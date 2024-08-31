@@ -2,7 +2,7 @@
 import { StringField } from '../../utils/__init__'
 import { transaction, userTransactions } from '@/api/transaction/handler'
 
-export const TransactionRoute = new Elysia({ prefix: '/api/transaction' })
+const TransactionRoute = new Elysia({ prefix: '/api/transaction' })
 	.post('/', async ({ body }) => await transaction(body), {
 		body: t.Object({
 			email: t.String({
