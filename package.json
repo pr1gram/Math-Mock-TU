@@ -9,8 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@elysiajs/swagger": "^1.1.1",
-    "@scalar/nextjs-api-reference": "^0.4.83",
     "elysia": "^1.1.9",
     "firebase": "^10.13.1",
     "next": "14.2.7",

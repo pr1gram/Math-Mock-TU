@@ -1,5 +1,5 @@
 ﻿import { Elysia, t } from 'elysia'
-import { createUser, deleteUser, getUser, updateUser } from '@/api/auth/handler'
+import { createUser, deleteUser, getUser, updateUser } from '@/api/authentication/handler'
 import { StringField } from '@/utils/__init__'
 
 const AuthRoute = new Elysia({ prefix: '/api/auth' })
