@@ -7,7 +7,8 @@ import {
 	isUsernameExist,
 	getDocumentByEmail,
 } from '@/utils/__init__'
-import { HTTPError } from '@/utils/error'
+import { Errors } from 'elysia-fault'
+
 
 interface User {
 	email: string
@@ -20,11 +21,11 @@ interface User {
 export async function createUser(options: User) {
 	try {
 		if (await isUsernameExist(options.username || '')) {
-			throw HTTPError.Conflict('Username already exists')
+			throw new Errors.BadRequest('Username already exists')
 		}
 
 		if (!validateEmail(options.email)) {
-			throw HTTPError.BadRequest('Email is not formatted correctly')
+			throw new Errors.BadRequest('Email is not formatted correctly')
 		}
 
 		const docSnap = await getDocumentByEmail('users', options.email)
@@ -38,14 +39,14 @@ export async function createUser(options: User) {
 		return { success: true, message: `User ${options.username} created successfully` }
 	} catch (e: unknown) {
 		error('Authentication', ErrorFromType.POST)
-		throw HTTPError.BadRequest('Error while user creating auth')
+		throw new Errors.BadRequest('Error while user creating auth')
 	}
 }
 
 export async function getUser(email: string) {
 	try {
 		if (!validateEmail(email)) {
-			throw HTTPError.BadRequest('Email is not formatted correctly')
+			throw new Errors.BadRequest('Email is not formatted correctly')
 		}
 
         console.log(email)
@@ -54,26 +55,26 @@ export async function getUser(email: string) {
 		const querySnapshot = await getDocs(q)
 
 		if (querySnapshot.empty) {
-			throw HTTPError.NotFound('Cannot find this user')
+			throw new Errors.NotFound('Cannot find this user')
 		}
 
 		return querySnapshot.docs[0].data()
 	} catch (e: unknown) {
 		error('Authentication', ErrorFromType.GET)
-		throw HTTPError.Internal('Error occurrred while retrieving user')
+		throw new Errors.InternalServerError('Error occurrred while retrieving user')
 	}
 }
 
 export async function updateUser(email: string, options: Partial<User>) {
 	try {
 		if (!validateEmail(email)) {
-			throw HTTPError.NotFound('Email is not formatted correctly')
+			throw new Errors.NotFound('Email is not formatted correctly')
 		}
 
 		const docSnap = await getDocumentByEmail('users', email)
 
 		if (!docSnap.exists()) {
-			throw HTTPError.NotFound('Cannot find this user')
+			throw new Errors.NotFound('Cannot find this user')
 		}
 
 		const updateData: Partial<User> = {}
@@ -87,7 +88,7 @@ export async function updateUser(email: string, options: Partial<User>) {
 		return { success: true, message: 'User updated successfully' }
 	} catch (e: unknown) {
 		error('Authentication', ErrorFromType.PATCH)
-		throw HTTPError.Internal('Error occurrred during user update')
+		throw new Errors.InternalServerError('Error occurrred during user update')
 	}
 }
 
@@ -98,7 +99,7 @@ export async function deleteUser(options: User) {
 		const querySnapshot = await getDocs(q)
 
 		if (querySnapshot.empty) {
-			throw HTTPError.NotFound('Cannot find this user')
+			throw new Errors.NotFound('Cannot find this user')
 		}
 
 		const userDoc = querySnapshot.docs[0]
@@ -106,6 +107,6 @@ export async function deleteUser(options: User) {
 		return { success: true, message: `User deleted successfully` }
 	} catch (e: unknown) {
 		error('Authentication', ErrorFromType.DELETE)
-		throw HTTPError.Internal('Error while deleting user')
+		throw new Errors.InternalServerError('Error while deleting user')
 	}
 }

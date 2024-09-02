@@ -1,4 +1,5 @@
-﻿import { storage, firestore } from '@/db/firebase'
+﻿import { Errors } from 'elysia-fault'
+import { storage, firestore } from '@/db/firebase'
 import {
 	collection,
 	query,
@@ -12,8 +13,6 @@ import {
 } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { ErrorFromType, validateEmail, error } from '@/utils/__init__'
-import { HTTPError } from '@/utils/error'
-import { InternalServerError, NotFoundError, ParseError, ValidationError } from 'elysia'
 
 interface Slip {
 	email: string
@@ -34,7 +33,7 @@ enum Status {
 export async function transaction(body: Slip) {
 	try {
 		if (!validateEmail(body.email)) {
-			throw HTTPError.BadRequest('Email is not formatted correctly')
+			throw new Errors.BadRequest('Email is not formatted correctly')
 		}
 
 		const storageRef = ref(storage, `uploads/${body.email}/${body.testID}`)
@@ -45,7 +44,7 @@ export async function transaction(body: Slip) {
 		const docSnap = await getDoc(docRef)
 
 		if (docSnap.exists()) {
-			if (!downloadURL) throw HTTPError.BadRequest('Cannot get image URL')
+			if (!downloadURL) throw new Errors.BadRequest('Cannot get image URL')
 
 			const transactionData: Slip[] = docSnap.data().transactions
 			const isDuplicatedTransaction = transactionData.find(
@@ -53,7 +52,7 @@ export async function transaction(body: Slip) {
 			)
 
 			if (isDuplicatedTransaction)
-				throw new NotFoundError(`Transaction with testID ${body.testID} already exists`)
+				throw new Errors.NotFound(`Transaction with testID ${body.testID} already exists`)
 
 			await updateDoc(docRef, {
 				email: body.email,
@@ -85,14 +84,14 @@ export async function transaction(body: Slip) {
 
 		return { success: true, message: 'Upload Transaction Completed' }
 	} catch (e: unknown) {
-		throw new InternalServerError('Error occurrred while retrieving user')
+		throw new Errors.InternalServerError('Error occurrred while retrieving user')
 	}
 }
 
 export async function userTransactions(email: string) {
 	try {
 		if (!validateEmail(email)) 
-			throw new NotFoundError('Email is not formatted correctly')
+			throw new Errors.NotFound('Email is not formatted correctly')
 		
 		const usersRef = collection(firestore, 'transactions')
 		const q = query(usersRef, where('email', '==', email))
@@ -100,14 +99,12 @@ export async function userTransactions(email: string) {
 		const querySnapshot = await getDocs(q)
 
 		if (querySnapshot.empty) {
-			throw HTTPError.NotFound('Cannot find this user')
+			throw new Errors.NotFound('Cannot find this user')
 		}
 
 		return querySnapshot.docs[0].data()
 	} catch (e: unknown) {
-		console.log(e)
-		error('Transaction', ErrorFromType.GET)
-		throw HTTPError.Internal('Error occured while fetching user')
+		throw new Errors.InternalServerError('Error occured while fetching user')
 	}
 }
 
@@ -123,16 +120,15 @@ export async function getTransaction(email: string, testID: string) {
 			)
 
 			if (transactionIndex === -1)
-				throw HTTPError.NotFound(`Cannot find ${testID} from ${email}`)
+				throw new Errors.NotFound(`Cannot find ${testID} from ${email}`)
 
-			const data = { ...transactions[transactionIndex], email: email }
-			return data
-		} else {
-			throw HTTPError.BadRequest('Cannot find user')
-		}
+			return { ...transactions[transactionIndex], email: email }
+		} 
+		
+		throw new Errors.BadRequest('Cannot find user')
+		
 	} catch (e: unknown) {
-		error('Transaction', ErrorFromType.PATCH)
-		throw HTTPError.Internal('Error occured while fetching user')
+		throw new Errors.InternalServerError('Error occured while fetching user')
 	}
 }
 
@@ -148,7 +144,7 @@ export async function updateStatus(email: string, testID: string) {
 			)
 
 			if (transactionIndex === -1)
-				throw HTTPError.NotFound(`Cannot find ${testID} from ${email}`)
+				throw new Errors.NotFound(`Cannot find ${testID} from ${email}`)
 
 			const updatedTransactions: Slip = {
 				...transactions[transactionIndex],
@@ -159,11 +155,9 @@ export async function updateStatus(email: string, testID: string) {
 			await updateDoc(docRef, { transactions })
 			return 'Updated Successfully'
 		} else {
-			throw HTTPError.BadRequest('Cannot find user')
+			throw new Errors.BadRequest('Cannot find user')
 		}
 	} catch (e: unknown) {
-		console.log(e)
-		error('Transaction', ErrorFromType.PATCH)
-		throw HTTPError.Internal('Error occured while fetching user')
+		throw new Errors.InternalServerError('Error occured while fetching user')
 	}
 }
