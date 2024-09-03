@@ -12,7 +12,7 @@ import {
 	getDoc,
 } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { ErrorFromType, validateEmail, error } from '@/utils/__init__'
+import { validateEmail } from '@/utils/__init__'
 
 interface Slip {
 	email: string
@@ -32,10 +32,9 @@ enum Status {
 
 export async function transaction(body: Slip) {
 	try {
-		if (!validateEmail(body.email)) {
-			throw new Errors.BadRequest('Email is not formatted correctly')
-		}
-
+		if (!validateEmail(body.email)) 
+			return new Errors.BadRequest('Email is not formatted correctly')
+		
 		const storageRef = ref(storage, `uploads/${body.email}/${body.testID}`)
 		await uploadBytes(storageRef, body.file)
 		const downloadURL = await getDownloadURL(storageRef)
@@ -44,7 +43,7 @@ export async function transaction(body: Slip) {
 		const docSnap = await getDoc(docRef)
 
 		if (docSnap.exists()) {
-			if (!downloadURL) throw new Errors.BadRequest('Cannot get image URL')
+			if (!downloadURL) return new Errors.BadRequest('Cannot get image URL')
 
 			const transactionData: Slip[] = docSnap.data().transactions
 			const isDuplicatedTransaction = transactionData.find(
@@ -52,7 +51,7 @@ export async function transaction(body: Slip) {
 			)
 
 			if (isDuplicatedTransaction)
-				throw new Errors.NotFound(`Transaction with testID ${body.testID} already exists`)
+				return new Errors.NotFound(`Transaction with testID ${body.testID} already exists`)
 
 			await updateDoc(docRef, {
 				email: body.email,
@@ -84,24 +83,23 @@ export async function transaction(body: Slip) {
 
 		return { success: true, message: 'Upload Transaction Completed' }
 	} catch (e: unknown) {
-		throw new Errors.InternalServerError('Error occurrred while retrieving user')
+		return new Errors.InternalServerError('Error occurrred while retrieving user')
 	}
 }
 
 export async function userTransactions(email: string) {
 	try {
 		if (!validateEmail(email)) 
-			throw new Errors.NotFound('Email is not formatted correctly')
+			return new Errors.NotFound('Email is not formatted correctly')
 		
 		const usersRef = collection(firestore, 'transactions')
 		const q = query(usersRef, where('email', '==', email))
 
 		const querySnapshot = await getDocs(q)
 
-		if (querySnapshot.empty) {
-			throw new Errors.NotFound('Cannot find this user')
-		}
-
+		if (querySnapshot.empty) 
+			return new Errors.NotFound('Cannot find this user')
+		
 		return querySnapshot.docs[0].data()
 	} catch (e: unknown) {
 		throw new Errors.InternalServerError('Error occured while fetching user')
@@ -125,10 +123,10 @@ export async function getTransaction(email: string, testID: string) {
 			return { ...transactions[transactionIndex], email: email }
 		} 
 		
-		throw new Errors.BadRequest('Cannot find user')
+		return new Errors.BadRequest('Cannot find user')
 		
 	} catch (e: unknown) {
-		throw new Errors.InternalServerError('Error occured while fetching user')
+		return new Errors.InternalServerError('Error occured while fetching user')
 	}
 }
 
@@ -144,7 +142,7 @@ export async function updateStatus(email: string, testID: string) {
 			)
 
 			if (transactionIndex === -1)
-				throw new Errors.NotFound(`Cannot find ${testID} from ${email}`)
+				return new Errors.NotFound(`Cannot find ${testID} from ${email}`)
 
 			const updatedTransactions: Slip = {
 				...transactions[transactionIndex],
@@ -153,11 +151,11 @@ export async function updateStatus(email: string, testID: string) {
 			transactions[transactionIndex] = updatedTransactions
 
 			await updateDoc(docRef, { transactions })
-			return 'Updated Successfully'
+			return { success: true, message: 'Updated Successfully' }
 		} else {
-			throw new Errors.BadRequest('Cannot find user')
+			return new Errors.BadRequest('Cannot find user')
 		}
 	} catch (e: unknown) {
-		throw new Errors.InternalServerError('Error occured while fetching user')
+		return new Errors.InternalServerError('Error occured while fetching user')
 	}
 }

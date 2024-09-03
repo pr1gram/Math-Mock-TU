@@ -1,6 +1,6 @@
 ﻿import Elysia, { t } from 'elysia'
 import { StringField } from '@/utils/__init__'
-import { transaction, updateStatus, userTransactions } from '@/api/transaction/handler'
+import { updateStatus, userTransactions } from '@/api/transaction/handler'
 
 const TransactionRoute = new Elysia({ prefix: '/api/transaction' })
 	.get('/:email', async ({ params: { email } }) => await userTransactions(email), {
