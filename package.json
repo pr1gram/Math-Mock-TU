@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@elysiajs/eden": "^1.1.2",
+    "axios": "^1.7.7",
     "elysia": "^1.1.9",
     "elysia-fault": "^1.0.7",
     "firebase": "^10.13.1",
