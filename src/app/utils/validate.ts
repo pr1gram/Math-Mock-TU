@@ -9,7 +9,7 @@ export function _validateEmail(email: string) {
 	return emailRegex.test(email)
 }
 
-export const _StringField = (errorMessage: string, required: boolean = true) => {
+export function _StringField(errorMessage: string, required: boolean = true) {
 	return required
 		? t.String({ error: errorMessage })
 		: t.Optional(t.String({ error: errorMessage }))

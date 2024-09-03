@@ -3,7 +3,7 @@ import { elysiaFault } from 'elysia-fault'
 import { createUser, deleteUser, getUser, updateUser } from './handler'
 import { StringField } from '@/utils/__init__'
 
-const AuthRoute = new Elysia({ prefix: '/api/auth' })
+const AuthRoute = new Elysia({ prefix: '/api/authentication' })
 	.use(elysiaFault())
 	.post('/', ({ body }) => createUser(body), {
 		body: t.Object({

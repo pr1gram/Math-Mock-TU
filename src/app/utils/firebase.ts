@@ -4,8 +4,8 @@ import { encoded } from '@/utils/__init__'
 
 export async function _isUsernameExist(username: string): Promise<boolean> {
 	const usersRef = collection(firestore, 'users')
-	const q = query(usersRef, where('username', '==', username))
-	const querySnapshot = await getDocs(q)
+	const queryResult = query(usersRef, where('username', '==', username))
+	const querySnapshot = await getDocs(queryResult)
 	return !querySnapshot.empty
 }
 

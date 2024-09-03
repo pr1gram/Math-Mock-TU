@@ -1,8 +1,10 @@
 ﻿import { Elysia, t } from 'elysia'
-import { createUser, deleteUser, getUser, updateUser } from '@/api/authentication/handler'
+import { getUser, updateUser } from '@/api/authentication/handler'
+import { elysiaFault } from 'elysia-fault'
 import { StringField } from '@/utils/__init__'
 
-const AuthRoute = new Elysia({ prefix: '/api/auth' })
+const AuthRoute = new Elysia({ prefix: '/api/authentication' })
+	.use(elysiaFault())
 	.get('/:email', ({ params: { email } }) => getUser(email), {
 		params: t.Object({
 			email: StringField('Email must be provided'),
