@@ -4,10 +4,10 @@ import SignInButton from '@/components/auth/signInButton'
 
 export default async function Auth() {
 	const session = await auth()
+	const check = await CheckSignIn( true, "/account" );
 
 	return (
 		<main>
-			<CheckSignIn isSignedIn={true} path={'/account'} />
 			<SignInButton />
 		</main>
 	)

@@ -7,19 +7,20 @@ import { redirect } from "next/navigation";
 export default async function Account() {
   const session = await auth();
   const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {});
+  const check = await CheckSignIn( false, "/auth" );
 
   console.log(response);
 
-  if (response === 500) {
+  if (response.status === 500) {
     console.log("Redirecting to /form");
     redirect("/form");
   }
 
   return (
     <main>
-      <CheckSignIn isSignedIn={false} path={"/auth"} />
       <h1>Account</h1>
-      <p>email : {response?.email} </p>
+      <p>email : {response?.data.email} </p>
+      <p>name : {response?.data.username}</p>
       <SignOutButton />
     </main>
   );
