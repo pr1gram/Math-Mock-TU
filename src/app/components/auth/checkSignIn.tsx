@@ -1,29 +1,18 @@
-"use client"
+import { useEffect } from 'react'
+import { redirect } from 'next/navigation'
+import { auth } from "@/api/auth";
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { getSession } from "next-auth/react"
+export default async function  CheckSignIn( isSignedIn:boolean, path:string ) {
+		
+			const session = await auth() // Client-side session fetch
+			if (isSignedIn && session) {
+				redirect(path)
+			} else if (!isSignedIn && !session) {
+				redirect(path)
+			}
+		
 
-interface CheckSignInProps {
-  isSignedIn: boolean
-  path: string
-}
-
-export default function CheckSignIn({ isSignedIn, path }: CheckSignInProps) {
-  const router = useRouter()
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const session = await getSession() // Client-side session fetch
-      if (isSignedIn && session) {
-        router.push(path)
-      } else if (!isSignedIn && !session) {
-        router.push(path)
-      }
-    }
-
-    checkSession()
-  }, [isSignedIn, path, router])
+		
 
   return null // Return null to prevent rendering anything
 }
