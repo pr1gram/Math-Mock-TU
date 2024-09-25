@@ -1,18 +1,20 @@
 "use client"
 
-import React, { use } from "react"
+import React, { use, useState } from "react"
 import { useFormik } from "formik"
 import { useSession } from "next-auth/react"
 import apiFunction from "@/components/api"
 import classNames from "classnames"
 import * as yup from "yup"
-import "yup-phone";
-import { useRouter } from 'next/navigation';
+import "yup-phone"
+import { useRouter } from "next/navigation"
 
 export default function SignUpForm() {
   const { data: session } = useSession()
-  const router = useRouter();
-  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+  const [invalidUsername,setInvalidUsername] = useState(false)
+  const router = useRouter()
+  const phoneRegExp =
+    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
   const formik = useFormik({
     initialValues: {
@@ -24,22 +26,29 @@ export default function SignUpForm() {
     validationSchema: yup.object({
       FirstName: yup.string().required("*จำเป็นต้องใส่"),
       LastName: yup.string().required("*จำเป็นต้องใส่"),
-      phone: yup.string().matches(phoneRegExp, 'หมายเลขโทรศัพท์ไม่ถูกต้อง').required("*จำเป็นต้องใส่"),
+      phone: yup
+        .string()
+        .matches(phoneRegExp, "หมายเลขโทรศัพท์ไม่ถูกต้อง")
+        .required("*จำเป็นต้องใส่"),
       username: yup.string().required("*จำเป็นต้องใส่").max(16, "Username ห้ามเกิน 16 ตัวอักษร"),
     }),
-    onSubmit: (values) => {
-      apiFunction("POST", `/authentication`, {
+    onSubmit: async (values) => {
+      const response = await apiFunction("POST", `/authentication`, {
         email: session?.user?.email,
         firstname: values.FirstName,
         lastname: values.LastName,
         username: values.username,
         tel: values.phone,
       })
-      setTimeout(() => {
-      router.push("/account")
-      }, 1000);
-    }
-    ,
+
+      if (response.status === 200) {
+        router.push("/account")
+      }
+
+      if (response.status === 500) {
+        setInvalidUsername(true)
+      }
+    },
   })
 
   console.log(formik.values)
@@ -84,7 +93,9 @@ export default function SignUpForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
         />
-        {formik.touched.phone && formik.errors.phone ? <div className=" text-red-600 h-0">{formik.errors.phone}</div> : null}
+        {formik.touched.phone && formik.errors.phone ? (
+          <div className=" text-red-600 h-0">{formik.errors.phone}</div>
+        ) : null}
       </div>
       <div>
         <input
@@ -97,6 +108,9 @@ export default function SignUpForm() {
         />
         {formik.touched.username && formik.errors.username ? (
           <div className=" text-red-600 h-0">{formik.errors.username}</div>
+        ) : null}
+        {invalidUsername ? (
+          <div className=" text-red-600 h-0">ชื่อบัญชีนี้ถูกใช้แล้ว</div>
         ) : null}
       </div>
       <button
