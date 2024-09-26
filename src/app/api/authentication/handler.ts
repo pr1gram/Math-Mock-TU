@@ -1,130 +1,124 @@
-﻿import { firestore } from "@/db/firebase"
-import { doc, setDoc, collection, query, where, addDoc, getDocs, updateDoc, deleteDoc } from "firebase/firestore"
-import { validateEmail, isUsernameExist, getDocumentByEmail, createSessionDoc, updateSessionDoc } from "@/utils/__init__"
-import { Errors } from "elysia-fault"
-import { sign } from "jsonwebtoken"
+﻿import { setDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { validateEmail, isUsernameExist, getDocumentByEmail, getSnapshotByQuery, createSessionDoc, updateSessionDoc } from "@/utils/__init__";
+import { Errors } from "elysia-fault";
+import { sign } from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 
 interface User {
-  email: string
-  firstname?: string
-  lastname?: string
-  username?: string
-  tel?: string
-  _id?: string
+  email: string;
+  firstname?: string;
+  lastname?: string;
+  username?: string;
+  tel?: string;
+  _id?: string;
 }
 
 export async function createUser(options: User) {
   try {
-    if (await isUsernameExist(options.username || ""))
-      return new Errors.BadRequest("Username already exists")
+    if (await isUsernameExist(options.username || "")) 
+      return new Errors.BadRequest("Username already exists");
 
-    if (!validateEmail(options.email))
-      return new Errors.BadRequest("Email is not formatted correctly")
+    if (!validateEmail(options.email)) 
+      return new Errors.BadRequest("Email is not formatted correctly");
+    
+    const docSnap = await getDocumentByEmail("users", options.email);
 
-    const docSnap = await getDocumentByEmail("users", options.email)
-
-    if (docSnap.exists()) {
-      await setDoc(docSnap.ref, options, { merge: true })
-      return { success: true, message: `User ${options.username} has been updated` }
+    if (docSnap?.exists()) {
+      await setDoc(docSnap.ref, options, { merge: true });
+      return { success: true, message: `User ${options.username} has been updated` };
     }
 
     const userId = uuidv4();
-    options._id = userId
-   
-    await setDoc(docSnap.ref, options)
-    return { success: true, message: `User ${options.username} created successfully` }
+    options._id = userId;
+
+    await setDoc(docSnap!.ref, options);
+    return { success: true, message: `User ${options.username} created successfully` };
   } catch (e: unknown) {
-    return new Errors.BadRequest("Error while user creating authentication")
+    return new Errors.BadRequest("Error while creating user authentication");
   }
 }
 
 export async function getUser(email: string) {
   try {
-    if (!validateEmail(email)) return new Errors.BadRequest("Email is not formatted correctly")
+    if (!validateEmail(email)) 
+      return new Errors.BadRequest("Email is not formatted correctly");
 
-    const usersRef = collection(firestore, "users")
-    const q = query(usersRef, where("email", "==", email))
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await getDocumentByEmail("users", email);
 
-    if (querySnapshot.empty) return new Errors.NotFound("Cannot find this user")
+    if (!querySnapshot?.exists()) 
+      return new Errors.NotFound("Cannot find this user");
 
-    return querySnapshot.docs[0].data()
+    return querySnapshot.data();
   } catch (e: unknown) {
-    return new Errors.NotFound("Cannot find user")
+    return new Errors.NotFound("Cannot find user");
   }
 }
 
 export async function updateUser(email: string, options: Partial<User>) {
   try {
-    if (!validateEmail(email)) return new Errors.NotFound("Email is not formatted correctly")
+    if (!validateEmail(email)) 
+      return new Errors.NotFound("Email is not formatted correctly");
 
-    const docSnap = await getDocumentByEmail("users", email)
+    const docSnap = await getDocumentByEmail("users", email);
 
-    if (!docSnap.exists()) return new Errors.NotFound("Cannot find this user")
+    if (!docSnap?.exists()) 
+      return new Errors.NotFound("Cannot find this user");
 
-    const updateData: Partial<User> = {}
+    const updateData: Partial<User> = {};
 
     Object.keys(options).forEach((key) => {
-      const value = options[key as keyof User]
-      if (value) updateData[key as keyof User] = value
-    })
+      const value = options[key as keyof User];
+      if (value) updateData[key as keyof User] = value;
+    });
 
-    await updateDoc(docSnap.ref, updateData)
-    return { success: true, message: "User updated successfully" }
+    await updateDoc(docSnap.ref, updateData);
+    return { success: true, message: "User updated successfully" };
   } catch (e: unknown) {
-    throw new Errors.InternalServerError("Error occurrred during user update")
+    throw new Errors.InternalServerError("Error occurred during user update");
   }
 }
 
 export async function deleteUser(options: User) {
   try {
-    const usersRef = collection(firestore, "users")
-    const q = query(usersRef, where("email", "==", options.email))
-    const querySnapshot = await getDocs(q)
+    if (!validateEmail(options.email)) 
+      return new Errors.BadRequest("Email is not formatted correctly");
 
-    if (querySnapshot.empty) return new Errors.NotFound("Cannot find this user")
+    const querySnapshot = await getDocumentByEmail("users", options.email);
+    if (!querySnapshot?.exists()) 
+      return new Errors.NotFound("Cannot find this user");
     
-    const userDoc = querySnapshot.docs[0]
-    await deleteDoc(userDoc.ref)
+    await deleteDoc(querySnapshot.ref);
+    return { success: true, message: "User deleted successfully" };
   } catch (e: unknown) {
-    return new Errors.InternalServerError("Error occured while deleting user")
+    return new Errors.InternalServerError("Error occurred while deleting user");
   }
 }
 
 export async function generateJWT(email: string) {
   try {
+    if (!validateEmail(email)) 
+      return new Errors.BadRequest("Email is not formatted correctly");
+    
     const querySnapshot = await getDocumentByEmail("users", email);
 
-    if (!querySnapshot.exists()) return new Errors.NotFound("Cannot find this user");
+    if (!querySnapshot?.exists()) 
+      return new Errors.NotFound("Cannot find this user");
 
     const userID = querySnapshot.data()._id;
-    const sessionRef = collection(firestore, "sessions");
-    const sessionQuery = query(sessionRef, where("userID", "==", userID));
-    const sessionSnapshot = await getDocs(sessionQuery);
-
-    const currentDate = new Date();
     let jwtToken: string;
-    let expirationDate = new Date();
-    expirationDate.setDate(currentDate.getDate() + 1);
+
+    const sessionSnapshot = await getSnapshotByQuery("session", "userID", userID)
 
     if (!sessionSnapshot.empty) {
       const sessionDoc = sessionSnapshot.docs[0];
-      const sessionData = sessionDoc.data();
-      const expiresAt = sessionData.expiresAt.toDate();
-
-      if (expiresAt < currentDate) {
-        jwtToken = sign({ userID }, process.env.JWT_SECRET!, { expiresIn: "1d" });
-        await updateSessionDoc(sessionDoc.id, userID, jwtToken, expirationDate);
-      } else {
-        jwtToken = sessionData.token;
-      }
+      jwtToken = sign({ userID }, process.env.JWT_SECRET!, { expiresIn: "1d" });
+      await updateSessionDoc(sessionDoc.id, userID, jwtToken);
     } else {
       jwtToken = sign({ userID }, process.env.JWT_SECRET!, { expiresIn: "1d" });
-      await createSessionDoc(userID, jwtToken, expirationDate);
+      await createSessionDoc(userID, jwtToken);
     }
 
-    return { success: true, message: "JWT token generated successfully" };
+    return { success: true, message: "JWT token generated successfully", token: jwtToken };
   } catch (e: unknown) {
     return new Errors.InternalServerError("Error while generating JWT");
   }
