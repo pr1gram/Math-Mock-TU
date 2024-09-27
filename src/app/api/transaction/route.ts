@@ -13,8 +13,8 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
       file: t.File({
         error: "Image file must be provided",
       }),
-      date: StringField("Date must be provided"), 
-      time: StringField("Time must be provided"), 
+      date: StringField("Date must be provided"),
+      time: StringField("Time must be provided"),
       price: StringField("Price must be provided"),
       testID: StringField("Test ID must be provided"),
     }),

@@ -12,8 +12,8 @@ export async function _isUsernameExist(username: string): Promise<boolean> {
 export async function _getDocumentByEmail(collectionName: string, email: string) {
   const ref = collection(firestore, collectionName)
   const queryResult = query(ref, where("email", "==", email))
-  const querySnapshot = await getDocs(queryResult);
-  return querySnapshot.docs.length > 0 ? querySnapshot.docs[0] : null;
+  const querySnapshot = await getDocs(queryResult)
+  return querySnapshot.docs.length > 0 ? querySnapshot.docs[0] : null
 }
 
 export async function _getSnapshotByQuery(collectionName: string, field: string, value: string) {
@@ -23,20 +23,24 @@ export async function _getSnapshotByQuery(collectionName: string, field: string,
 }
 
 export async function _updateSessionDoc(docId: string, userID: string, token: string) {
-  const document = doc(firestore, "sessions", docId);
-  await setDoc(document, {
-    userID,
-    token,
-    createdAt: new Date(),
-  }, { merge: true });
+  const document = doc(firestore, "sessions", docId)
+  await setDoc(
+    document,
+    {
+      userID,
+      token,
+      createdAt: new Date(),
+    },
+    { merge: true }
+  )
 }
 
 export async function _createSessionDoc(userID: string, token: string) {
-  const sessionRef = collection(firestore, "sessions");
-  const document = doc(sessionRef, userID);
+  const sessionRef = collection(firestore, "sessions")
+  const document = doc(sessionRef, userID)
   await setDoc(document, {
     userID,
     token,
     createdAt: new Date(),
-  });
+  })
 }

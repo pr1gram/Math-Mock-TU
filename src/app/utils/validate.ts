@@ -2,11 +2,11 @@
 import crypto from "crypto"
 
 export function _createHash(text: string) {
-  crypto.createHash("sha256").update(text).digest("hex")
+  return crypto.createHash("sha256").update(text).digest("hex")
 }
 
 export function _encoded(text: string) {
-  Buffer.from(text, "utf-8").toString("base64")
+  return Buffer.from(text, "utf-8").toString("base64")
 }
 
 export function _validateEmail(email: string) {
