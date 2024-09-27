@@ -1,6 +1,5 @@
 ﻿import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { firestore } from "@/db/firebase"
-import { encoded } from "@/utils/__init__"
 
 export async function _isUsernameExist(username: string): Promise<boolean> {
   const usersRef = collection(firestore, "users")
