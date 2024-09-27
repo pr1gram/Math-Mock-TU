@@ -5,15 +5,15 @@ import { auth } from "@/api/auth"
 import { redirect } from "next/navigation"
 
 export default async function Account() {
-  const session = await auth();
-  const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {});
-  const check = await CheckSignIn( false, "/auth" );
+  const session = await auth()
+  const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
+  const check = await CheckSignIn(false, "/auth")
 
   console.log(response)
 
   if (response.status === 500) {
-    console.log("Redirecting to /form");
-    redirect("/form");
+    console.log("Redirecting to /form")
+    redirect("/form")
   }
 
   return (
