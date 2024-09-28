@@ -1,6 +1,5 @@
-﻿import { Errors } from "elysia-fault"
-import { storage, firestore } from "@/db/firebase"
-import { doc, updateDoc, arrayUnion, setDoc, getDoc } from "firebase/firestore"
+﻿import { storage, firestore } from "@/db/firebase"
+import { doc, updateDoc, arrayUnion, setDoc } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import {
   getDocumentByEmail,
@@ -8,6 +7,7 @@ import {
   validateEnvironmentKey,
   getSnapshotByQuery,
 } from "@/utils/__init__"
+import { CustomError } from "@/utils/errors"
 
 interface Slip {
   email: string
@@ -28,13 +28,12 @@ export enum Status {
 
 function dfsTransaction(transactions: Slip[], testID: string): number {
   function dfs(index: number): number {
-    if (index >= transactions.length) return -1;
-    if (transactions[index].testID === testID) return index;
-    return dfs(index + 1);
+    if (index >= transactions.length) return -1
+    if (transactions[index].testID === testID) return index
+    return dfs(index + 1)
   }
-  return dfs(0);
+  return dfs(0)
 }
-
 
 async function uploadFile(email: string, testID: string, file: File): Promise<string> {
   const storageRef = ref(storage, `uploads/${email}/${testID}`)
@@ -73,76 +72,61 @@ async function createTransaction(docRef: any, body: Slip, downloadURL: string) {
 }
 
 export async function transaction(body: Slip) {
-  try {
-    if (!validateEmail(body.email))
-      return new Errors.BadRequest("Email is not formatted correctly")
+  if (!validateEmail(body.email)) throw new CustomError(400, "Email is not formatted correctly")
 
-    if (!validateEnvironmentKey(body.environmentKey!))
-      return new Errors.BadRequest("Environment key is invalid")
+  if (!validateEnvironmentKey(body.environmentKey!))
+    throw new CustomError(400, "Environment key is invalid")
 
-    const downloadURL = await uploadFile(body.email, body.testID!, body.file)
-    if (!downloadURL) {
-      return new Errors.BadRequest("Cannot get image URL")
-    }
+  const downloadURL = await uploadFile(body.email, body.testID!, body.file)
+  if (!downloadURL) {
+    throw new CustomError(400, "Cannot get image URL")
+  }
 
-    const docSnap = await getDocumentByEmail("transactions", body.email)
+  const docSnap = await getDocumentByEmail("transactions", body.email)
 
-    if (docSnap?.exists()) {
-      const transactionData: Slip[] = docSnap.data().transactions
-      const isDuplicatedTransaction = transactionData.find(
-        (transaction) => transaction.testID === body.testID
-      )
+  if (docSnap?.exists()) {
+    const transactionData: Slip[] = docSnap.data().transactions
+    const isDuplicatedTransaction = transactionData.find(
+      (transaction) => transaction.testID === body.testID
+    )
 
-      if (isDuplicatedTransaction) {
-        return new Errors.NotFound(`Transaction with testID ${body.testID} already exists`)
-      }
+    if (isDuplicatedTransaction)
+      throw new CustomError(400, `Transaction with testID ${body.testID} already exists`)
 
-      const { environmentKey, ...newBody } = body
-      await updateTransaction(docSnap.ref, newBody, downloadURL)
-      return { success: true, message: "Purchase completed" }
-    } else {
-      const docRef = doc(firestore, "transactions", body.email)
-      const { environmentKey, ...newBody } = body
-      await createTransaction(docRef, newBody, downloadURL)
-      return { success: true, message: "Upload Transaction Completed" }
-    }
-  } catch (e: unknown) {
-    return new Errors.InternalServerError("Error occurred while processing transaction")
+    const { environmentKey, ...newBody } = body
+    await updateTransaction(docSnap.ref, newBody, downloadURL)
+    return { success: true, message: "Purchase completed" }
+  } else {
+    const docRef = doc(firestore, "transactions", body.email)
+    const { environmentKey, ...newBody } = body
+    await createTransaction(docRef, newBody, downloadURL)
+    return { success: true, message: "Upload Transaction Completed" }
   }
 }
 
 export async function userTransactions(email: string) {
-  try {
-    if (!validateEmail(email)) return new Errors.NotFound("Email is not formatted correctly")
+  if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
 
-    const querySnapshot = await getSnapshotByQuery("transactions", "email", email)
-    if (querySnapshot.empty) return new Errors.NotFound("Cannot find this user")
+  const querySnapshot = await getSnapshotByQuery("transactions", "email", email)
+  if (querySnapshot.empty) throw new CustomError(400, "Cannot find this user")
 
-    return querySnapshot.docs[0].data()
-  } catch (e: unknown) {
-    throw new Errors.InternalServerError("Error occurred while fetching user transactions")
-  }
+  return querySnapshot.docs[0].data()
 }
 
 export async function getTransaction(email: string, testID: string) {
-  try {
-    const docSnap = await getDocumentByEmail("transactions", email)
+  const docSnap = await getDocumentByEmail("transactions", email)
 
-    if (docSnap?.exists()) {
-      const transactions: Slip[] = docSnap.data().transactions
-      const transaction = transactions.find((t) => t.testID === testID)
+  if (docSnap?.exists()) {
+    const transactions: Slip[] = docSnap.data().transactions
+    const transaction = transactions.find((t) => t.testID === testID)
 
-      if (!transaction) {
-        throw new Errors.NotFound(`Cannot find ${testID} from ${email}`)
-      }
+    if (!transaction)
+      throw new CustomError(404, `Cannot find ${testID} from ${email}`)
 
-      return { ...transaction, email: email }
-    }
-
-    return new Errors.BadRequest("Cannot find user")
-  } catch (e: unknown) {
-    return new Errors.InternalServerError("Error occurred while fetching transaction")
+    return { ...transaction, email: email }
   }
+
+  throw new CustomError(404, "Cannot find user")
 }
 
 export async function updateStatus(
@@ -152,27 +136,27 @@ export async function updateStatus(
   environmentKey: string
 ) {
   try {
-    if (!validateEmail(email)) return new Errors.BadRequest("Email is not formatted correctly")
 
+    if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
+  
     if (!validateEnvironmentKey(environmentKey!))
-      return new Errors.BadRequest("Environment key is invalid")
-
+      throw new CustomError(400, "Environment key is invalid")
+  
     const docSnap = await getDocumentByEmail("transactions", email)
-
+  
     if (docSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
       const transactionIndex = dfsTransaction(transactions, testID)
-      if (transactionIndex === -1)
-        return new Errors.NotFound(`Cannot find ${testID} from ${email}`)
-
+      if (transactionIndex === -1) throw new CustomError(404, `Cannot find ${testID} from ${email}`)
+  
       transactions[transactionIndex].status = status
       await updateDoc(docSnap.ref, { transactions })
-
+  
       return { success: true, message: "Updated Successfully" }
     } else {
-      return new Errors.BadRequest("Cannot find user")
+      throw new CustomError(404, "Cannot find user")
     }
   } catch (e: unknown) {
-    return new Errors.InternalServerError("Error occurred while updating status")
-  }
+    throw new CustomError(500, "Error while updating status")
+  } 
 }

@@ -1,6 +1,5 @@
 ﻿import { t } from "elysia"
 import crypto from "crypto"
-import { Errors } from "elysia-fault"
 
 export function _createHash(text: string) {
   return crypto.createHash("sha256").update(text).digest("hex")

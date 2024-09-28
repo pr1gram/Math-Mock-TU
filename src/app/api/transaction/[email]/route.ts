@@ -1,8 +1,17 @@
 ﻿import Elysia, { t } from "elysia"
 import { StringField } from "@/utils/__init__"
 import { updateStatus, userTransactions, Status } from "@/api/transaction/handler"
+import { verifyEnvironmentKey } from "@/utils/validate"
+import { CustomError } from "@/utils/errors"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
+  .guard({
+    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
+      if (!verifyEnvironmentKey({ headers })) {
+        throw new CustomError(401, "Unauthorized")
+      }
+    },
+  })
   .get("/:email", async ({ params: { email } }) => await userTransactions(email), {
     params: t.Object({
       email: StringField("Email must be provided"),

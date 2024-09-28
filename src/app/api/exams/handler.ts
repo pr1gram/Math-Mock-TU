@@ -1,22 +1,14 @@
 ﻿import { firestore } from "@/db/firebase"
 import { setDoc, updateDoc, doc } from "firebase/firestore"
 import { validateEmail, validateEnvironmentKey, getDocumentByEmail } from "@/utils/__init__"
-import { Errors } from "elysia-fault"
+import { CustomError } from "@/utils/errors"
 
-async function updateExamAnswers(
-  email: string,
-  testID: string,
-  answers: string[],
-) {
+async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   const userDocRef = doc(firestore, "exams", email)
   await updateDoc(userDocRef, { [testID]: answers })
 }
 
-async function createExamDocument(
-  email: string,
-  testID: string,
-  answers: string[],
-) {
+async function createExamDocument(email: string, testID: string, answers: string[]) {
   const newUserRef = doc(firestore, "exams", email)
   await setDoc(newUserRef, { [testID]: answers })
 }
@@ -25,17 +17,13 @@ export async function sendExam(
   email: string,
   testID: string,
   answers: string[],
-  environmentKey: string
 ) {
   try {
     if (!validateEmail(email))
-      return new Errors.BadRequest("Email is not formatted correctly")
-    
-    if (!validateEnvironmentKey(environmentKey))
-      return new Errors.BadRequest("Environment key is invalid")
-
+      throw new CustomError(400, "Email is not formatted correctly")
+  
     const docSnap = await getDocumentByEmail("exams", email)
-
+  
     if (!docSnap?.exists()) {
       await createExamDocument(email, testID, answers)
       return { success: true, message: "User created and test answers successfully added" }
@@ -44,6 +32,6 @@ export async function sendExam(
       return { success: true, message: "Test answers successfully added" }
     }
   } catch (e: unknown) {
-    return new Errors.InternalServerError("Error while processing exam answers")
+    throw new CustomError(500, "Error while sending exam")
   }
 }

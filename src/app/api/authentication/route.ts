@@ -1,17 +1,18 @@
 ﻿import { Elysia, t } from "elysia"
-import { elysiaFault, Errors } from "elysia-fault"
 import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./handler"
 import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
+import { CustomError } from "@/utils/errors"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
-  .use(elysiaFault())
-  .post("/", ({ body, headers }) => {
-    if (!verifyEnvironmentKey({ headers })) 
-      throw new Errors.Unauthorized("Invalid or missing environment key")
-    
-    return createUser(body)
-  }, {
+  .guard({
+    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
+      if (!verifyEnvironmentKey({ headers })) {
+        throw new CustomError(401, "Unauthorized")
+      }
+    },
+  })
+  .post("/", ({ body }) => createUser(body), {
     body: t.Object({
       email: StringField("String must be provided"),
       firstname: StringField("Firstname must be provided"),
@@ -31,7 +32,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
       }),
     }
   )
-  .patch("/:email", ({ params: { email }, body }) => updateUser(email, body), {
+  .patch("/:email", ({ params: { email }, body, headers }) => updateUser(email, body), {
     params: t.Object({
       email: StringField("String must be provided"),
     }),
