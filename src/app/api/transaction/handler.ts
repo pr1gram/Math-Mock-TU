@@ -4,7 +4,6 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import {
   getDocumentByEmail,
   validateEmail,
-  validateEnvironmentKey,
   getSnapshotByQuery,
 } from "@/utils/__init__"
 import { CustomError } from "@/utils/errors"
@@ -74,10 +73,8 @@ async function createTransaction(docRef: any, body: Slip, downloadURL: string) {
 export async function transaction(body: Slip) {
   if (!validateEmail(body.email)) throw new CustomError(400, "Email is not formatted correctly")
 
-  if (!validateEnvironmentKey(body.environmentKey!))
-    throw new CustomError(400, "Environment key is invalid")
-
   const downloadURL = await uploadFile(body.email, body.testID!, body.file)
+
   if (!downloadURL) {
     throw new CustomError(400, "Cannot get image URL")
   }
@@ -138,9 +135,6 @@ export async function updateStatus(
   try {
 
     if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
-  
-    if (!validateEnvironmentKey(environmentKey!))
-      throw new CustomError(400, "Environment key is invalid")
   
     const docSnap = await getDocumentByEmail("transactions", email)
   

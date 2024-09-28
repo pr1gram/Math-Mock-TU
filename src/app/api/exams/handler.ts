@@ -1,6 +1,6 @@
 ﻿import { firestore } from "@/db/firebase"
 import { setDoc, updateDoc, doc } from "firebase/firestore"
-import { validateEmail, validateEnvironmentKey, getDocumentByEmail } from "@/utils/__init__"
+import { validateEmail, getDocumentByEmail } from "@/utils/__init__"
 import { CustomError } from "@/utils/errors"
 
 async function updateExamAnswers(email: string, testID: string, answers: string[]) {

@@ -2,7 +2,6 @@
 import { firestore } from "@/db/firebase"
 import {
   validateEmail,
-  validateEnvironmentKey,
   isUsernameExist,
   getDocumentByEmail,
   getSnapshotByQuery,
@@ -18,9 +17,9 @@ interface User {
   firstname?: string
   lastname?: string
   username?: string
+  school?: string
   tel?: string
   _id?: string
-  environmentKey?: string
 }
 
 export async function createUser(options: User) {
@@ -32,10 +31,9 @@ export async function createUser(options: User) {
       return new CustomError(400, "Email is not formatted correctly")
   
     const docSnap = await getDocumentByEmail("users", options.email)
-    const { environmentKey, ...userOptions } = options
   
     if (docSnap?.exists()) {
-      await setDoc(docSnap.ref, userOptions, { merge: true })
+      await setDoc(docSnap.ref, options, { merge: true })
       return { success: true, message: `User ${options.username} has been updated` }
     }
   
@@ -69,10 +67,7 @@ export async function updateUser(email: string, options: Partial<User>) {
   try {
 
     if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
-  
-    if (!validateEnvironmentKey(options.environmentKey!))
-      throw new CustomError(400, "Environment key is invalid")
-  
+
     const docSnap = await getDocumentByEmail("users", email)
   
     if (!docSnap?.exists()) throw new CustomError(400, "Cannot find this user")
@@ -96,9 +91,6 @@ export async function deleteUser(options: User) {
 
     if (!validateEmail(options.email)) throw new CustomError(400, "Email is not formatted correctly")
   
-    if (!validateEnvironmentKey(options.environmentKey!))
-      throw new CustomError(400, "Environment key is invalid")
-  
     const querySnapshot = await getDocumentByEmail("users", options.email)
     if (!querySnapshot?.exists()) throw new CustomError(400, "Cannot find this user")
   
@@ -109,14 +101,11 @@ export async function deleteUser(options: User) {
   }
 }
 
-export async function generateJWT(email: string, environmentKey: string) {
+export async function generateJWT(email: string) {
   try {
 
     if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
-  
-    if (!validateEnvironmentKey(environmentKey))
-      throw new CustomError(500, "Environment key is invalid")
-  
+    
     const querySnapshot = await getDocumentByEmail("users", email)
   
     if (!querySnapshot?.exists()) throw new CustomError(400, "Cannot find this user")

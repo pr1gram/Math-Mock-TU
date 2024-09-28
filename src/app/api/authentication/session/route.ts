@@ -12,10 +12,9 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
       }
     },
   })
-  .post("/session", ({ body: { email, environmentKey } }) => generateJWT(email, environmentKey), {
+  .post("/session", ({ body: { email } }) => generateJWT(email), {
     body: t.Object({
       email: StringField("String must be provided"),
-      environmentKey: StringField("Environment key must be provided"),
     }),
   })
 
