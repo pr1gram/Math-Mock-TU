@@ -160,7 +160,6 @@ export async function updateStatus(
     if (docSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
       const transactionIndex = dfsTransaction(transactions, testID)
-      console.log(transactionIndex)
       if (transactionIndex === -1) return new Errors.NotFound(`Cannot find ${testID} from ${email}`)
 
       transactions[transactionIndex].status = status
