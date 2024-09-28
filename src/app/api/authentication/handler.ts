@@ -30,9 +30,6 @@ export async function createUser(options: User) {
 
     if (!validateEmail(options.email))
       return new Errors.BadRequest("Email is not formatted correctly")
-
-    if (!validateEnvironmentKey(options.environmentKey!)) 
-      return new Errors.BadRequest("Environment key is invalid")
     
     const docSnap = await getDocumentByEmail("users", options.email)
     const { environmentKey, ...userOptions } = options;

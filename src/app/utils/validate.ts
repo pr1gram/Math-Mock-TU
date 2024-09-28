@@ -1,5 +1,6 @@
 ﻿import { t } from "elysia"
 import crypto from "crypto"
+import { Errors } from "elysia-fault"
 
 export function _createHash(text: string) {
   return crypto.createHash("sha256").update(text).digest("hex")
@@ -7,6 +8,14 @@ export function _createHash(text: string) {
 
 export function _validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+export function verifyEnvironmentKey({ headers }: { headers: { [key: string]: string | undefined } }): boolean {
+  if (!headers) return false
+  if (!headers["x-api-key"]) return false
+  if (!process.env.API_KEY) return false
+
+  return headers["x-api-key"] === process.env.API_KEY
 }
 
 export function _validateEnvironmentKey(key: string) {

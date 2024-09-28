@@ -74,7 +74,8 @@ async function createTransaction(docRef: any, body: Slip, downloadURL: string) {
 
 export async function transaction(body: Slip) {
   try {
-    if (!validateEmail(body.email)) return new Errors.BadRequest("Email is not formatted correctly")
+    if (!validateEmail(body.email))
+      return new Errors.BadRequest("Email is not formatted correctly")
 
     if (!validateEnvironmentKey(body.environmentKey!))
       return new Errors.BadRequest("Environment key is invalid")
