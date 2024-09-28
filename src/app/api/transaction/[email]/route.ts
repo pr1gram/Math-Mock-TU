@@ -1,6 +1,6 @@
 ﻿import Elysia, { t } from "elysia"
 import { StringField } from "@/utils/__init__"
-import { updateStatus, userTransactions } from "@/api/transaction/handler"
+import { updateStatus, userTransactions, Status } from "@/api/transaction/handler"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .get("/:email", async ({ params: { email } }) => await userTransactions(email), {
@@ -10,13 +10,16 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   })
   .patch(
     "/:email",
-    async ({ params: { email }, body: { testID } }) => await updateStatus(email, testID),
+    async ({ params: { email }, body: { testID, status, environmentKey } }) =>
+      await updateStatus(email, testID, status, environmentKey),
     {
       params: t.Object({
         email: StringField("Email must be provided"),
       }),
       body: t.Object({
         testID: StringField("TestID must be provided"),
+        status: t.Enum(Status, { error: "Status must be provided"}),
+        environmentKey: StringField("Environment key must be provided"),
       }),
     }
   )

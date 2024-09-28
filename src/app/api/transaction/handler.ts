@@ -2,7 +2,12 @@
 import { storage, firestore } from "@/db/firebase"
 import { doc, updateDoc, arrayUnion, setDoc, getDoc } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { validateEmail, getSnapshotByQuery } from "@/utils/__init__"
+import {
+  getDocumentByEmail,
+  validateEmail,
+  validateEnvironmentKey,
+  getSnapshotByQuery,
+} from "@/utils/__init__"
 
 interface Slip {
   email: string
@@ -12,13 +17,24 @@ interface Slip {
   price?: string
   testID?: string
   status?: string
+  environmentKey?: string
 }
 
-enum Status {
+export enum Status {
   PENDING = "pending",
   APPROVED = "approved",
   REJECTED = "rejected",
 }
+
+function dfsTransaction(transactions: Slip[], testID: string): number {
+  function dfs(index: number): number {
+    if (index >= transactions.length) return -1;
+    if (transactions[index].testID === testID) return index;
+    return dfs(index + 1);
+  }
+  return dfs(0);
+}
+
 
 async function uploadFile(email: string, testID: string, file: File): Promise<string> {
   const storageRef = ref(storage, `uploads/${email}/${testID}`)
@@ -60,15 +76,17 @@ export async function transaction(body: Slip) {
   try {
     if (!validateEmail(body.email)) return new Errors.BadRequest("Email is not formatted correctly")
 
+    if (!validateEnvironmentKey(body.environmentKey!))
+      return new Errors.BadRequest("Environment key is invalid")
+
     const downloadURL = await uploadFile(body.email, body.testID!, body.file)
     if (!downloadURL) {
       return new Errors.BadRequest("Cannot get image URL")
     }
 
-    const docRef = doc(firestore, "transactions", body.email)
-    const docSnap = await getDoc(docRef)
+    const docSnap = await getDocumentByEmail("transactions", body.email)
 
-    if (docSnap.exists()) {
+    if (docSnap?.exists()) {
       const transactionData: Slip[] = docSnap.data().transactions
       const isDuplicatedTransaction = transactionData.find(
         (transaction) => transaction.testID === body.testID
@@ -78,9 +96,11 @@ export async function transaction(body: Slip) {
         return new Errors.NotFound(`Transaction with testID ${body.testID} already exists`)
       }
 
-      await updateTransaction(docRef, body, downloadURL)
+      await updateTransaction(docSnap.ref, body, downloadURL)
       return { success: true, message: "Purchase completed" }
     } else {
+      const docRef = doc(firestore, "transactions", body.email)
+
       await createTransaction(docRef, body, downloadURL)
       return { success: true, message: "Upload Transaction Completed" }
     }
@@ -104,10 +124,9 @@ export async function userTransactions(email: string) {
 
 export async function getTransaction(email: string, testID: string) {
   try {
-    const docRef = doc(firestore, "transactions", email)
-    const docSnap = await getDoc(docRef)
+    const docSnap = await getDocumentByEmail("transactions", email)
 
-    if (docSnap.exists()) {
+    if (docSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
       const transaction = transactions.find((t) => t.testID === testID)
 
@@ -124,19 +143,28 @@ export async function getTransaction(email: string, testID: string) {
   }
 }
 
-export async function updateStatus(email: string, testID: string) {
+export async function updateStatus(
+  email: string,
+  testID: string,
+  status: Status,
+  environmentKey: string
+) {
   try {
-    const docRef = doc(firestore, "transactions", email)
-    const docSnap = await getDoc(docRef)
+    if (!validateEmail(email)) return new Errors.BadRequest("Email is not formatted correctly")
 
-    if (docSnap.exists()) {
+    if (!validateEnvironmentKey(environmentKey!))
+      return new Errors.BadRequest("Environment key is invalid")
+
+    const docSnap = await getDocumentByEmail("transactions", email)
+
+    if (docSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
-      const transactionIndex = transactions.findIndex((t) => t.testID === testID)
-
+      const transactionIndex = dfsTransaction(transactions, testID)
+      console.log(transactionIndex)
       if (transactionIndex === -1) return new Errors.NotFound(`Cannot find ${testID} from ${email}`)
 
-      transactions[transactionIndex].status = Status.APPROVED
-      await updateDoc(docRef, { transactions })
+      transactions[transactionIndex].status = status
+      await updateDoc(docSnap.ref, { transactions })
 
       return { success: true, message: "Updated Successfully" }
     } else {

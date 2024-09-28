@@ -9,6 +9,10 @@ export function _validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+export function _validateEnvironmentKey(key: string) {
+  return key === process.env.API_KEY
+}
+
 export function _StringField(errorMessage: string, required: boolean = true) {
   return required
     ? t.String({ error: errorMessage })

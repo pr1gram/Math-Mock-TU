@@ -17,6 +17,7 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
       time: StringField("Time must be provided"),
       price: StringField("Price must be provided"),
       testID: StringField("Test ID must be provided"),
+      environmentKey: StringField("Environment key must be provided"),
     }),
   })
 

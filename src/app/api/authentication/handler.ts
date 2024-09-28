@@ -2,6 +2,7 @@
 import { firestore } from "@/db/firebase"
 import {
   validateEmail,
+  validateEnvironmentKey,
   isUsernameExist,
   getDocumentByEmail,
   getSnapshotByQuery,
@@ -19,6 +20,7 @@ interface User {
   username?: string
   tel?: string
   _id?: string
+  environmentKey?: string
 }
 
 export async function createUser(options: User) {
@@ -29,6 +31,9 @@ export async function createUser(options: User) {
     if (!validateEmail(options.email))
       return new Errors.BadRequest("Email is not formatted correctly")
 
+    if (!validateEnvironmentKey(options.environmentKey!)) 
+      return new Errors.BadRequest("Environment key is invalid")
+    
     const docSnap = await getDocumentByEmail("users", options.email)
 
     if (docSnap?.exists()) {
@@ -52,7 +57,7 @@ export async function createUser(options: User) {
 export async function getUser(email: string) {
   try {
     if (!validateEmail(email)) return new Errors.BadRequest("Email is not formatted correctly")
-
+    
     const querySnapshot = await getDocumentByEmail("users", email)
 
     if (!querySnapshot?.exists()) return new Errors.NotFound("Cannot find this user")
@@ -65,7 +70,11 @@ export async function getUser(email: string) {
 
 export async function updateUser(email: string, options: Partial<User>) {
   try {
-    if (!validateEmail(email)) return new Errors.NotFound("Email is not formatted correctly")
+    if (!validateEmail(email))
+      return new Errors.NotFound("Email is not formatted correctly")
+
+    if (!validateEnvironmentKey(options.environmentKey!)) 
+      return new Errors.BadRequest("Environment key is invalid")
 
     const docSnap = await getDocumentByEmail("users", email)
 
@@ -90,6 +99,9 @@ export async function deleteUser(options: User) {
     if (!validateEmail(options.email))
       return new Errors.BadRequest("Email is not formatted correctly")
 
+    if (!validateEnvironmentKey(options.environmentKey!)) 
+      return new Errors.BadRequest("Environment key is invalid")
+
     const querySnapshot = await getDocumentByEmail("users", options.email)
     if (!querySnapshot?.exists()) return new Errors.NotFound("Cannot find this user")
 
@@ -100,9 +112,13 @@ export async function deleteUser(options: User) {
   }
 }
 
-export async function generateJWT(email: string) {
+export async function generateJWT(email: string, environmentKey: string) {
   try {
-    if (!validateEmail(email)) return new Errors.BadRequest("Email is not formatted correctly")
+    if (!validateEmail(email))
+      return new Errors.BadRequest("Email is not formatted correctly")
+    
+    if (!validateEnvironmentKey(environmentKey)) 
+      return new Errors.BadRequest("Environment key is invalid")
 
     const querySnapshot = await getDocumentByEmail("users", email)
 

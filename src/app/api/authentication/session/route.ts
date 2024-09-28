@@ -5,9 +5,10 @@ import { StringField } from "@/utils/__init__"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .use(elysiaFault())
-  .post("/session", ({ body: { email } }) => generateJWT(email), {
+  .post("/session", ({ body: { email, environmentKey } }) => generateJWT(email, environmentKey), {
     body: t.Object({
       email: StringField("String must be provided"),
+      environmentKey: StringField("Environment key must be provided"),
     }),
   })
 

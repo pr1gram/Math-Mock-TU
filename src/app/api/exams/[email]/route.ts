@@ -5,7 +5,8 @@ import { sendExam } from "../handler"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" }).post(
   "/:email",
-  ({ params: { email }, body: { testID, answers } }) => sendExam(email, testID, answers),
+  ({ params: { email }, body: { testID, answers, environmentKey } }) =>
+    sendExam(email, testID, answers, environmentKey),
   {
     params: t.Object({
       email: StringField("String must be provided"),
@@ -13,6 +14,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams" }).post(
     body: t.Object({
       testID: StringField("String must be provided"),
       answers: t.Array(StringField("Answer must be provided correctly")),
+      environmentKey: StringField("Environment Key must be provided"),
     }),
   }
 )

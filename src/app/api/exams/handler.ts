@@ -1,21 +1,38 @@
 ﻿import { firestore } from "@/db/firebase"
 import { setDoc, updateDoc, doc } from "firebase/firestore"
-import { validateEmail, getDocumentByEmail } from "@/utils/__init__"
+import { validateEmail, validateEnvironmentKey, getDocumentByEmail } from "@/utils/__init__"
 import { Errors } from "elysia-fault"
 
-async function updateExamAnswers(email: string, testID: string, answers: string[]) {
+async function updateExamAnswers(
+  email: string,
+  testID: string,
+  answers: string[],
+) {
   const userDocRef = doc(firestore, "exams", email)
   await updateDoc(userDocRef, { [testID]: answers })
 }
 
-async function createExamDocument(email: string, testID: string, answers: string[]) {
+async function createExamDocument(
+  email: string,
+  testID: string,
+  answers: string[],
+) {
   const newUserRef = doc(firestore, "exams", email)
   await setDoc(newUserRef, { [testID]: answers })
 }
 
-export async function sendExam(email: string, testID: string, answers: string[]) {
+export async function sendExam(
+  email: string,
+  testID: string,
+  answers: string[],
+  environmentKey: string
+) {
   try {
-    if (!validateEmail(email)) return new Errors.BadRequest("Email is not formatted correctly")
+    if (!validateEmail(email))
+      return new Errors.BadRequest("Email is not formatted correctly")
+    
+    if (!validateEnvironmentKey(environmentKey))
+      return new Errors.BadRequest("Environment key is invalid")
 
     const docSnap = await getDocumentByEmail("exams", email)
 
