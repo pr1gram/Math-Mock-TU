@@ -40,6 +40,7 @@ export default function SignUpForm() {
         username: values.username,
         tel: values.phone,
         school: values.school,
+        env_key: process.env.API_KEY,
       })
 
       if (response.data.name === "200") {
