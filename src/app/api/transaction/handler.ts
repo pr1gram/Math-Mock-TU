@@ -96,12 +96,13 @@ export async function transaction(body: Slip) {
         return new Errors.NotFound(`Transaction with testID ${body.testID} already exists`)
       }
 
-      await updateTransaction(docSnap.ref, body, downloadURL)
+      const { environmentKey, ...newBody } = body
+      await updateTransaction(docSnap.ref, newBody, downloadURL)
       return { success: true, message: "Purchase completed" }
     } else {
       const docRef = doc(firestore, "transactions", body.email)
-
-      await createTransaction(docRef, body, downloadURL)
+      const { environmentKey, ...newBody } = body
+      await createTransaction(docRef, newBody, downloadURL)
       return { success: true, message: "Upload Transaction Completed" }
     }
   } catch (e: unknown) {
@@ -160,7 +161,8 @@ export async function updateStatus(
     if (docSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
       const transactionIndex = dfsTransaction(transactions, testID)
-      if (transactionIndex === -1) return new Errors.NotFound(`Cannot find ${testID} from ${email}`)
+      if (transactionIndex === -1)
+        return new Errors.NotFound(`Cannot find ${testID} from ${email}`)
 
       transactions[transactionIndex].status = status
       await updateDoc(docSnap.ref, { transactions })

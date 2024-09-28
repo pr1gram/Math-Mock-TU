@@ -35,9 +35,10 @@ export async function createUser(options: User) {
       return new Errors.BadRequest("Environment key is invalid")
     
     const docSnap = await getDocumentByEmail("users", options.email)
+    const { environmentKey, ...userOptions } = options;
 
     if (docSnap?.exists()) {
-      await setDoc(docSnap.ref, options, { merge: true })
+      await setDoc(docSnap.ref, userOptions, { merge: true })
       return { success: true, message: `User ${options.username} has been updated` }
     }
 
