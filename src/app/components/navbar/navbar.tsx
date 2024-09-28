@@ -9,27 +9,27 @@ export default async function NavBar() {
   const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
 
   return (
-    <div className="bg-[#0449B1]">
-      <div className="container mx-auto flex justify-between items-center py-4">
+    <div className="bg-[#0449B1] border-b-2 border-white h-16 fixed z-[999] w-screen">
+      <div className="container mx-auto flex justify-between items-center h-full max-sm:px-4 ">
         <Link href="/">
           <div className=" flex align-middle items-center gap-2 ">
-            <Logo className=" h-12" />
-            <h1 className="text-white text-4xl font-bold">ONE MATH</h1>
+            <Logo className=" h-10" />
+            <h1 className="text-white text-3xl font-bold">ONE MATH</h1>
           </div>
         </Link>
         {session ? (
           <div className=" flex gap-5">
-            <div className=" text-white px-4 py-2 rounded-full font-bold text-xl  border border-white ">
+            <div className=" text-white px-4 py-2 rounded-full font-bold text-xl  border border-white sm:flex hidden ">
               {response?.data?.firstname} {response?.data?.lastname}
             </div>
             <Link href="/account">
-              <UserIcon className="h-12" />
+              <UserIcon className="h-10" />
             </Link>
           </div>
         ) : (
           <div>
             <Link href="/auth">
-              <button className="bg-white text-[#0449B1] px-4 py-2 rounded-full font-bold text-xl  border border-white hover:bg-transparent hover:text-white duration-500 ">
+              <button className=" text-white sm:px-4 px-2 sm:py-2 py-1 rounded-full font-bold sm:text-xl text-lg  border border-white bg-transparent  duration-500 ">
                 เข้าสู่ระบบ
               </button>
             </Link>
