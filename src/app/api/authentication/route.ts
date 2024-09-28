@@ -10,7 +10,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
     if (!verifyEnvironmentKey({ headers })) 
       throw new Errors.Unauthorized("Invalid or missing environment key")
     
-    createUser(body)
+    return createUser(body)
   }, {
     body: t.Object({
       email: StringField("String must be provided"),
