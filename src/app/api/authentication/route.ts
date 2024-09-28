@@ -18,7 +18,6 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
       lastname: StringField("Lastname must be provided"),
       username: StringField("Username must be provided"),
       tel: StringField("Tel must be provided"),
-      environmentKey: StringField("Environment key must be provided"),
     }),
   })
   .get(
