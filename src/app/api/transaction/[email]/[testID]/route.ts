@@ -2,19 +2,23 @@
 import { StringField } from "@/utils/__init__"
 import { getTransaction } from "@/api/transaction/handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
-import { CustomError } from "@/utils/errors"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .guard({
-    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
+    beforeHandle({ headers, error }) {
       if (!verifyEnvironmentKey({ headers })) {
-        throw new CustomError(401, "Unauthorized")
+        return error(401, "Error: Unauthorized")
       }
     },
-  })  
+  })
   .get(
   "/:email/:testID",
-  async ({ params: { email, testID } }) => await getTransaction(email, testID),
+  async ({ params: { email, testID }, error }) => {
+    const res = await getTransaction(email, testID)
+    if (res.success) return res
+    if (res.status === 404) return error(404, `Error: ${res.message}`)
+    return error(400, `Error: ${res.message}`)
+  },
   {
     params: t.Object({
       email: StringField("Email must be provided"),

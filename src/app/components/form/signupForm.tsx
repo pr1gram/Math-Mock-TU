@@ -43,17 +43,16 @@ export default function SignUpForm() {
         env_key: process.env.API_KEY,
       })
 
-      if (response.data.name === "200") {
+      if (response.status === 200) {
         router.push("/account")
       }
 
-      if (response.data.name === "400") {
+      if (response.status === 400) {
         setInvalidUsername(true)
       }
     },
   })
 
-  console.log(formik.values)
   const formStyle =
     "border-2 border-[#b5b6c2] p-1 rounded-lg bg-transparent placeholder-[#b5b6c2] sm:text-base text-sm w-full "
   const errorStyle = "text-red-600 h-0 sm:text-sm text-xs"

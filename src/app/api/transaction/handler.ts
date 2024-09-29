@@ -6,7 +6,6 @@ import {
   validateEmail,
   getSnapshotByQuery,
 } from "@/utils/__init__"
-import { CustomError } from "@/utils/errors"
 
 interface Slip {
   email: string
@@ -71,13 +70,11 @@ async function createTransaction(docRef: any, body: Slip, downloadURL: string) {
 }
 
 export async function transaction(body: Slip) {
-  if (!validateEmail(body.email)) throw new CustomError(400, "Email is not formatted correctly")
+  if (!validateEmail(body.email)) return { success: false, message: "Email is not formatted correctly" }
 
   const downloadURL = await uploadFile(body.email, body.testID!, body.file)
 
-  if (!downloadURL) {
-    throw new CustomError(400, "Cannot get image URL")
-  }
+  if (!downloadURL) return { success: false, message: "Cannot get Image URL" }
 
   const docSnap = await getDocumentByEmail("transactions", body.email)
 
@@ -87,8 +84,7 @@ export async function transaction(body: Slip) {
       (transaction) => transaction.testID === body.testID
     )
 
-    if (isDuplicatedTransaction)
-      throw new CustomError(400, `Transaction with testID ${body.testID} already exists`)
+    if (isDuplicatedTransaction) return { success: false, message: `Transaction with testID ${body.testID} already exists` }
 
     const { environmentKey, ...newBody } = body
     await updateTransaction(docSnap.ref, newBody, downloadURL)
@@ -102,10 +98,10 @@ export async function transaction(body: Slip) {
 }
 
 export async function userTransactions(email: string) {
-  if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
+  if (!validateEmail(email)) return { success: false, message: "Email is not formatted correctly" }
 
   const querySnapshot = await getSnapshotByQuery("transactions", "email", email)
-  if (querySnapshot.empty) throw new CustomError(400, "Cannot find this user")
+  if (querySnapshot.empty) return { success: false, status:404, message: "Cannot find user" }
 
   return querySnapshot.docs[0].data()
 }
@@ -117,13 +113,12 @@ export async function getTransaction(email: string, testID: string) {
     const transactions: Slip[] = docSnap.data().transactions
     const transaction = transactions.find((t) => t.testID === testID)
 
-    if (!transaction)
-      throw new CustomError(404, `Cannot find ${testID} from ${email}`)
+    if (!transaction) return { success: false, status:404, message: `Cannot find ${testID} from ${email}` }
 
     return { ...transaction, email: email }
   }
 
-  throw new CustomError(404, "Cannot find user")
+  throw new Error("Cannot find user")
 }
 
 export async function updateStatus(
@@ -134,23 +129,23 @@ export async function updateStatus(
 ) {
   try {
 
-    if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
+    if (!validateEmail(email)) return { success: false, message: "Email is not formatted correctly" }
   
     const docSnap = await getDocumentByEmail("transactions", email)
   
     if (docSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
       const transactionIndex = dfsTransaction(transactions, testID)
-      if (transactionIndex === -1) throw new CustomError(404, `Cannot find ${testID} from ${email}`)
+      if (transactionIndex === -1) return { success: false, status:404, message: `Cannot find ${testID} from ${email}` }
   
       transactions[transactionIndex].status = status
       await updateDoc(docSnap.ref, { transactions })
   
       return { success: true, message: "Updated Successfully" }
     } else {
-      throw new CustomError(404, "Cannot find user")
+      return { success: false, status:404, message: "Cannot find user" }
     }
   } catch (e: unknown) {
-    throw new CustomError(500, "Error while updating status")
+    throw new Error("Error while updating status")
   } 
 }

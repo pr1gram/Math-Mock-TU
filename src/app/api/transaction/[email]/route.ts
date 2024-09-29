@@ -2,25 +2,33 @@
 import { StringField } from "@/utils/__init__"
 import { updateStatus, userTransactions, Status } from "@/api/transaction/handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
-import { CustomError } from "@/utils/errors"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .guard({
-    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
+    beforeHandle({ headers, error }) {
       if (!verifyEnvironmentKey({ headers })) {
-        throw new CustomError(401, "Unauthorized")
+        return error(401, "Error: Unauthorized")
       }
     },
   })
-  .get("/:email", async ({ params: { email } }) => await userTransactions(email), {
+  .get("/:email", async ({ params: { email }, error }) => {
+    const res = await userTransactions(email)
+    if (res.success) return res
+    if (res.status === 404) return error(404, `Error: ${res.message}`)
+    return error(400, `Error: ${res.message}`)
+  }, {
     params: t.Object({
       email: StringField("Email must be provided"),
     }),
   })
   .patch(
     "/:email",
-    async ({ params: { email }, body: { testID, status, environmentKey } }) =>
-      await updateStatus(email, testID, status, environmentKey),
+    async ({ params: { email }, body: { testID, status, environmentKey }, error }) => {
+      const res = await updateStatus(email, testID, status, environmentKey)
+      if (res.success) return res
+      if (res.status === 404) return error(404, `Error: ${res.message}`)
+      return error(400, `Error: ${res.message}`)
+    },
     {
       params: t.Object({
         email: StringField("Email must be provided"),

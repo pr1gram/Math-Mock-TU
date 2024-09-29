@@ -2,19 +2,22 @@
 import { StringField } from "@/utils/__init__"
 import { sendExam } from "../handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
-import { CustomError } from "@/utils/errors"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" })
   .guard({
-    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
+    beforeHandle({ headers, error }) {
       if (!verifyEnvironmentKey({ headers })) {
-        throw new CustomError(401, "Unauthorized")
+        return error(401, "Error: Unauthorized")
       }
     },
   })
   .post(
     "/:email",
-    ({ params: { email }, body: { testID, answers } }) => sendExam(email, testID, answers),
+    async ({ params: { email }, body: { testID, answers }, error }) => {
+      const res = await sendExam(email, testID, answers)
+      if (res.success) return res
+      return error(400, `Error: ${res.message}`)
+    },
     {
       params: t.Object({
         email: StringField("String must be provided"),

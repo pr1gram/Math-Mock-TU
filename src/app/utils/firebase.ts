@@ -1,7 +1,7 @@
 ﻿import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { firestore } from "@/db/firebase"
 
-export async function _isUsernameExist(username: string): Promise<boolean> {
+export async function _isUsernameExist(username: string | null) {
   const usersRef = collection(firestore, "users")
   const queryResult = query(usersRef, where("username", "==", username))
   const querySnapshot = await getDocs(queryResult)
