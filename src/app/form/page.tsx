@@ -12,10 +12,8 @@ export default async function Account() {
   const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
   const check = await CheckSignIn(false, "/auth")
 
-  console.log(response)
-
   if (response.status === 200) {
-    console.log("Redirecting to /account")
+    //console.log("Redirecting to /account")
     redirect("/account")
   }
 

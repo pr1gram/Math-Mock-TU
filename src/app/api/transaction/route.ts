@@ -2,17 +2,21 @@
 import { StringField } from "../../utils/__init__"
 import { transaction } from "@/api/transaction/handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
-import { CustomError } from "@/utils/errors"
+import { error } from "console"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .guard({
-    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
+    beforeHandle({ headers, error }) {
       if (!verifyEnvironmentKey({ headers })) {
-        throw new CustomError(401, "Unauthorized")
+        return error(401, "Error: Unauthorized")
       }
     },
   })
-  .post("/", async ({ body }) => await transaction(body), {
+  .post("/", async ({ body }) => {
+    const res = await transaction(body)
+    if(res.success) return res
+    return error(400, `Error: ${res.message}`)
+  }, {
     body: t.Object({
       email: t.String({
         error: StringField("User email must be provided"),
