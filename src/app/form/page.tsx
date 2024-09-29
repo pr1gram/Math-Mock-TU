@@ -34,7 +34,6 @@ export default async function Account() {
             </div>
           </div>
         </div>
-        
       </div>
     </main>
   )
