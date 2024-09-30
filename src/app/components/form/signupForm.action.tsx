@@ -11,5 +11,5 @@ export const handlerSubmit = async(values: any, session: any) => {
     tel: values.phone,
     school: values.school,
   })
-  return response
+  return response.data
 }
