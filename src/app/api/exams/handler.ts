@@ -1,6 +1,14 @@
 ﻿import { firestore } from "@/db/firebase"
-import { setDoc, updateDoc, doc } from "firebase/firestore"
+import { setDoc, updateDoc, doc, deleteDoc, collection, getDocs, getDoc } from "firebase/firestore"
 import { validateEmail, getDocumentByEmail } from "@/utils/__init__"
+import { error } from "elysia"
+interface ExamList {
+  title: string
+  description?: string
+  date?: string
+  price?: number
+  duration?: number
+}
 
 async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   const userDocRef = doc(firestore, "exams", email)
@@ -12,16 +20,66 @@ async function createExamDocument(email: string, testID: string, answers: string
   await setDoc(newUserRef, { [testID]: answers })
 }
 
-export async function sendExam(
-  email: string,
-  testID: string,
-  answers: string[],
-) {
+export async function examList(detail: ExamList) {
   try {
-    if (!validateEmail(email)) return { success: false, message: "Email is not formatted correctly" }
+    const ref = doc(firestore, "examlists", detail.title)
+    await setDoc(ref, detail)
+    return { success: true, message: "Added to exam list successfully" }
+  } catch (e) {
+    throw error(500, "Error while adding exam list")
+  }
+}
+
+export async function getExamList(title?: string) {
+  try {
+    if (!title) {
+      const ref = collection(firestore, "examlists")
+      const snapshot = await getDocs(ref)
+
+      const examLists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      return { success: true, data: examLists }
+    }
+
+    const docSnap = await getDoc(doc(firestore, "examlists", title))
+
+    if (docSnap.exists())
+      return { success: true, data: { id: docSnap.id, ...docSnap.data() } }
+
+    return { success: false, message: "Exam list not found" }
+  } catch (e: unknown) {
+    throw error(500, "Error while getting exam list")
+  }
+}
+export async function updateExamList(title: string, detail: ExamList) {
+  try {
+    const ref = doc(firestore, "examlists", title)
+    if (!ref) return { success: false, message: "Exam list not found" }
+    
+    await setDoc(ref, detail, { merge: true })
+    return { success: true, message: "Exam list updated successfully" }
+    
+  } catch (e) {
+    throw error(500, "Error while updating exam list")
+  }
+}
+
+export async function deleteExamList(title: string) {
+  try {
+    const ref = doc(firestore, "examlists", title)
+    await deleteDoc(ref)
+    return { success: true, message: `Delete ${title} sucessfully` }
+  } catch (e: unknown) {
+    throw error(500, "Error while deleting exam list")
+  }
+}
+
+export async function sendExam(email: string, testID: string, answers: string[]) {
+  try {
+    if (!validateEmail(email))
+      return { success: false, message: "Email is not formatted correctly" }
 
     const docSnap = await getDocumentByEmail("exams", email)
-  
+
     if (!docSnap?.exists()) {
       await createExamDocument(email, testID, answers)
       return { success: true, message: "User created and test answers successfully added" }
@@ -30,6 +88,6 @@ export async function sendExam(
       return { success: true, message: "Test answers successfully added" }
     }
   } catch (e: unknown) {
-    throw new Error("Error while sending exam")
+    throw error(500, "Error while sending exam")
   }
 }

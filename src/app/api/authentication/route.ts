@@ -66,7 +66,5 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
     }),
   })
 
-export const GET = AuthRoute.handle
 export const POST = AuthRoute.handle
-export const PATCH = AuthRoute.handle
 export const DELETE = AuthRoute.handle

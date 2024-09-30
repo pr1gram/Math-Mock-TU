@@ -9,7 +9,7 @@ export default async function NavBar() {
   if (session) {
     const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
     return (
-        <div className="bg-[#0449B1] border-b-2 border-white h-16 z-[999] w-screen">
+        <div className="bg-[#0449B1] border-b-2 border-white h-16 z-[999] w-screen fixed">
           <div className="container mx-auto flex justify-between items-center h-full max-sm:px-4 ">
             <Link href="/">
               <div className=" flex align-middle items-center gap-2 ">
@@ -30,7 +30,7 @@ export default async function NavBar() {
     )
   } else {
     return (
-      <div className="bg-[#0449B1] border-b-2 border-white h-16 z-[999] w-screen">
+      <div className="bg-[#0449B1] border-b-2 border-white h-16 z-[999] w-screen fixed">
         <div className="container mx-auto flex justify-between items-center h-full max-sm:px-4 ">
           <Link href="/">
             <div className=" flex align-middle items-center gap-2 ">

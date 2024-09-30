@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { SessionProvider } from "next-auth/react"
 import NavBar from "./components/navbar/navbar"
+import Secret from "./components/secret"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,6 +28,7 @@ export default function RootLayout({
         <body>
           <NavBar />
           <div>{children}</div>
+          <Secret />
         </body>
       </html>
     </SessionProvider>
