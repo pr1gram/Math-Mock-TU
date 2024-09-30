@@ -7,7 +7,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams" })
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey({ headers })
-      if (!res) {
+      if (!res.success) {
         return error(401, `Error: ${res.message}`)
       }
     },

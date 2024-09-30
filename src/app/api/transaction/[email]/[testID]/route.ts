@@ -7,7 +7,7 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey({ headers })
-      if (!res) {
+      if (!res.success) {
         return error(401, `Error: ${res.message}`)
       }
     },

@@ -5,9 +5,10 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   .guard({
-    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
-      if (!verifyEnvironmentKey({ headers })) {
-        return error(401, "Unauthorized")
+    beforeHandle({ headers, error }) {
+      const res = verifyEnvironmentKey({ headers })
+      if (!res.success) {
+        return error(401, `Error: ${res.message}`)
       }
     },
   })
