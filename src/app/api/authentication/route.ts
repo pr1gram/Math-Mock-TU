@@ -6,7 +6,7 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .guard({
     async beforeHandle({ headers, error, set }) {
-      const res = await verifyEnvironmentKey({ headers })
+      const res = await verifyEnvironmentKey(headers)
       if (!res.success) {
         return error(401, `Error: ${res.message}`)
       }
