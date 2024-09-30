@@ -2,22 +2,29 @@
 import { getUser, updateUser } from "@/api/authentication/handler"
 import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
-import { CustomError } from "@/utils/errors"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .guard({
-    beforeHandle({ headers }: { headers: Record<string, string | undefined> }) {
+    beforeHandle({ headers, error, set }) {
       if (!verifyEnvironmentKey({ headers })) {
-        throw new CustomError(401, "Unauthorized")
+        return error(401, "Error: Unauthorized")
       }
     },
   })
-  .get("/:email", ({ params: { email } }) => getUser(email), {
+  .get("/:email", async ({ params: { email }, error }) => {
+    const res = await getUser(email)
+    if (res.success) return res.data
+    return error(400, `Error: ${res.message}`)
+  }, {
     params: t.Object({
       email: StringField("Email must be provided"),
     }),
   })
-  .patch("/:email", ({ params: { email }, body }) => updateUser(email, body), {
+  .patch("/:email", async ({ params: { email }, body, error }) => {
+    const res = await updateUser(email, body)
+    if (res.success) return res
+    return error(400, `Error: ${res.message}`)
+  }, {
     params: t.Object({
       email: StringField("String must be provided"),
     }),

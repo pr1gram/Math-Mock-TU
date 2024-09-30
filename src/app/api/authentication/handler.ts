@@ -10,7 +10,6 @@ import {
 } from "@/utils/__init__"
 import { sign } from "jsonwebtoken"
 import { v4 as uuidv4 } from "uuid"
-import { CustomError } from "@/utils/errors"
 
 interface User {
   email: string
@@ -24,18 +23,10 @@ interface User {
 
 export async function createUser(options: User) {
   try {
-    if (await isUsernameExist(options.username || ""))
-      return new CustomError(400, "Username already exists")
-  
-    if (!validateEmail(options.email))
-      return new CustomError(400, "Email is not formatted correctly")
-  
-    const docSnap = await getDocumentByEmail("users", options.email)
-  
-    if (docSnap?.exists()) {
-      await setDoc(docSnap.ref, options, { merge: true })
-      return { success: true, message: `User ${options.username} has been updated` }
-    }
+    const user = await isUsernameExist(options.username || null)
+    if (!options.username) return { success: false, message: "Username is required" }
+    if (user) return { success: false, message: "Username already exists" }
+    if (!validateEmail(options.email)) return { success: false, message: 'Email is not formatted correctly' }
   
     const userId = uuidv4()
     options._id = userId
@@ -45,32 +36,32 @@ export async function createUser(options: User) {
   
     return { success: true, message: `User ${options.username} created successfully` }
   } catch (e) {
-    throw new CustomError(500, "Error while creating user")
+    throw new Error("Error while creating user")
   }
 }
 
 export async function getUser(email: string) {
   try {
-    if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
+    if (!validateEmail(email)) return { success: false, message: "Email is not formatted correctly" }
   
     const querySnapshot = await getDocumentByEmail("users", email)
   
-    if (!querySnapshot?.exists()) throw new CustomError(400, "Cannot find this user")
+    if (!querySnapshot?.exists()) return { success: false, message: "Cannot find this user" }
   
-    return querySnapshot.data()
+    return { success: true, data: querySnapshot.data()}
   } catch (e: unknown) {
-    throw new CustomError(500, "Error while getting user")
+    throw new Error("Error while getting user") 
   }
 }
 
 export async function updateUser(email: string, options: Partial<User>) {
   try {
 
-    if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
+    if (!validateEmail(email)) return { success: false, message: "Email is not formatted correctly" }
 
     const docSnap = await getDocumentByEmail("users", email)
   
-    if (!docSnap?.exists()) throw new CustomError(400, "Cannot find this user")
+    if (!docSnap?.exists()) return { success: false, message: "Cannot find this user" }
   
     const updateData: Partial<User> = {}
   
@@ -82,33 +73,33 @@ export async function updateUser(email: string, options: Partial<User>) {
     await updateDoc(docSnap.ref, updateData)
     return { success: true, message: "User updated successfully" }
   } catch (e: unknown) {
-    throw new CustomError(500, "Error while updating user")
+    throw new Error("Error while updating user")
   }
 }
 
 export async function deleteUser(options: User) {
   try {
 
-    if (!validateEmail(options.email)) throw new CustomError(400, "Email is not formatted correctly")
+    if (!validateEmail(options.email)) return { success: false, message: "Email is not formatted correctly" }
   
     const querySnapshot = await getDocumentByEmail("users", options.email)
-    if (!querySnapshot?.exists()) throw new CustomError(400, "Cannot find this user")
+    if (!querySnapshot?.exists()) return { success: false, message: "Cannot find this user" }
   
     await deleteDoc(querySnapshot.ref)
     return { success: true, message: "User deleted successfully" }
   } catch (e: unknown) {
-    throw new CustomError(500, "Error while deleting user")
+    throw new Error("Error while deleting user")
   }
 }
 
 export async function generateJWT(email: string) {
   try {
 
-    if (!validateEmail(email)) throw new CustomError(400, "Email is not formatted correctly")
+    if (!validateEmail(email)) return { success: false, message: "Email is not formatted correctly" }
     
     const querySnapshot = await getDocumentByEmail("users", email)
   
-    if (!querySnapshot?.exists()) throw new CustomError(400, "Cannot find this user")
+    if (!querySnapshot?.exists()) return { success: false, message: "Cannot find this user" }
   
     const userID = querySnapshot.data()._id
     let jwtToken: string
@@ -126,6 +117,6 @@ export async function generateJWT(email: string) {
   
     return { success: true, message: "JWT token generated successfully" }
   } catch (e: unknown) {
-    throw new CustomError(500, "Error while generating JWT token")
+    throw new Error("Error while generating JWT token")
   }
 }
