@@ -34,13 +34,13 @@ export default function SignUpForm() {
       school: yup.string().required("*จำเป็นต้องใส่"),
     }),
     onSubmit: async (values) => {
-      const response = await handlerSubmit(values, session)
+      const status = await handlerSubmit(values, session)
 
-      if (response.status === 200) {
+      if (status === 200) {
         router.push("/account")
       }
 
-      if (response.status === 400) {
+      if (status === 400) {
         setInvalidUsername(true)
       }
     },
