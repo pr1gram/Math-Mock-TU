@@ -65,10 +65,10 @@ export async function updateExamList(title: string, detail: ExamList) {
 
 export async function deleteExamList(title: string) {
   try {
-    const ref = doc(firestore, "examLists", title)
+    const ref = doc(firestore, "examlists", title)
     await deleteDoc(ref)
     return { success: true, message: `Delete ${title} sucessfully` }
-  } catch (e) {
+  } catch (e: unknown) {
     throw error(500, "Error while deleting exam list")
   }
 }
