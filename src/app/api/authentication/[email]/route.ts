@@ -8,7 +8,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey(headers)
       if (!res.success) {
-        return error(401, `Error: ${res.message}`)
+        return error(401, `Error: ${res.message}, headers: ${res.headers}, E-headers: ${JSON.stringify(headers)}`)
       }
     },
   })
