@@ -12,8 +12,8 @@ export function _validateEmail(email: string) {
 export function verifyEnvironmentKey({ headers }: { headers: { [key: string]: string | undefined } }): boolean {
   if (!headers) return false
   if (!headers["x-api-key"]) return false
-  if (!process.env.NEXT_PUBLIC_API_KEY) return false
-  return headers["x-api-key"] === process.env.NEXT_PUBLIC_API_KEY
+  if (!process.env.API_KEY) return false
+  return headers["x-api-key"] === process.env.API_KEY
 }
 
 export function _StringField(errorMessage: string, required: boolean = true) {

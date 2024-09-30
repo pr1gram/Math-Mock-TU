@@ -15,8 +15,7 @@ export default async function Account() {
   return (
     <main>
       <h1>Account</h1>
-      <p>email : {response?.data.email} </p>
-      <p>name : {response?.data.username}</p>
+      <p>email : {session?.user?.email} </p>
       <SignOutButton />
     </main>
   )
