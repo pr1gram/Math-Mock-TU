@@ -5,6 +5,7 @@ import { useFormik } from "formik"
 import { useSession } from "next-auth/react"
 import * as yup from "yup"
 import { useRouter } from "next/navigation"
+import apiFunction from "@/components/api"
 
 export default function SignUpForm() {
   const { data: session } = useSession()
@@ -34,30 +35,27 @@ export default function SignUpForm() {
 
     
     onSubmit: async (values) => {
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: session?.user?.email,
-          firstname: values.FirstName,
-          lastname: values.LastName,
-          username: values.username,
-          tel: values.phone,
-          school: values.school,
-        }),
-      });
+      const response = await apiFunction("POST", `/authentication`, {
+        email: session?.user?.email,
+        firstname: values.FirstName,
+        lastname: values.LastName,
+        username: values.username,
+        tel: values.phone,
+        school: values.school,
+      })
 
-      if (response.ok) {
-        router.push("/account");
-      } else if (response.status === 400) {
-        setInvalidUsername(true);
+      if (response.status === 200) {
+        router.push("/account")
       }
+
+      if (response.status === 400) {
+        setInvalidUsername(true)}
     },
   })
 
   useEffect(() => {
     setInvalidUsername(false)
-  }, [formik.errors.username])
+  }, [formik.errors])
 
   const formStyle =
     "border-2 border-[#b5b6c2] p-1 rounded-lg bg-transparent placeholder-[#b5b6c2] sm:text-base text-sm w-full "
