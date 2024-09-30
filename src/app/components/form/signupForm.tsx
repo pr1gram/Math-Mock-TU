@@ -5,7 +5,7 @@ import { useFormik } from "formik"
 import { useSession } from "next-auth/react"
 import * as yup from "yup"
 import { useRouter } from "next/navigation"
-import apiFunction from "@/components/api"
+import { handlerSubmit } from "./signupForm.action"
 
 export default function SignUpForm() {
   const { data: session } = useSession()
@@ -35,16 +35,9 @@ export default function SignUpForm() {
 
     
     onSubmit: async (values) => {
-      const response = await apiFunction("POST", `/authentication`, {
-        email: session?.user?.email,
-        firstname: values.FirstName,
-        lastname: values.LastName,
-        username: values.username,
-        tel: values.phone,
-        school: values.school,
-      })
+      const status = await handlerSubmit(values, session)
 
-      if (response.status === 200) {
+      if (status === 200) {
         router.push("/account")
       }
 

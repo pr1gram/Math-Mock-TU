@@ -5,14 +5,16 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .guard({
-    beforeHandle({ headers, error, set }) {
-      if (!verifyEnvironmentKey({ headers })) {
-        return error(401, "Error: Unauthorized")
+    beforeHandle({ headers, error }) {
+      const res = verifyEnvironmentKey({ headers })
+      if (!res) {
+        return error(401, `Error: ${res.message}`)
       }
     },
   })
   .post("/", async ({ error, body }) => {
     const res = await createUser(body)
+    console.log(res)
     if(res.success) return res
     return error(400, `Error: ${res.message}`)
   }, {

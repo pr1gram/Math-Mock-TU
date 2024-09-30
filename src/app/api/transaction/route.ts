@@ -7,8 +7,9 @@ import { error } from "console"
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .guard({
     beforeHandle({ headers, error }) {
-      if (!verifyEnvironmentKey({ headers })) {
-        return error(401, "Error: Unauthorized")
+      const res = verifyEnvironmentKey({ headers })
+      if (!res) {
+        return error(401, `Error: ${res.message}`)
       }
     },
   })
