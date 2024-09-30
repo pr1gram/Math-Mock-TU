@@ -6,11 +6,13 @@ import { auth } from "@/api/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import Left_Arrow from "@/vector/left_arrow"
+import { TestBtn } from "@/components/form/testBtn"
 
 export default async function Account() {
   const session = await auth()
   const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
   const check = await CheckSignIn(false, "/auth")
+
 
   if (response.status === 200) {
     //console.log("Redirecting to /account")
@@ -31,6 +33,7 @@ export default async function Account() {
             <div className=" w-full">
               <h1 className=" sm:text-4xl text-2xl font-bold text-left ">สร้างบัญชีใหม่</h1>
               <SignUpForm />
+              <TestBtn />
             </div>
           </div>
         </div>

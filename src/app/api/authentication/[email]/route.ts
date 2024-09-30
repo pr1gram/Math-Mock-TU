@@ -4,13 +4,16 @@ import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
-  .guard({
-    beforeHandle({ headers, error, set }) {
-      if (!verifyEnvironmentKey({ headers })) {
-        return error(401, "Error: Unauthorized")
-      }
-    },
+  .get('/test', async ({headers}) => {
+    return headers
   })
+  // .guard({
+  //   beforeHandle({ headers, error, set }) {
+  //     if (!verifyEnvironmentKey({ headers })) {
+  //       return error(401, "Error: Unauthorized")
+  //     }
+  //   },
+  // })
   .get("/:email", async ({ params: { email }, error }) => {
     const res = await getUser(email)
     if (res.success) return res.data
