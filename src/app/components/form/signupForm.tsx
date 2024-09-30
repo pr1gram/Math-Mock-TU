@@ -1,9 +1,8 @@
 "use client"
 
-import React, { use, useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useFormik } from "formik"
 import { useSession } from "next-auth/react"
-import apiFunction from "@/components/api"
 import * as yup from "yup"
 import { useRouter } from "next/navigation"
 
@@ -32,26 +31,33 @@ export default function SignUpForm() {
       username: yup.string().required("*จำเป็นต้องใส่").max(16, "Username ห้ามเกิน 16 ตัวอักษร"),
       school: yup.string().required("*จำเป็นต้องใส่"),
     }),
+
+    
     onSubmit: async (values) => {
-      const response = await apiFunction("POST", `/authentication`, {
-        email: session?.user?.email,
-        firstname: values.FirstName,
-        lastname: values.LastName,
-        username: values.username,
-        tel: values.phone,
-        school: values.school,
-        env_key: process.env.API_KEY,
-      })
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: session?.user?.email,
+          firstname: values.FirstName,
+          lastname: values.LastName,
+          username: values.username,
+          tel: values.phone,
+          school: values.school,
+        }),
+      });
 
-      if (response.status === 200) {
-        router.push("/account")
-      }
-
-      if (response.status === 400) {
-        setInvalidUsername(true)
+      if (response.ok) {
+        router.push("/account");
+      } else if (response.status === 400) {
+        setInvalidUsername(true);
       }
     },
   })
+
+  useEffect(() => {
+    setInvalidUsername(false)
+  }, [formik.errors.username])
 
   const formStyle =
     "border-2 border-[#b5b6c2] p-1 rounded-lg bg-transparent placeholder-[#b5b6c2] sm:text-base text-sm w-full "
@@ -134,12 +140,12 @@ export default function SignUpForm() {
           <div className={errorStyle}>{formik.errors.phone}</div>
         ) : null}
       </div>
-        <button
-          type="submit"
-          className=" sm:text-lg text-base mt-2 py-1 border-2 rounded-full border-[#2f7aeb] text-white bg-[#2f7aeb] hover:text-[#2f7aeb] hover:bg-transparent duration-300"
-        >
-          สร้างบัญชีใหม่
-        </button>
+      <button
+        type="submit"
+        className="sm:text-lg text-base mt-2 py-1 border-2 rounded-full border-[#2f7aeb] text-white bg-[#2f7aeb] hover:text-[#2f7aeb] hover:bg-transparent duration-300"
+      >
+        Create New Account
+      </button>
     </form>
   )
 }
