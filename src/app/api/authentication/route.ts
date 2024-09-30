@@ -4,9 +4,6 @@ import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
-  .get('/test', ({ headers }) => {
-    return headers
-  })
   .guard({
     beforeHandle({ headers, error, set }) {
       if (!verifyEnvironmentKey({ headers })) {

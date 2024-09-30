@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react"
 import apiFunction from "@/components/api"
 import * as yup from "yup"
 import { useRouter } from "next/navigation"
+import { handlerSubmit } from "./signupForm.action"
 
 export default function SignUpForm() {
   const { data: session } = useSession()
@@ -33,14 +34,7 @@ export default function SignUpForm() {
       school: yup.string().required("*จำเป็นต้องใส่"),
     }),
     onSubmit: async (values) => {
-      const response = await apiFunction("POST", `/authentication`, {
-        email: session?.user?.email,
-        firstname: values.FirstName,
-        lastname: values.LastName,
-        username: values.username,
-        tel: values.phone,
-        school: values.school,
-      })
+      const response = await handlerSubmit(values, session)
 
       if (response.status === 200) {
         router.push("/account")

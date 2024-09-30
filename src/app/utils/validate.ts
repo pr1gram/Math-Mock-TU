@@ -10,7 +10,6 @@ export function _validateEmail(email: string) {
 }
 
 export function verifyEnvironmentKey({ headers }: { headers: { [key: string]: string | undefined } }): boolean {
-  console.log(headers)
   if (!headers) return false
   if (!headers["x-api-key"]) return false
   if (!process.env.NEXT_PUBLIC_API_KEY) return false
