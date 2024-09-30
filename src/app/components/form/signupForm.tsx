@@ -41,7 +41,7 @@ export default function SignUpForm() {
         router.push("/account")
       }
 
-      if (response.status === 400) {
+      if (status === 400) {
         setInvalidUsername(true)}
     },
   })
