@@ -4,5 +4,9 @@ import Image from "next/image"
 export default async function Home() {
   const session = await auth()
 
-  return <main></main>
+  return <main className="">
+    <div className=" w-full h-screen">
+
+    </div>
+  </main>
 }
