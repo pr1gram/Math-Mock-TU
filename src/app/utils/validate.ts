@@ -15,12 +15,12 @@ export function _validateEmail(email: string) {
 //   if (!process.env.NEXT_PUBLIC_API_KEY) return false
 //   return headers["x-api-key"] === process.env.NEXT_PUBLIC_API_KEY
 // }
-export function verifyEnvironmentKey({ headers }: { headers: Record<string, string | undefined | null> }): boolean {
-  if(!headers) return false
-  if(!headers['x-api-key']) return false
-  if(!process.env.NEXT_PUBLIC_API_KEY) return false
-  //return headers['x-api-key'] === process.env.NEXT_PUBLIC_API_KEY
-  return headers['x-api-key'] === '34d8e22434adc1e1f826aa74a16c426371ebae91f085ce2437831756c1d1d43f'
+export function verifyEnvironmentKey({ headers }: { headers: Record<string, string | undefined | null> }): any {
+  if(!headers) return { success: false, message: "Headers not found" }
+  if(!headers['x-api-key']) return { success: false, message: "API key not found" }
+  if(!process.env.NEXT_PUBLIC_API_KEY) return { success: false, message: "ENV key not found" }
+  return headers['x-api-key'] === process.env.NEXT_PUBLIC_API_KEY
+  //return headers['x-api-key'] === '34d8e22434adc1e1f826aa74a16c426371ebae91f085ce2437831756c1d1d43f'
 }
 
 export function _StringField(errorMessage: string, required: boolean = true) {
