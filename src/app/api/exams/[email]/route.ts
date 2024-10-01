@@ -2,8 +2,10 @@
 import { StringField } from "@/utils/__init__"
 import { sendExam } from "../handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
+import cors from '@elysiajs/cors'
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" })
+  .use(cors())
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey(headers)
