@@ -4,10 +4,13 @@ import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
 import { cors } from '@elysiajs/cors'
 
-const AuthRoute = new Elysia({ prefix: "/api/authentication", aot: true})
+const AuthRoute = new Elysia({ prefix: "/api/authentication"})
   .use(cors())
   .guard({
     beforeHandle({ headers, error }) {
+      if(!headers){
+        return error(401, `Error: Headers must be provided`)
+      }
       const res = verifyEnvironmentKey(headers)
       if (!res.success) {
         return error(401, `Error: ${res.message}, headers: ${res.headers}, E-headers: ${JSON.stringify(headers)}`)
