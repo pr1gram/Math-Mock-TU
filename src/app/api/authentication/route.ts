@@ -5,15 +5,9 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 import { cors } from '@elysiajs/cors'
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication"})
-  .onAfterHandle(({ request, set}) => {
-    if(request.method !== "OPTIONS") return;
-    const allowHeader = set.headers["Access-Control-Allow-Headers"]
-    if(allowHeader === '*') {
-      set.headers["access-control-allow-headers"] =
-        request.headers.get("access-control-request-headers") ?? "*"
-    }
-  })
-  .use(cors())
+  .use(cors({
+    preflight: true,
+  }))
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey(headers)
