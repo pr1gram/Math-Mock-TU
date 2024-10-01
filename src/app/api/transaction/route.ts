@@ -6,10 +6,11 @@ import { error } from "console"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .guard({
-    beforeHandle({ headers, error }) {
+    beforeHandle({ error, request }) {
+      const headers = request.headers
       const res = verifyEnvironmentKey(headers)
       if (!res.success) {
-        return error(401, `Error: ${res.message}, headers: ${res.headers}, E-headers: ${JSON.stringify(headers)}`)
+        return error(401, `Error: ${res.message}`)
       }
     },
   })

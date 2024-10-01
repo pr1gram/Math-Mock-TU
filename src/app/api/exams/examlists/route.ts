@@ -5,10 +5,11 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   .guard({
-    beforeHandle({ headers, error }) {
+    beforeHandle({ error, request }) {
+      const headers = request.headers
       const res = verifyEnvironmentKey(headers)
       if (!res.success) {
-        return error(401, `Error: ${res.message}, headers: ${res.headers}, E-headers: ${JSON.stringify(headers)}`)
+        return error(401, `Error: ${res.message}`)
       }
     },
   })

@@ -2,16 +2,14 @@
 import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./handler"
 import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
-import { cors } from '@elysiajs/cors'
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication"})
-  .use(cors())
   .guard({
     beforeHandle({ error, request }) {
       const headers = request.headers
       const res = verifyEnvironmentKey(headers)
       if (!res.success) {
-        return error(401, `Error: ${res.message}, headers: ${res.headers}`)
+        return error(401, `Error: ${res.message}`)
       }
     },
   })
