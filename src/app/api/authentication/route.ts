@@ -5,12 +5,14 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 import { cors } from '@elysiajs/cors'
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication"})
-  .use(cors())
+  .use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    allowedHeaders: '*',
+    preflight: true
+  }))
   .guard({
     beforeHandle({ headers, error }) {
-      if(!headers){
-        return error(401, `Error: Headers must be provided`)
-      }
       const res = verifyEnvironmentKey(headers)
       if (!res.success) {
         return error(401, `Error: ${res.message}, headers: ${res.headers}, E-headers: ${JSON.stringify(headers)}`)
