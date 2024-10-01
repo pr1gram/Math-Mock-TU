@@ -17,7 +17,6 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication"})
   })
   .post("/", async ({ error, body }) => {
     const res = await createUser(body)
-    console.log(res)
     if(res.success) return res
     return error(400, `Error: ${res.message}`)
   }, {
