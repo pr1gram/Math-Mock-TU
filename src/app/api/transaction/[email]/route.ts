@@ -5,9 +5,10 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .guard({
-    beforeHandle({ headers, error }) {
-      const res = verifyEnvironmentKey({ headers })
-      if (!res) {
+    beforeHandle({ error, request }) {
+      const headers = request.headers
+      const res = verifyEnvironmentKey(headers)
+      if (!res.success) {
         return error(401, `Error: ${res.message}`)
       }
     },

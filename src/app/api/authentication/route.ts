@@ -3,18 +3,18 @@ import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./hand
 import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
 
-const AuthRoute = new Elysia({ prefix: "/api/authentication" })
+const AuthRoute = new Elysia({ prefix: "/api/authentication"})
   .guard({
-    beforeHandle({ headers, error }) {
-      const res = verifyEnvironmentKey({ headers })
-      if (!res) {
+    beforeHandle({ error, request }) {
+      const headers = request.headers
+      const res = verifyEnvironmentKey(headers)
+      if (!res.success) {
         return error(401, `Error: ${res.message}`)
       }
     },
   })
   .post("/", async ({ error, body }) => {
     const res = await createUser(body)
-    console.log(res)
     if(res.success) return res
     return error(400, `Error: ${res.message}`)
   }, {
