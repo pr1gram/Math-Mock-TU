@@ -4,8 +4,11 @@ import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
 import { cors } from '@elysiajs/cors'
 
-const AuthRoute = new Elysia({ prefix: "/api/authentication", aot: false })
+const AuthRoute = new Elysia({ prefix: "/api/authentication"})
   .use(cors())
+  .onRequest(({ set }) => {
+    set.headers['x-api-key'] = process.env.NEXT_PUBLIC_API_KEY!
+  })
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey(headers)
