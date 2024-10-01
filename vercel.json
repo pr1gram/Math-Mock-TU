@@ -20,6 +20,15 @@
           "value": "true"
         }
       ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "x-api-key",
+          "value": "34d8e22434adc1e1f826aa74a16c426371ebae91f085ce2437831756c1d1d43f"
+        }
+      ]
     }
   ]
 }
