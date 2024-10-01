@@ -9,7 +9,7 @@ export function _validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-export function verifyEnvironmentKey(headers: any): any {
+export function verifyEnvironmentKey(headers: Headers): any {
   if(headers.get('x-api-key') === process.env.NEXT_PUBLIC_API_KEY) {
     return { success: true, message: "API key verified"}
   } else {
