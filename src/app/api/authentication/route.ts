@@ -6,7 +6,7 @@ import { cors } from '@elysiajs/cors'
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication"})
   .use(cors({
-    allowedHeaders: 'application/json, x-api-key'
+    allowedHeaders: ['application/json', 'x-api-key']
   }))
   .guard({
     beforeHandle({ headers, error }) {
