@@ -1,4 +1,4 @@
-﻿import { _createHash, _validateEmail, _StringField } from "@/utils/validate"
+﻿import { _createHash, _validateEmail, _StringField, _encoded } from "@/utils/validate"
 import {
   _isUsernameExist,
   _getDocumentByEmail,
@@ -8,6 +8,7 @@ import {
 } from "@/utils/firebase"
 
 export const createHash = _createHash
+export const encoded = _encoded
 export const validateEmail = _validateEmail
 export const StringField = _StringField
 export const isUsernameExist = _isUsernameExist
