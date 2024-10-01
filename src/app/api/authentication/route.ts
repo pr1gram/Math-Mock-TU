@@ -2,8 +2,10 @@
 import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./handler"
 import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
+import { cors } from '@elysiajs/cors'
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
+  .use(cors())
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey(headers)

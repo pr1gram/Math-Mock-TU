@@ -5,9 +5,7 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 import { cors } from '@elysiajs/cors'
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" })
-  .use(cors({
-    allowedHeaders: '*',
-  }))
+  .use(cors())
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey(headers)
