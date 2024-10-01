@@ -25,7 +25,7 @@ export default function RootLayout({
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <title>One Math</title>
         </head>
-        <body>
+        <body className=" font-Thai">
           <NavBar />
           <div>{children}</div>
           <Secret />
