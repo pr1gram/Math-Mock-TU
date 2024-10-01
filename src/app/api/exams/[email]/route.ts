@@ -8,6 +8,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams" })
   .use(cors({
     aot: false,
     allowedHeaders: [
+      'Content-Type',
       'x-api-key',
     ]
   }))
