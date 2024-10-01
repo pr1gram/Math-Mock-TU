@@ -3,16 +3,15 @@ import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./hand
 import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
 import { cors } from '@elysiajs/cors'
-import { opentelemetry } from '@elysiajs/opentelemetry'
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication"})
-  .use(opentelemetry())
   .use(cors())
   .guard({
-    beforeHandle({ headers, error }) {
+    beforeHandle({ error, request }) {
+      const headers = request.headers
       const res = verifyEnvironmentKey(headers)
       if (!res.success) {
-        return error(401, `Error: ${res.message}, headers: ${res.headers}, E-headers: ${JSON.stringify(headers)}`)
+        return error(401, `Error: ${res.message}, headers: ${res.headers}`)
       }
     },
   })
