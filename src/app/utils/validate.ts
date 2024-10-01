@@ -10,10 +10,11 @@ export function _validateEmail(email: string) {
 }
 
 export function verifyEnvironmentKey(headers: any): any {
-  if(!headers) return { success: false, message: "Headers not found", headers: JSON.stringify(headers) }
-  if(!headers.get('x-api-key')) return { success: false, message: "API key not found" , headers:JSON.stringify(headers)}
-  if(!process.env.NEXT_PUBLIC_API_KEY) return { success: false, message: "ENV key not found", headers: JSON.stringify(headers) }
-  if(headers.get('x-api-key') === process.env.NEXT_PUBLIC_API_KEY) return { success: true, message: "API key verified"}
+  if(headers.get('x-api-key') === process.env.NEXT_PUBLIC_API_KEY) {
+    return { success: true, message: "API key verified"}
+  } else {
+    throw new Error("API key not verified")
+  }
 }
 
 export function _StringField(errorMessage: string, required: boolean = true) {
