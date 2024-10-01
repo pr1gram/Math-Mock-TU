@@ -4,10 +4,8 @@ import { StringField } from "@/utils/__init__"
 import { verifyEnvironmentKey } from "@/utils/validate"
 import { cors } from '@elysiajs/cors'
 
-const AuthRoute = new Elysia({ prefix: "/api/authentication"})
-  .use(cors({
-    preflight: true,
-  }))
+const AuthRoute = new Elysia({ prefix: "/api/authentication", aot: true})
+  .use(cors())
   .guard({
     beforeHandle({ headers, error }) {
       const res = verifyEnvironmentKey(headers)
