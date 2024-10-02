@@ -13,7 +13,7 @@ export default async function Home() {
   const ExamLists =JSON.stringify(response.data.data)
 
   return (
-    <main>
+    <main className="w-screen overflow-hidden" >
       <div className="  h-[62px] bg-[#0855c9]"></div>
       <div className=" flex justify-center items-center w-full h-[180px] sm:h-[380px] md:h-[417px] bg-gradient-to-b from-[#0855c9] to-[#2f7aeb]">
         <div className=" block text-white text-center">
