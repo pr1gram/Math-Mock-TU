@@ -11,24 +11,15 @@ import {
 } from "@/utils/__init__"
 import { sign } from "jsonwebtoken"
 import { v4 as uuidv4 } from "uuid"
-
-interface User {
-  email: string
-  firstname?: string
-  lastname?: string
-  username?: string
-  school?: string
-  tel?: string
-  _id?: string
-}
+import type { User } from "./__init__"
 
 export async function createUser(options: User) {
   try {
     const user = await isUsernameExist(options.username || null)
-    
+
     if (!options.username) return { success: false, message: "Username is required" }
     if (user) return { success: false, message: "Username already exists" }
-    
+
     if (!validateEmail(options.email))
       return { success: false, message: "Email is not formatted correctly" }
 

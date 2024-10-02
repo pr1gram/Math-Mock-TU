@@ -5,12 +5,9 @@ import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" })
   .guard({
-    beforeHandle({ error, request }) {
-      const headers = request.headers
+    beforeHandle({ error, request: { headers } }) {
       const res = verifyEnvironmentKey(headers)
-      if (!res.success) {
-        return error(401, `Error: ${res.message}`)
-      }
+      if (!res.success) return error(401, `Error: ${res.message}`)
     },
   })
   .post(
@@ -18,7 +15,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams" })
     async ({ params: { email }, body: { testID, answers }, error }) => {
       const res = await sendExam(email, testID, answers)
       if (res.success) return res
-      return error(400, `Error: ${res.message}`)
+      else return error(400, `Error: ${res.message}`)
     },
     {
       params: t.Object({

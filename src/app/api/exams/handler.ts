@@ -1,24 +1,10 @@
-﻿import { firestore } from "@/db/firebase"
-import { setDoc, updateDoc, doc, deleteDoc, collection, getDocs, getDoc } from "firebase/firestore"
+﻿import { error } from "elysia"
+import { firestore } from "@/db/firebase"
+import { setDoc, doc, deleteDoc, collection, getDocs, getDoc } from "firebase/firestore"
+
 import { validateEmail, getDocumentByEmail } from "@/utils/__init__"
-import { error } from "elysia"
-interface ExamList {
-  title: string
-  description?: string
-  date?: string
-  price?: number
-  duration?: number
-}
-
-async function updateExamAnswers(email: string, testID: string, answers: string[]) {
-  const userDocRef = doc(firestore, "exams", email)
-  await updateDoc(userDocRef, { [testID]: answers })
-}
-
-async function createExamDocument(email: string, testID: string, answers: string[]) {
-  const newUserRef = doc(firestore, "exams", email)
-  await setDoc(newUserRef, { [testID]: answers })
-}
+import { createExamDocument, updateExamAnswers } from "./__init__"
+import type { ExamList } from "./__init__"
 
 export async function examList(detail: ExamList) {
   try {
@@ -42,8 +28,7 @@ export async function getExamList(title?: string) {
 
     const docSnap = await getDoc(doc(firestore, "examlists", title))
 
-    if (docSnap.exists())
-      return { success: true, data: { id: docSnap.id, ...docSnap.data() } }
+    if (docSnap.exists()) return { success: true, data: { id: docSnap.id, ...docSnap.data() } }
 
     return { success: false, message: "Exam list not found" }
   } catch (e: unknown) {
@@ -54,10 +39,9 @@ export async function updateExamList(title: string, detail: ExamList) {
   try {
     const ref = doc(firestore, "examlists", title)
     if (!ref) return { success: false, message: "Exam list not found" }
-    
+
     await setDoc(ref, detail, { merge: true })
     return { success: true, message: "Exam list updated successfully" }
-    
   } catch (e) {
     throw error(500, "Error while updating exam list")
   }
