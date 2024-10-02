@@ -3,10 +3,15 @@ import Image from "next/image"
 import apiFunction from "@/components/api"
 import ClockIcon from "./vector/exam/clockIcon"
 import CalendarIcon from "./vector/exam/calendarIcon"
+import Carousel from "react-multi-carousel"
+import ExamList from "@/components/exam/examList"
 
 export default async function Home() {
-  const examLists = await apiFunction("GET", "/exams/examlists/", {})
-  console.log(examLists.data.data)
+  const response = await apiFunction("GET", "/exams/examlists/", {}).catch((error) => ({
+    data: { data: [] },
+  }));
+  const ExamLists =JSON.stringify(response.data.data)
+
   return (
     <main>
       <div className="  h-[62px] bg-[#0855c9]"></div>
@@ -18,36 +23,7 @@ export default async function Home() {
       </div>
       <div>
         <div className="text-[#383c4e] text-3xl font-bold ml-4 mt-5">การสอบทั้งหมด</div>
-        <div className=" flex gap-5 ml-4">
-          {examLists.data.data.map((exam: any) => {
-            return (
-              <div
-                key={exam.id}
-                className=" border-2 rounded-xl border-[#B5B6C2] aspect-square w-[224px] sm:w-[366px] p-4 sm:p-6 md:p-8 my-6 flex flex-col justify-between"
-              >
-                <div>
-                  <div className=" text-[#2F7AEB] font-bold text-3xl">{exam.title}</div>
-                  <div className="text-[#383c4e] my-2">
-                    <div className=" flex gap-[2px] ">
-                      <CalendarIcon className=" h-6" />
-                      {exam.date}
-                    </div>
-                    <div className=" flex gap-[2px] ">
-                      <ClockIcon className=" h-6" />
-                      {exam.duration} นาที
-                    </div>
-                  </div>
-                  <div className="">{exam.description} </div>
-                </div>
-                <div className="mt-auto justify-center flex">
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-full">
-                    สมัครสอบ
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
+          <ExamList examListsJSON={ExamLists} />
       </div>
     </main>
   )
