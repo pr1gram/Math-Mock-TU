@@ -111,9 +111,9 @@ export async function deleteSolutions(testID: string) {
 export async function getScore(email: string, testID: string) {
   try {
     const docSnap = await getDocumentById("exams", email)
-
+  
     if (docSnap?.exists()) {
-      const answers = docSnap.data().get(testID)
+      const answers = docSnap.data()[testID]
       if (!answers) return { success: false, message: "Cannot find answers" }
 
       const solutionSnap = await getDoc(doc(firestore, "solutions", testID))
@@ -134,4 +134,3 @@ export async function getScore(email: string, testID: string) {
     throw error(500, "Error while getting score")
   }
 }
-
