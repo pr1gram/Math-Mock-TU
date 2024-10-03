@@ -40,11 +40,11 @@ const ExamList = ({ examListsJSON }: { examListsJSON: any }) => {
                 <div>
                   <div className="text-[#2F7AEB] font-bold text-3xl">{exam.title}</div>
                   <div className="text-[#383c4e] my-2">
-                    <div className="flex gap-[2px]">
-                      <CalendarIcon className="h-6" />
+                    <div className="flex gap-[2px] items-center ">
+                      <CalendarIcon className="h-6 w-6" />
                       {exam.date}
                     </div>
-                    <div className="flex gap-[2px]">
+                    <div className="flex gap-[2px] items-center">
                       <ClockIcon className="h-6" />
                       {exam.duration} นาที
                     </div>
@@ -52,10 +52,11 @@ const ExamList = ({ examListsJSON }: { examListsJSON: any }) => {
                   <div className="">{exam.description}</div>
                 </div>
                 <div className="mt-auto justify-center flex">
-                    <Link href={`/exam/${exam.id}`}>
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-full">
-                    สมัครสอบ
-                  </button></Link>
+                  <Link href={`/exam/${exam.id}`}>
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded-full">
+                      สมัครสอบ
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))
