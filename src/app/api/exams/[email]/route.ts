@@ -24,7 +24,6 @@ const ExamRoute = new Elysia({ prefix: "/api/exams" })
       body: t.Object({
         testID: StringField("String must be provided"),
         answers: t.Array(StringField("Answer must be provided correctly")),
-        environmentKey: StringField("Environment Key must be provided"),
       }),
     }
   )

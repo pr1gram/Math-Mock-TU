@@ -10,7 +10,6 @@ export interface Slip {
   price?: string
   testID?: string
   status?: string
-  environmentKey?: string
 }
 
 export enum Status {

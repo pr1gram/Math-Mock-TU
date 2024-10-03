@@ -3,7 +3,7 @@ import { StringField } from "@/utils/__init__"
 import { getTransaction } from "@/api/transaction/handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
 
-const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
+const TransactionRouteTestID = new Elysia({ prefix: "/api/transaction" })
   .guard({
     beforeHandle({ error, request: { headers } }) {
       const res = verifyEnvironmentKey(headers)
@@ -26,4 +26,4 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
     }
   )
 
-export const GET = TransactionRoute.handle
+export const GET = TransactionRouteTestID.handle

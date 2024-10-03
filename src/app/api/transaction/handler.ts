@@ -44,8 +44,8 @@ export async function userTransactions(email: string) {
 
   const querySnapshot = await getSnapshotByQuery("transactions", "email", email)
   if (querySnapshot.empty) return { success: false, status: 404, message: "Cannot find user" }
-
-  return querySnapshot.docs[0].data()
+  
+  return { success: true, data: querySnapshot.docs[0].data() }
 }
 
 export async function getTransaction(email: string, testID: string) {
@@ -58,10 +58,10 @@ export async function getTransaction(email: string, testID: string) {
     if (!transaction)
       return { success: false, status: 404, message: `Cannot find ${testID} from ${email}` }
 
-    return { ...transaction, email: email }
+    return { success: true, data: transaction }
   }
 
-  throw new Error("Cannot find user")
+  return { success: false, status: 404, message: "Cannot find user" }
 }
 
 export async function updateStatus(email: string, testID: string, status: Status) {

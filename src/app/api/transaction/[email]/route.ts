@@ -4,7 +4,7 @@ import { updateStatus, userTransactions } from "@/api/transaction/handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
 import { Status } from "../__init__"
 
-const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
+const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
   .guard({
     beforeHandle({ error, request: { headers } }) {
       const res = verifyEnvironmentKey(headers)
@@ -44,5 +44,5 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
     }
   )
 
-export const GET = TransactionRoute.handle
-export const PATCH = TransactionRoute.handle
+export const GET = TransactionRouteEmail.handle
+export const PATCH = TransactionRouteEmail.handle

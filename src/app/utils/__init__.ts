@@ -2,6 +2,7 @@
 import {
   _isUsernameExist,
   _getDocumentByEmail,
+  _getDocumentById,
   _getSnapshotByQuery,
   _updateSessionDoc,
   _createSessionDoc,
@@ -13,6 +14,7 @@ export const validateEmail = _validateEmail
 export const StringField = _StringField
 export const isUsernameExist = _isUsernameExist
 export const getDocumentByEmail = _getDocumentByEmail
+export const getDocumentById = _getDocumentById
 export const getSnapshotByQuery = _getSnapshotByQuery
 export const updateSessionDoc = _updateSessionDoc
 export const createSessionDoc = _createSessionDoc
