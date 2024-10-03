@@ -7,18 +7,22 @@ export async function _isUsernameExist(username: string | null) {
   const querySnapshot = await getDocs(queryResult)
   return !querySnapshot.empty
 }
-
 export async function _getDocumentByEmail(collectionName: string, email: string) {
-  const ref = collection(firestore, collectionName)
-  const queryResult = query(ref, where("email", "==", email))
-  const querySnapshot = await getDocs(queryResult)
-  return querySnapshot.docs.length > 0 ? querySnapshot.docs[0] : null
+  const q = query(collection(firestore, collectionName), where("email", "==", email))
+  const querySnapshot = await getDocs(q)
+  return !querySnapshot.empty ? querySnapshot.docs[0] : undefined
 }
 
 export async function _getSnapshotByQuery(collectionName: string, field: string, value: string) {
   const ref = collection(firestore, collectionName)
   const queryResult = query(ref, where(field, "==", value))
   return await getDocs(queryResult)
+}
+
+export async function _getDocumentById(collectionName: string, documentId: string) {
+  const docRef = doc(firestore, collectionName, documentId)
+  const docSnap = await getDoc(docRef)
+  return docSnap.exists() ? docSnap : undefined
 }
 
 export async function _updateSessionDoc(docId: string, userID: string, token: string) {
