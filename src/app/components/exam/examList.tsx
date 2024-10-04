@@ -52,7 +52,7 @@ const ExamList = ({ examListsJSON }: { examListsJSON: any }) => {
                   <div className="">{exam.description}</div>
                 </div>
                 <div className="mt-auto justify-center flex">
-                  <Link href={`/exam/${exam.id}`}>
+                  <Link href={`/register/${exam.id}`}>
                     <button className="bg-blue-500 text-white px-4 py-2 rounded-full">
                       สมัครสอบ
                     </button>
