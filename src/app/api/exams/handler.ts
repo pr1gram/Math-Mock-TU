@@ -1,14 +1,20 @@
 ﻿import { error } from "elysia"
 import { firestore } from "@/db/firebase"
-import { setDoc, query, doc, deleteDoc, collection, getDocs, getDoc, where } from "firebase/firestore"
 
+import { setDoc, query, doc, deleteDoc, collection, getDocs, getDoc, where } from "firebase/firestore"
+import { v4 as uuidv4 } from "uuid"
 import { validateEmail, getDocumentByEmail, getDocumentById, getSnapshotByQuery } from "@/utils/__init__"
+
 import { createExamDocument, updateExamAnswers } from "./__init__"
 import type { ExamList } from "./__init__"
 
 export async function examList(detail: ExamList) {
   try {
-    const ref = doc(firestore, "examlists", detail.title)
+    const ref = doc(firestore, "examLists", detail.title)
+
+    const userId = uuidv4()
+    detail._id = userId
+
     await setDoc(ref, detail)
     return { success: true, message: "Added to exam list successfully" }
   } catch (e) {
@@ -36,14 +42,14 @@ export async function getUserExams(email: string) {
 export async function getExamList(title?: string) {
   try {
     if (!title) {
-      const ref = collection(firestore, "examlists")
+      const ref = collection(firestore, "examLists")
       const snapshot = await getDocs(ref)
 
       const examLists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
       return { success: true, data: examLists }
     }
 
-    const docSnap = await getDoc(doc(firestore, "examlists", title))
+    const docSnap = await getDoc(doc(firestore, "examLists", title))
 
     if (docSnap.exists()) return { success: true, data: { id: docSnap.id, ...docSnap.data() } }
 
@@ -55,7 +61,7 @@ export async function getExamList(title?: string) {
 
 export async function updateExamList(title: string, detail: ExamList) {
   try {
-    const ref = doc(firestore, "examlists", title)
+    const ref = doc(firestore, "examLists", title)
     if (!ref) return { success: false, message: "Exam list not found" }
 
     await setDoc(ref, detail, { merge: true })
@@ -67,7 +73,7 @@ export async function updateExamList(title: string, detail: ExamList) {
 
 export async function deleteExamList(title: string) {
   try {
-    const ref = doc(firestore, "examlists", title)
+    const ref = doc(firestore, "examLists", title)
     await deleteDoc(ref)
     return { success: true, message: `Delete ${title} sucessfully` }
   } catch (e: unknown) {
@@ -128,9 +134,9 @@ export async function deleteSolutions(testID: string) {
 export async function getScore(email: string, testID: string) {
   try {
     const docSnap = await getDocumentById("exams", email)
-
+  
     if (docSnap?.exists()) {
-      const answers = docSnap.data().get(testID)
+      const answers = docSnap.data()[testID]
       if (!answers) return { success: false, message: "Cannot find answers" }
 
       const solutionSnap = await getDoc(doc(firestore, "solutions", testID))
@@ -151,4 +157,3 @@ export async function getScore(email: string, testID: string) {
     throw error(500, "Error while getting score")
   }
 }
-

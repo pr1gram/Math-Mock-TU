@@ -11,7 +11,7 @@ const ResultsTestIDRoute = new Elysia({ prefix: "/api/exams/results" })
     },
   })
   .get(
-    "/",
+    "/:email/:testID",
     async ({ params: { email, testID }, error }) => {
     const res = await getScore(email, testID)  
     if (res.success) return res

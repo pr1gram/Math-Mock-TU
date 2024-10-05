@@ -5,7 +5,7 @@ import { useFormik } from "formik"
 import { useSession } from "next-auth/react"
 import * as yup from "yup"
 import { useRouter } from "next/navigation"
-import { handlerSubmit } from "./signupForm.action"
+import { handlerSubmit } from "@/components/form/signupForm.action"
 
 export default function SignUpForm() {
   const { data: session } = useSession()
@@ -33,7 +33,6 @@ export default function SignUpForm() {
       school: yup.string().required("*จำเป็นต้องใส่"),
     }),
 
-    
     onSubmit: async (values) => {
       const status = await handlerSubmit(values, session)
 
@@ -42,7 +41,8 @@ export default function SignUpForm() {
       }
 
       if (status === 400) {
-        setInvalidUsername(true)}
+        setInvalidUsername(true)
+      }
     },
   })
 
@@ -135,7 +135,7 @@ export default function SignUpForm() {
         type="submit"
         className="sm:text-lg text-base mt-2 py-1 border-2 rounded-full border-[#2f7aeb] text-white bg-[#2f7aeb] hover:text-[#2f7aeb] hover:bg-transparent duration-300"
       >
-        Create New Account
+        สร้างบัญชีใหม่
       </button>
     </form>
   )

@@ -4,6 +4,7 @@ import { error } from "elysia"
 import { getDocumentById } from "@/utils/__init__"
 
 export interface ExamList {
+  _id?: string,
   title: string
   description?: string
   date?: string

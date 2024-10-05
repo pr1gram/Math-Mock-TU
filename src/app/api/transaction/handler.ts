@@ -1,7 +1,15 @@
 ﻿import { firestore } from "@/db/firebase"
-import { doc, getDocs ,updateDoc, arrayUnion, query, collection, where } from "firebase/firestore"
 
-import { getDocumentByEmail, validateEmail, getSnapshotByQuery } from "@/utils/__init__"
+import { doc, getDocs ,updateDoc, arrayUnion, query, collection, where } from "firebase/firestore"
+import { error } from "elysia"
+
+
+import {
+  getDocumentByEmail,
+  validateEmail,
+  getSnapshotByQuery,
+  getDocumentById,
+} from "@/utils/__init__"
 import {
   Status,
   createTransaction,
@@ -45,24 +53,31 @@ export async function userTransactions(email: string) {
 
   const querySnapshot = await getSnapshotByQuery("transactions", "email", email)
   if (querySnapshot.empty) return { success: false, status: 404, message: "Cannot find user" }
-  
+
   return { success: true, data: querySnapshot.docs[0].data() }
 }
 
 export async function getTransaction(email: string, testID: string) {
-  const docSnap = await getDocumentByEmail("transactions", email)
+  try {
+    const docSnap = await getDocumentByEmail("transactions", email)
+    const examSnap = await getDocumentById("examLists", testID)
 
-  if (docSnap?.exists()) {
-    const transactions: Slip[] = docSnap.data().transactions
-    const transaction = transactions.find((t) => t.testID === testID)
+    if (docSnap?.exists() && examSnap?.exists()) {
+      const transactions: Slip[] = docSnap.data().transactions
+      const transaction = transactions.find((t) => t.testID === testID)
 
-    if (!transaction)
-      return { success: false, status: 404, message: `Cannot find ${testID} from ${email}` }
+      if (!transaction)
+        return { success: false, status: 404, message: `Cannot find ${testID} from ${email}` }
 
-    return { success: true, data: transaction }
+      const examData = examSnap.data()
+      return { success: true, data: { ...transaction, examData } }
+    }
+
+    return { success: false, status: 404, message: "Cannot find user or testID not found" }
+  } catch (e: unknown) {
+    console.log(e)
+    throw error(500, "Error while getting transaction")
   }
-
-  return { success: false, status: 404, message: "Cannot find user" }
 }
 
 export async function updateStatus(email: string, testID: string, status: Status) {
