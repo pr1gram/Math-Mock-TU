@@ -1,18 +1,12 @@
 ﻿import { Elysia, t, error } from "elysia"
-import { StringField } from "@/utils/__init__"
+import { StringField, GlobalGuard} from "@/utils/__init__"
 import { solutions, updateSolutions, deleteSolutions } from "../handler"
-import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`   )
-    },
-  })
+  .use(GlobalGuard)
   .post(
     "/",
-    async ({ body: { testID, answers }, error }) => {
+    async ({ body: { testID, answers }}) => {
       const res = await solutions(testID, answers)
       if (res.success) return res
       else return error(404, res.message)
@@ -26,7 +20,7 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
   )
   .patch(
     "/",
-    async ({ body: { testID, answers }, error }) => {
+    async ({ body: { testID, answers }}) => {
       const res = await updateSolutions(testID, answers)
       if (res.success) return res
       else return error(404, res.message)
@@ -40,7 +34,7 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
   )
   .delete(
     "/",
-    async ({ body: { testID }, error }) => {
+    async ({ body: { testID }}) => {
       const res = await deleteSolutions(testID)
       if (res.success) return res
       else return error(404, res.message)

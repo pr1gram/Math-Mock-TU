@@ -1,18 +1,12 @@
 ﻿import { Elysia, t, error } from "elysia"
-import { StringField } from "@/utils/__init__"
+import { StringField, GlobalGuard } from "@/utils/__init__"
 import { getExamList, updateExamList } from "../../handler"
-import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`)
-    },
-  })
+  .use(GlobalGuard)
   .get(
     "/:title",
-    async ({ params: { title }, error }) => {
+    async ({ params: { title } }) => {
       const res = await getExamList(title)
       if (res.success) return res
       else return error(404, res.message)
@@ -25,7 +19,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   )
   .patch(
     "/:title",
-    async ({ params: { title }, body, error }) => {
+    async ({ params: { title }, body }) => {
       const res = await updateExamList(title, body)
       if (res.success) return res
       else return error(404, res.message)
