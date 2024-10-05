@@ -1,8 +1,8 @@
 ﻿import { error } from "elysia"
 import { firestore } from "@/db/firebase"
-import { setDoc, doc, deleteDoc, collection, getDocs, getDoc } from "firebase/firestore"
+import { setDoc, query, doc, deleteDoc, collection, getDocs, getDoc, where } from "firebase/firestore"
 
-import { validateEmail, getDocumentByEmail, getDocumentById } from "@/utils/__init__"
+import { validateEmail, getDocumentByEmail, getDocumentById, getSnapshotByQuery } from "@/utils/__init__"
 import { createExamDocument, updateExamAnswers } from "./__init__"
 import type { ExamList } from "./__init__"
 
@@ -13,6 +13,23 @@ export async function examList(detail: ExamList) {
     return { success: true, message: "Added to exam list successfully" }
   } catch (e) {
     throw error(500, "Error while adding exam list")
+  }
+}
+
+export async function getUserExams(email: string) {
+  try {
+    const tranSnap = await getSnapshotByQuery("transactions", "email", email)
+    if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404}
+    const testIDStatusMap: { [key: string]: string } = {};
+    tranSnap.forEach((doc) => {
+      const data = doc.data().transactions;
+      data.forEach((tran: any) => {
+        testIDStatusMap[tran.testID] = tran.status;
+      });
+    })
+    return { success: true, data: testIDStatusMap }
+  } catch (error) {
+    throw new Error("Error while getting user exams")
   }
 }
 
@@ -62,7 +79,7 @@ export async function sendExam(email: string, testID: string, answers: string[])
   try {
     if (!validateEmail(email))
       return { success: false, message: "Email is not formatted correctly" }
-    
+
     const docSnap = await getDocumentById("exams", email)
 
     if (!docSnap?.exists()) {
