@@ -1,6 +1,6 @@
 ﻿import { Elysia, t } from "elysia"
 import { StringField } from "@/utils/__init__"
-import { sendExam } from "../handler"
+import { sendExam, getUserExams } from "../handler"
 import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" })
@@ -27,5 +27,17 @@ const ExamRoute = new Elysia({ prefix: "/api/exams" })
       }),
     }
   )
+  .get('/:email',async ({ params: { email }, error}) =>{
+    const res = await getUserExams(email)
+    if (res.success) return res
+    if (res.status === 404) return error(404, `Error: ${res.message}`)
+    return error(400, `Error: ${res.message}`)
+  },
+  {
+    params: t.Object({
+      email: StringField("String must be provided"),
+    }),
+  })
 
 export const POST = ExamRoute.handle
+export const GET = ExamRoute.handle

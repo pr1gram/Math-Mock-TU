@@ -15,6 +15,7 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
     async ({ body }) => {
       const res = await transaction(body)
       if (res.success) return res
+      if (res.status === 404) return error(404, `Error: ${res.message}`)
       else return error(400, `Error: ${res.message}`)
     },
     {
