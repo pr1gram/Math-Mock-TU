@@ -7,6 +7,7 @@ export async function _isUsernameExist(username: string | null) {
   const querySnapshot = await getDocs(queryResult)
   return !querySnapshot.empty
 }
+
 export async function _getDocumentByEmail(collectionName: string, email: string) {
   const q = query(collection(firestore, collectionName), where("email", "==", email))
   const querySnapshot = await getDocs(q)

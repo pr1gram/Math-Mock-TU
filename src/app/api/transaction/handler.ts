@@ -75,7 +75,6 @@ export async function getTransaction(email: string, testID: string) {
 
     return { success: false, status: 404, message: "Cannot find user or testID not found" }
   } catch (e: unknown) {
-    console.log(e)
     throw error(500, "Error while getting transaction")
   }
 }

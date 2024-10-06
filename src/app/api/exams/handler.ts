@@ -96,7 +96,6 @@ export async function sendExam(email: string, testID: string, answers: string[])
       return { success: true, message: "Test answers successfully added" }
     }
   } catch (e: unknown) {
-    console.log(e)
     throw error(500, "Error while sending exam")
   }
 }
@@ -153,7 +152,6 @@ export async function getScore(email: string, testID: string) {
 
     return { success: false, message: "Cannot find user" }
   } catch (e: unknown) {
-    console.log(e)
     throw error(500, "Error while getting score")
   }
 }

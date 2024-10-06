@@ -28,7 +28,6 @@ export async function updateExamAnswers(email: string, testID: string, answers: 
       return error(400, { message: "User not found" })
     }
   } catch (e: unknown) {
-      console.log(e)
     throw error(500, "Error while updating exam answers")
   }
 }
