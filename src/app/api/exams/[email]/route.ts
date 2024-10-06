@@ -1,18 +1,12 @@
-﻿import { Elysia, t } from "elysia"
-import { StringField } from "@/utils/__init__"
+﻿import { Elysia, t, error } from "elysia"
+import { StringField, GlobalGuard } from "@/utils/__init__"
 import { sendExam, getUserExams } from "../handler"
-import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`)
-    },
-  })
+  .use(GlobalGuard)
   .post(
     "/:email",
-    async ({ params: { email }, body: { testID, answers }, error }) => {
+    async ({ params: { email }, body: { testID, answers } }) => {
       const res = await sendExam(email, testID, answers)
       if (res.success) return res
       else return error(400, `Error: ${res.message}`)
@@ -27,7 +21,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams" })
       }),
     }
   )
-  .get('/:email',async ({ params: { email }, error}) =>{
+  .get('/:email',async ({ params: { email } }) =>{
     const res = await getUserExams(email)
     if (res.success) return res
     if (res.status === 404) return error(404, `Error: ${res.message}`)

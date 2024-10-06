@@ -1,15 +1,9 @@
-﻿import Elysia, { t, error } from "elysia"
-import { StringField } from "../../utils/__init__"
+﻿import { Elysia, t, error } from "elysia"
+import { StringField, GlobalGuard} from "../../utils/__init__"
 import { transaction } from "@/api/transaction/handler"
-import { verifyEnvironmentKey } from "@/utils/validate"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`)
-    },
-  })
+  .use(GlobalGuard)
   .post(
     "/",
     async ({ body }) => {

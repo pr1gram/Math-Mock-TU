@@ -1,4 +1,5 @@
 ﻿import { _createHash, _validateEmail, _StringField, _encoded } from "@/utils/validate"
+import { _GlobalGuard } from "@/utils/globalguard"
 import {
   _isUsernameExist,
   _getDocumentByEmail,
@@ -8,6 +9,7 @@ import {
   _createSessionDoc,
 } from "@/utils/firebase"
 
+export const GlobalGuard = _GlobalGuard
 export const createHash = _createHash
 export const encoded = _encoded
 export const validateEmail = _validateEmail

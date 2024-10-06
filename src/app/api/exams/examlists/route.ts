@@ -1,18 +1,12 @@
 ﻿import { Elysia, t, error } from "elysia"
-import { StringField } from "@/utils/__init__"
+import { StringField, GlobalGuard } from "@/utils/__init__"
 import { examList, deleteExamList, getExamList } from "../handler"
-import { verifyEnvironmentKey } from "@/utils/validate"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`)
-    },
-  })
+  .use(GlobalGuard)
   .post(
     "/",
-    async ({ body, error }) => {
+    async ({ body }) => {
       const res = await examList(body)
       if (res.success) return res
       else return error(404, res.message)
@@ -34,7 +28,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   })
   .delete(
     "/",
-    async ({ body: { title }, error }) => {
+    async ({ body: { title } }) => {
       const res = await deleteExamList(title)
       if (res.success) return res
       else return error(404, res.message)

@@ -1,19 +1,13 @@
-﻿import Elysia, { t } from "elysia"
-import { StringField } from "@/utils/__init__"
+﻿import { Elysia, t, error} from "elysia"
+import { StringField, GlobalGuard } from "@/utils/__init__"
 import { updateStatus, userTransactions } from "@/api/transaction/handler"
-import { verifyEnvironmentKey } from "@/utils/validate"
 import { Status } from "../__init__"
 
 const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`)
-    },
-  })
+  .use(GlobalGuard)
   .get(
     "/:email",
-    async ({ params: { email }, error }) => {
+    async ({ params: { email } }) => {
       const res = await userTransactions(email)
       if (res.success) return res
       else if (res.status === 404) return error(404, `Error: ${res.message}`)
@@ -27,7 +21,7 @@ const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
   )
   .patch(
     "/:email",
-    async ({ params: { email }, body: { testID, status }, error }) => {
+    async ({ params: { email }, body: { testID, status } }) => {
       const res = await updateStatus(email, testID, status)
       if (res.success) return res
       else if (res.status === 404) return error(404, `Error: ${res.message}`)

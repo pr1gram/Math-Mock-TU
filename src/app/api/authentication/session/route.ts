@@ -1,18 +1,12 @@
-﻿import { Elysia, t } from "elysia"
+﻿import { Elysia, t, error } from "elysia"
 import { generateJWT } from "../handler"
-import { StringField } from "@/utils/__init__"
-import { verifyEnvironmentKey } from "@/utils/validate"
+import { StringField, GlobalGuard} from "@/utils/__init__"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`)
-    },
-  })
+  .use(GlobalGuard)
   .post(
     "/session",
-    async ({ body: { email }, error }) => {
+    async ({ body: { email } }) => {
       const res = await generateJWT(email)
       if (res.success) return res
       else return error(400, `Error: ${res.message}`)

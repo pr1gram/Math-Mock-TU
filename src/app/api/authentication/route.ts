@@ -1,18 +1,12 @@
-﻿import { Elysia, t } from "elysia"
+﻿import { Elysia, t, error } from "elysia"
 import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./handler"
-import { StringField } from "@/utils/__init__"
-import { verifyEnvironmentKey } from "@/utils/validate"
+import { StringField, GlobalGuard} from "@/utils/__init__"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
-  .guard({
-    beforeHandle({ error, request: { headers } }) {
-      const res = verifyEnvironmentKey(headers)
-      if (!res.success) return error(401, `Error: ${res.message}`)
-    },
-  })
+  .use(GlobalGuard)
   .post(
     "/",
-    async ({ error, body }) => {
+    async ({ body }) => {
       const res = await createUser(body)
       if (res.success) return res
       else return error(400, `Error: ${res.message}`)
@@ -29,7 +23,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   )
   .get(
     "/:email",
-    async ({ params: { email }, error }) => {
+    async ({ params: { email } }) => {
       const res = await getUser(email)
       if (res.success) return res
       else return error(400, `Error: ${res.message}`)
@@ -42,7 +36,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   )
   .patch(
     "/:email",
-    async ({ params: { email }, body, error }) => {
+    async ({ params: { email }, body }) => {
       const res = await updateUser(email, body)
       if (res.success) return res
       else return error(400, `Error: ${res.message}`)
@@ -61,7 +55,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   )
   .delete(
     "/",
-    async ({ body, error }) => {
+    async ({ body }) => {
       const res = await deleteUser(body)
       if (res.success) return res
       else return error(400, `Error: ${res.message}`)
