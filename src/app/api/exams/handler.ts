@@ -1,9 +1,23 @@
 ﻿import { error } from "elysia"
 import { firestore } from "@/db/firebase"
 
-import { setDoc, query, doc, deleteDoc, collection, getDocs, getDoc, where } from "firebase/firestore"
+import {
+  setDoc,
+  query,
+  doc,
+  deleteDoc,
+  collection,
+  getDocs,
+  getDoc,
+  where,
+} from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"
-import { validateEmail, getDocumentByEmail, getDocumentById, getSnapshotByQuery } from "@/utils/__init__"
+import {
+  validateEmail,
+  getDocumentByEmail,
+  getDocumentById,
+  getSnapshotByQuery,
+} from "@/utils/__init__"
 
 import { createExamDocument, updateExamAnswers } from "./__init__"
 import type { ExamList } from "./__init__"
@@ -25,13 +39,13 @@ export async function examList(detail: ExamList) {
 export async function getUserExams(email: string) {
   try {
     const tranSnap = await getSnapshotByQuery("transactions", "email", email)
-    if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404}
-    const testIDStatusMap: { [key: string]: string } = {};
+    if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404 }
+    const testIDStatusMap: { [key: string]: string } = {}
     tranSnap.forEach((doc) => {
-      const data = doc.data().transactions;
+      const data = doc.data().transactions
       data.forEach((tran: any) => {
-        testIDStatusMap[tran.testID] = tran.status;
-      });
+        testIDStatusMap[tran.testID] = tran.status
+      })
     })
     return { success: true, data: testIDStatusMap }
   } catch (error) {
@@ -78,6 +92,43 @@ export async function deleteExamList(title: string) {
     return { success: true, message: `Delete ${title} sucessfully` }
   } catch (e: unknown) {
     throw error(500, "Error while deleting exam list")
+  }
+}
+
+export async function startExam(email: string, testID: string) {
+  try {
+    if (!validateEmail(email))
+      return { success: false, message: "Email is not formatted correctly" }
+
+    const docSnap = await getDocumentById("exams", email)
+    const examSnap = await getSnapshotByQuery("examLists", "title", testID)
+
+    if (examSnap.empty) return { success: false, message: "Cannot find exam list" }
+
+    const date = Date.now()
+
+    if (!docSnap?.exists()) {
+      const newUserRef = doc(firestore, "exams", email)
+      await setDoc(newUserRef, {
+        [testID]: {
+          startDate: date,
+        },
+      })
+      return { success: true, message: "Created successfully" }
+    } else {
+      const UserRef = doc(firestore, "exams", email)
+      const userDoc = (await getDoc(UserRef)).data()
+
+      await setDoc(UserRef, {
+        ...userDoc,
+        [testID]: {
+          startDate: date,
+        },
+      })
+      return { success: true, message: "Updated successfully" }
+    }
+  } catch (e: unknown) {
+    throw error(500, "Error while starting exam")
   }
 }
 
@@ -133,16 +184,16 @@ export async function deleteSolutions(testID: string) {
 export async function getScore(email: string, testID: string) {
   try {
     const docSnap = await getDocumentById("exams", email)
-  
+
     if (docSnap?.exists()) {
-      const answers = docSnap.data()[testID]
-      if (!answers) return { success: false, message: "Cannot find answers" }
+      const data = docSnap.data()[testID]
+      if (!data) return { success: false, message: "Cannot find answers" }
 
       const solutionSnap = await getDoc(doc(firestore, "solutions", testID))
       if (!solutionSnap.exists()) return { success: false, message: "Cannot find solutions" }
 
       const sols = solutionSnap.data().answers
-      const score = answers.reduce(
+      const score = data.answers.reduce(
         (acc: number, cur: string, idx: number) => (cur === sols[idx] ? acc + 1 : acc),
         0
       )
@@ -152,6 +203,7 @@ export async function getScore(email: string, testID: string) {
 
     return { success: false, message: "Cannot find user" }
   } catch (e: unknown) {
+    console.log(e)
     throw error(500, "Error while getting score")
   }
 }

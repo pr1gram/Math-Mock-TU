@@ -1,7 +1,7 @@
 ﻿import { firestore } from "@/db/firebase"
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
+import { addDoc, doc, setDoc, updateDoc } from "firebase/firestore"
 import { error } from "elysia"
-import { getDocumentById } from "@/utils/__init__"
+import { getDocumentById, getSnapshotByQuery } from "@/utils/__init__"
 
 export interface ExamList {
   _id?: string,
@@ -10,16 +10,23 @@ export interface ExamList {
   date?: string
   price?: number
   duration?: number
+  startTime?: number
+  endTime?: number
 }
 
 export async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   try {
     const userDocSnap = await getDocumentById("exams", email)
+    const testData = userDocSnap?.data()[testID] || {}; // Get existing data for testID or initialize as an empty object
 
     if (userDocSnap?.exists()) {
       const updatedData = {
         ...userDocSnap.data(),
-        [testID]: answers,
+        [testID]: {
+          ...testData,
+          answers: answers,
+          submittedTime: Date.now()
+        },
       }
 
       const userDoc = doc(firestore, "exams", email)
@@ -34,5 +41,10 @@ export async function updateExamAnswers(email: string, testID: string, answers: 
 
 export async function createExamDocument(email: string, testID: string, answers: string[]) {
   const newUserRef = doc(firestore, "exams", email)
-  await setDoc(newUserRef, { [testID]: answers })
+
+  await setDoc(newUserRef, {
+    [testID]: {
+      answers: answers,
+      submittedTime: Date.now()
+  } })
 }

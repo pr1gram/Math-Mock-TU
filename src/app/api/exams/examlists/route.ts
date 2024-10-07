@@ -18,6 +18,8 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
         date: StringField("Date must be provided"),
         price: t.Number({ message: "Price must be provided" }),
         duration: t.Number({ message: "Duration must be provided" }),
+        startTime: t.Number({ message: "Start Time must be provided" }),
+        endTime: t.Number({ message: "End Time must be provided" }),
       }),
     }
   )

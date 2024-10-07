@@ -13,26 +13,6 @@ import {
 } from "./__init__"
 import type { Slip } from "./__init__"
 
-function getApprovedTestIDs(transactions: any[]): string[] {
-  return transactions
-    .filter(transaction => transaction.status === "approved")
-    .map(transaction => transaction.testID);
-}
-
-async function getExamData(testIDs: string[]): Promise<any[]> {
-  const examData = [];
-
-  for (const testID of testIDs) {
-    const examSnap = await getDocumentById("examLists", testID);
-    if (examSnap?.exists()) {
-      examData.push(examSnap.data());
-    }
-  }
-
-  return examData;
-}
-
-
 export async function transaction(body: Slip) {
   if (!validateEmail(body.email))
     return { success: false, message: "Email is not formatted correctly" }
@@ -78,11 +58,16 @@ export async function userTransactions(email: string) {
   if (querySnapshot.empty)
     return { success: false, status: 404, message: "Cannot find user" };
 
-  const transactions = querySnapshot.docs[0].data().transactions;
-  const approvedTestIDs = getApprovedTestIDs(transactions);
+  const transactions = querySnapshot.docs[0].data().transactions
+  let temp = []
 
-  const examData = await getExamData(approvedTestIDs);
-  return { success: true, data: querySnapshot.docs[0].data(), examData };
+  for (let i = 0; i < transactions.length; i++) {
+    const examSnap = await getDocumentById("examLists", transactions[i].testID)
+    if (examSnap?.exists()) 
+      temp.push({ ...transactions[i], examData: examSnap.data() })      
+  } 
+
+  return { success: true, data: temp };
 }
 
 export async function getTransaction(email: string, testID: string) {
