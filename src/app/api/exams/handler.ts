@@ -203,7 +203,6 @@ export async function getScore(email: string, testID: string) {
 
     return { success: false, message: "Cannot find user" }
   } catch (e: unknown) {
-    console.log(e)
     throw error(500, "Error while getting score")
   }
 }
