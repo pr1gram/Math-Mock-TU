@@ -14,7 +14,7 @@ export default async function Home() {
   if (session) {
     myExamLists = await apiFunction("GET", `/transaction/${session.user?.email}`, {})
   }
-  const myExamListsJSON = JSON.stringify(myExamLists.data.data)
+  const myExamListsJSON = JSON.stringify(myExamLists?.data?.data) || null
 
   return (
     <main className="w-screen overflow-hidden">
