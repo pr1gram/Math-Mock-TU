@@ -39,15 +39,24 @@ export async function examList(detail: ExamList) {
 export async function getUserExams(email: string) {
   try {
     const tranSnap = await getSnapshotByQuery("transactions", "email", email)
+    const examSnap = await getDocumentById("exams", email)
+
     if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404 }
+    if (!examSnap?.exists()) return { success: false, message: "Cannot find exam snap", status: 404 }
+
     const testIDStatusMap: { [key: string]: string } = {}
+
     tranSnap.forEach((doc) => {
       const data = doc.data().transactions
       data.forEach((tran: any) => {
         testIDStatusMap[tran.testID] = tran.status
       })
     })
-    return { success: true, data: testIDStatusMap }
+
+    const examData = examSnap?.data()
+    if (!examData) return { success: false, message: "Cannot find exam data", status: 404}
+
+    return { success: true, data: { examData, status: testIDStatusMap } }
   } catch (error) {
     throw new Error("Error while getting user exams")
   }
