@@ -10,6 +10,7 @@ import RightIcon from "@/vector/exam/rightIcon"
 import Link from "next/link"
 import PendingIcon from "@/vector/exam/pendingIcon"
 import ApprovedIcon from "@/vector/exam/approvedIcon"
+import RejectedIcon from "@/vector/exam/rejectedIcon"
 
 const MyExamList = ({ myExamListsJSON }: { myExamListsJSON: any }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start" })
@@ -52,13 +53,18 @@ const MyExamList = ({ myExamListsJSON }: { myExamListsJSON: any }) => {
                     </div>
                     <div className="flex gap-[2px] items-center">
                     {myExam.status === "approved" && (
-                        <div className=" text-[#F0B00C] flex">
+                        <div className=" text-[#4ab361] flex">
                           <ApprovedIcon className="h-6" /> ผ่านการตรวจสอบ
                         </div>
                       )}
                       {myExam.status === "pending" && (
                         <div className=" text-[#F0B00C] flex">
                           <PendingIcon className="h-6" /> อยู่ระหว่างการตรวจสอบ
+                        </div>
+                      )}
+                      {myExam.status === "rejected" && (
+                        <div className=" text-red-600 flex">
+                          <RejectedIcon className="h-6" /> ไม่ผ่านการตรวจสอบ
                         </div>
                       )}
                     </div>

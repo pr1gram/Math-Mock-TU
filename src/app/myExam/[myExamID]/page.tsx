@@ -8,6 +8,7 @@ import PendingIcon from "@/vector/exam/pendingIcon"
 import Left_Arrow from "@/vector/left_arrow"
 import Link from "next/link"
 import CheckSignIn from "@/components/auth/checkSignIn"
+import RejectedIcon from "@/vector/exam/rejectedIcon"
 
 const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
   const { myExamID } = params
@@ -60,13 +61,18 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                     </div>
                     <div className="flex gap-[2px] items-center">
                       {myExamData.status === "approved" && (
-                        <div className=" text-[#F0B00C] flex gap-[2px] items-center">
+                        <div className=" text-[#4ab361] flex gap-[2px] items-center">
                           <ApprovedIcon className="w-5 sm:w-7" /> ผ่านการตรวจสอบ
                         </div>
                       )}
                       {myExamData.status === "pending" && (
                         <div className=" text-[#F0B00C] flex gap-[2px] items-center">
                           <PendingIcon className="w-5 sm:w-7" /> อยู่ระหว่างการตรวจสอบ
+                        </div>
+                      )}
+                      {myExamData.status === "rejected" && (
+                        <div className=" text-red-600 flex">
+                          <RejectedIcon className="h-6" /> ไม่ผ่านการตรวจสอบ
                         </div>
                       )}
                     </div>
