@@ -7,6 +7,7 @@ export interface ExamList {
   _id?: string,
   title: string
   description?: string
+  items?: number
   date?: string
   price?: number
   duration?: number
@@ -17,7 +18,7 @@ export interface ExamList {
 export async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   try {
     const userDocSnap = await getDocumentById("exams", email)
-    const testData = userDocSnap?.data()[testID] || {}; // Get existing data for testID or initialize as an empty object
+    const testData = userDocSnap?.data()[testID] || {}; 
 
     if (userDocSnap?.exists()) {
       const updatedData = {

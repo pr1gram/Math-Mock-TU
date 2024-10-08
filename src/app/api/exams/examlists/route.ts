@@ -15,6 +15,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
       body: t.Object({
         title: StringField("Title must be provided"),
         description: StringField("Description must be provided correctly"),
+        items: t.Number({ message: "Item must be provided" }),
         date: StringField("Date must be provided"),
         price: t.Number({ message: "Price must be provided" }),
         duration: t.Number({ message: "Duration must be provided" }),
