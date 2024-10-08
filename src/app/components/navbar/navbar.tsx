@@ -21,7 +21,7 @@ export default async function NavBar() {
               <div className=" text-white px-4 py-2 rounded-full font-bold text-xl  border border-white sm:flex hidden ">
                 {response?.data?.firstname} {response?.data?.lastname}
               </div>
-              <Link href="/account">
+              <Link href="/account" className=" flex items-center">
                 <UserIcon className="h-10" />
               </Link>
             </div>

@@ -1,11 +1,20 @@
 import apiFunction from "@/components/api"
 import ExamList from "@/components/exam/examList"
+import { auth } from "@/api/auth"
+import Link from "next/link"
+import MyExamList from "@/components/exam/myExamList"
 
 export default async function Home() {
+  const session = await auth()
   const response = await apiFunction("GET", "/exams/examlists/", {}).catch((error) => ({
     data: { data: [] },
   }))
   const ExamLists = JSON.stringify(response.data.data)
+  let myExamLists = { data: { data: [] } }
+  if (session) {
+    myExamLists = await apiFunction("GET", `/transaction/${session.user?.email}`, {})
+  }
+  const myExamListsJSON = JSON.stringify(myExamLists.data.data)
 
   return (
     <main className="w-screen overflow-hidden">
@@ -19,6 +28,35 @@ export default async function Home() {
       <div>
         <div className="text-[#383c4e] text-3xl font-bold ml-4 mt-5">การสอบทั้งหมด</div>
         <ExamList examListsJSON={ExamLists} />
+      </div>
+      <div className=" w-full border border-[#EBEBEB] mt-4"></div>
+      <div>
+        <div className="text-[#383c4e] text-3xl font-bold ml-4 mt-5">การสอบของฉัน</div>
+        {session ? (
+          myExamListsJSON ? (
+            <MyExamList myExamListsJSON={myExamListsJSON} />
+          ) : (
+            <div className=" flex justify-center">
+              <div className="text-[#383c4e] text-2xl font-bold ml-4 mt-2 py-36">
+                ไม่มีการสมัครสอบ
+              </div>
+            </div>
+          )
+        ) : (
+          <div className=" flex justify-center py-36">
+            <div>
+              <div>เข้าสู่ระบบเพื่อดูการสอบของคุณ</div>
+              <div className=" flex justify-center mt-2">
+                <Link
+                  href="/auth"
+                  className="bg-[#2F7AEB] rounded-full text-white font-bold px-4 py-2 "
+                >
+                  เข้าสู่ระบบ
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   )
