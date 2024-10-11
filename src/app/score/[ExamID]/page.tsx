@@ -10,7 +10,7 @@ const ScorePage = async ({ params }: { params: { ExamID: string } }) => {
   console.log(response.data)
   return (
     <main>
-      <div className=" w-full h-screen bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] items-center flex justify-center">
+      <div className=" w-full h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] items-center flex justify-center">
         <div className="flex justify-center">
           <div className="w-[250px] sm:w-[290px] md:w-[320px]">
             <Link href="/" className="inline-block mt-4">

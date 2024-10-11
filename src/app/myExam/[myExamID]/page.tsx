@@ -35,7 +35,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
 
   return (
     <main>
-      <div className=" w-full h-screen bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] items-center flex justify-center">
+      <div className=" w-full h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] items-center flex justify-center">
         <div className="flex justify-center">
           <div className="w-[250px] sm:w-[290px] md:w-[320px]">
             <Link href="/" className="inline-block mt-4">
@@ -79,19 +79,50 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                   </div>
                   <div className="text-base">{myExamData.examData.description}</div>
                 </div>
-                <div className="mt-4 flex justify-center text-[#B5B6C2]">
-                  <div className=" w-full">
-                    <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 ">
-                      <Link className=" inline-block w-full h-full" href={`/exam/${myExamData.testID}`}>เริ่มต้นสอบ</Link>
-                    </div>
-                    <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
-                      <Link className=" inline-block w-full h-full" href={`/score/${myExamData.testID}`}>คะแนนสอบ</Link>
-                    </div>
-                    <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
-                      <Link className=" inline-block w-full h-full" href={`/exam/${myExamData.testID}`}>เฉลยข้อสอบ</Link>
+                {myExamData.status === "approved" ? (
+                  <div className="mt-4 flex justify-center text-[#B5B6C2]">
+                    <div className=" w-full">
+                      <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 ">
+                        <Link
+                          className=" inline-block w-full h-full"
+                          href={`/exam/${myExamData.testID}`}
+                        >
+                          เริ่มต้นสอบ
+                        </Link>
+                      </div>
+                      <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
+                        <Link
+                          className=" inline-block w-full h-full"
+                          href={`/score/${myExamData.testID}`}
+                        >
+                          คะแนนสอบ
+                        </Link>
+                      </div>
+                      <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
+                        <Link
+                          className=" inline-block w-full h-full"
+                          href={`/exam/${myExamData.testID}`}
+                        >
+                          เฉลยข้อสอบ
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="mt-4 flex justify-center text-[#B5B6C2]">
+                    <div className=" w-full">
+                      <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
+                        เริ่มต้นสอบ
+                      </div>
+                      <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
+                        คะแนนสอบ
+                      </div>
+                      <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
+                        เฉลยข้อสอบ
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

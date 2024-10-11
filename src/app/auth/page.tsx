@@ -11,9 +11,9 @@ export default async function Auth() {
   const check = await CheckSignIn(true, "/account")
 
   return (
-    <main className=" bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] w-full h-screen relative  z-0">
+    <main className=" bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] w-full h-[calc(100dvh)] relative  z-0">
       <Auth_Logo className=" absolute right-0 bottom-0 max-md:w-[90%] md:h-[90%] -z-10 " />
-      <div className=" w-full h-screen flex justify-center items-center">
+      <div className=" w-full h-[calc(100dvh)] flex justify-center items-center">
         <div>
           <Link href="/" className=" inline-block">
             <div className=" flex text-white items-center gap-1 w-fit ">

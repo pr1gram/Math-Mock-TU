@@ -1,6 +1,6 @@
 ﻿import { Elysia, t, error } from "elysia"
 import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./handler"
-import { StringField, GlobalGuard} from "@/utils/__init__"
+import { StringField, GlobalGuard } from "@/utils/__init__"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .use(GlobalGuard)
@@ -18,6 +18,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
         lastname: StringField("Lastname must be provided"),
         username: StringField("Username must be provided"),
         tel: StringField("Tel must be provided"),
+        school: StringField("school must be provided"),
       }),
     }
   )
@@ -50,6 +51,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
         lastname: StringField("Lastname must be provided", false),
         username: StringField("Username must be provided", false),
         tel: StringField("Tel must be provided", false),
+        school: StringField("school must be provided", false),
       }),
     }
   )

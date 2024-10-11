@@ -20,7 +20,7 @@ export default async function Account() {
 
   return (
     <main className=" bg-gradient-to-b from-[#0855CA] to-[#2F7AEB]">
-      <div className=" w-full h-screen flex justify-center items-center">
+      <div className=" w-full h-[calc(100dvh)] flex justify-center items-center">
         <div>
           <Link href="/" className=" inline-block">
             <div className=" flex text-white items-center gap-1">

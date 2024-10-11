@@ -11,12 +11,35 @@ export default async function Account() {
   if (response.status === 400) {
     redirect("/form")
   }
+  console.log(response.data)
 
   return (
-    <main>
-      <h1>Account</h1>
-      <p>email : {session?.user?.email} </p>
-      <SignOutButton />
+    <main className=" bg-gradient-to-t from-[#2F7AEB] to-[#0855CA] h-[calc(100dvh)] w-screen flex justify-center items-center ">
+      <div>
+        <div className=" bg-white border border-[#B5B6C2] rounded-xl p-4">
+          <div className=" text-[#383C4E] text-3xl font-bold">ข้อมูลส่วนตัว</div>
+          <div className=" text-[#383C4E] text-xl font-bold">
+            <div className=" flex gap-1">
+              ชื่อ-นามสกุล
+              <div className=" font-normal">
+                {response.data.firstname} {response.data.lastname}
+              </div>
+            </div>
+            <div className=" flex gap-1">
+              username <div className="font-normal">{response.data.username}</div>
+            </div>
+            <div className=" flex gap-1">
+              โรงเรียน <div className="font-normal">{response.data.school}</div>
+            </div>
+            <div className=" flex gap-1">
+              เบอร์โทรศัพท์ <div className="font-normal">{response.data.tel}</div>
+            </div>
+          </div>
+        </div>
+        <div className=" flex justify-center mt-3">
+          <SignOutButton />
+        </div>
+      </div>
     </main>
   )
 }

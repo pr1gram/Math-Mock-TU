@@ -73,17 +73,39 @@ const ExamPage = async ({
               ) : (
                 <p>Question not found</p>
               )}
+              <div className=" flex justify-between mt-3 text-center">
+                {pageNumber > 1 ? (
+                  <Link href={`/exam/${examID}?n=${pageNumber - 1}`}>
+                    <div className=" rounded-full px-4 py-[6px] w-24 text-white border-2 border-[#2F7AEB] bg-[#2F7AEB] sm:hidden ">
+                      ย้อนกลับ
+                    </div>
+                  </Link>
+                ) : (
+                  <div className=" rounded-full px-4 py-[6px] w-24 text-[#B5B6C2] border-2 border-[#B5B6C2] sm:hidden ">
+                    ย้อนกลับ
+                  </div>
+                )}
+                {pageNumber !== ExamApiData.data.data.items ? (
+                  <Link href={`/exam/${examID}?n=${pageNumber + 1}`}>
+                    <div className=" rounded-full px-4 py-[6px] w-24 text-white border-2 border-[#2F7AEB] bg-[#2F7AEB] sm:hidden ">
+                      ต่อไป
+                    </div>
+                  </Link>
+                ) : (
+                  <ExamSummitButton examName={examID} />
+                )}
+              </div>
             </div>
           </div>
-          <div className=" mt-7 flex justify-center items-center gap-3">
+          <div className=" mt-7 flex justify-center items-center gap-3 text-center">
             {pageNumber > 1 ? (
               <Link href={`/exam/${examID}?n=${pageNumber - 1}`}>
-                <div className=" rounded-full px-4 py-2 text-white border-2 border-[#2F7AEB] bg-[#2F7AEB] ">
+                <div className=" rounded-full px-4 py-[6px] w-24 text-white border-2 border-[#2F7AEB] bg-[#2F7AEB] max-sm:hidden mb-6 ">
                   ย้อนกลับ
                 </div>
               </Link>
             ) : (
-              <div className=" rounded-full px-4 py-2 text-[#B5B6C2] border-2 border-[#B5B6C2] ">
+              <div className=" rounded-full px-4 py-[6px] w-24 text-[#B5B6C2] border-2 border-[#B5B6C2] max-sm:hidden mb-6 ">
                 ย้อนกลับ
               </div>
             )}
@@ -91,7 +113,9 @@ const ExamPage = async ({
             <ExamCountSelect examName={examID} pointNumber={pointNumber} />
             {pageNumber !== ExamApiData.data.data.items ? (
               <Link href={`/exam/${examID}?n=${pageNumber + 1}`}>
-                <div className=" rounded-full px-4 py-2 text-white bg-[#2F7AEB] ">ต่อไป</div>
+                <div className=" rounded-full px-4 py-[6px] w-24 text-white border-2 border-[#2F7AEB] bg-[#2F7AEB] max-sm:hidden mb-6 ">
+                  ต่อไป
+                </div>
               </Link>
             ) : (
               <ExamSummitButton examName={examID} />

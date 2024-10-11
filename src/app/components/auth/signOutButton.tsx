@@ -9,8 +9,9 @@ export default function SignOutButton() {
       onClick={async () => {
         await signOut({ callbackUrl: "/auth" })
       }}
+      className=" border-2 border-white rounded-full text-white px-2 py-1"
     >
-      Sign Out
+      ออกจากระบบ
     </button>
   )
 }
