@@ -1,10 +1,10 @@
 ﻿import { firestore } from "@/db/firebase"
-import { addDoc, doc, setDoc, updateDoc } from "firebase/firestore"
+import { doc, setDoc, updateDoc } from "firebase/firestore"
 import { error } from "elysia"
-import { getDocumentById, getSnapshotByQuery } from "@/utils/__init__"
+import { getDocumentById } from "@/utils/__init__"
 
 export interface ExamList {
-  _id?: string,
+  _id?: string
   title: string
   description?: string
   items?: number
@@ -18,7 +18,7 @@ export interface ExamList {
 export async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   try {
     const userDocSnap = await getDocumentById("exams", email)
-    const testData = userDocSnap?.data()[testID] || {}; 
+    const testData = userDocSnap?.data()[testID] || {}
 
     if (userDocSnap?.exists()) {
       const updatedData = {
@@ -26,7 +26,7 @@ export async function updateExamAnswers(email: string, testID: string, answers: 
         [testID]: {
           ...testData,
           answers: answers,
-          submittedTime: Date.now()
+          submittedTime: Date.now(),
         },
       }
 
@@ -46,6 +46,7 @@ export async function createExamDocument(email: string, testID: string, answers:
   await setDoc(newUserRef, {
     [testID]: {
       answers: answers,
-      submittedTime: Date.now()
-  } })
+      submittedTime: Date.now(),
+    },
+  })
 }

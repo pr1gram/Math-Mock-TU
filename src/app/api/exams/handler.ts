@@ -1,33 +1,17 @@
 ﻿import { error } from "elysia"
 import { firestore } from "@/db/firebase"
 
-import {
-  setDoc,
-  query,
-  doc,
-  deleteDoc,
-  collection,
-  getDocs,
-  getDoc,
-  where,
-} from "firebase/firestore"
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"
-import {
-  validateEmail,
-  getDocumentByEmail,
-  getDocumentById,
-  getSnapshotByQuery,
-} from "@/utils/__init__"
+import { getDocumentById, getSnapshotByQuery, validateEmail } from "@/utils/__init__"
 
-import { createExamDocument, updateExamAnswers } from "./__init__"
 import type { ExamList } from "./__init__"
+import { createExamDocument, updateExamAnswers } from "./__init__"
 
 export async function examList(detail: ExamList) {
   try {
     const ref = doc(firestore, "examLists", detail.title)
-
-    const userId = uuidv4()
-    detail._id = userId
+    detail._id = uuidv4()
 
     await setDoc(ref, detail)
     return { success: true, message: "Added to exam list successfully" }
@@ -42,7 +26,8 @@ export async function getUserExams(email: string) {
     const examSnap = await getDocumentById("exams", email)
 
     if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404 }
-    if (!examSnap?.exists()) return { success: false, message: "Cannot find exam snap", status: 404 }
+    if (!examSnap?.exists())
+      return { success: false, message: "Cannot find exam snap", status: 404 }
 
     const testIDStatusMap: { [key: string]: string } = {}
 
@@ -54,7 +39,7 @@ export async function getUserExams(email: string) {
     })
 
     const examData = examSnap?.data()
-    if (!examData) return { success: false, message: "Cannot find exam data", status: 404}
+    if (!examData) return { success: false, message: "Cannot find exam data", status: 404 }
 
     return { success: true, data: { examData, status: testIDStatusMap } }
   } catch (error) {
@@ -98,7 +83,7 @@ export async function deleteExamList(title: string) {
   try {
     const ref = doc(firestore, "examLists", title)
     await deleteDoc(ref)
-    return { success: true, message: `Delete ${title} sucessfully` }
+    return { success: true, message: `Delete ${title} successfully` }
   } catch (e: unknown) {
     throw error(500, "Error while deleting exam list")
   }
@@ -184,7 +169,7 @@ export async function deleteSolutions(testID: string) {
   try {
     const ref = doc(firestore, "solutions", testID)
     await deleteDoc(ref)
-    return { success: true, message: `Delete ${testID} solutions sucessfully` }
+    return { success: true, message: `Delete ${testID} solutions successfully` }
   } catch (e: unknown) {
     throw error(500, "Error while deleting solutions")
   }
@@ -204,7 +189,7 @@ export async function getScore(email: string, testID: string) {
       const sols = solutionSnap.data().answers
       const score = data.answers.reduce(
         (acc: number, cur: string, idx: number) => (cur === sols[idx] ? acc + 1 : acc),
-        0
+        0,
       )
 
       return { success: true, data: { email: email, score: score } }

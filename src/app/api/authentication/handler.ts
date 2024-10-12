@@ -1,18 +1,18 @@
-﻿import { doc, setDoc, updateDoc, deleteDoc } from "firebase/firestore"
+﻿import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore"
 import { firestore } from "@/db/firebase"
 import {
+  createSessionDoc,
   encoded,
-  validateEmail,
-  isUsernameExist,
   getDocumentByEmail,
   getSnapshotByQuery,
-  createSessionDoc,
+  isUsernameExist,
   updateSessionDoc,
+  validateEmail
 } from "@/utils/__init__"
 import { sign } from "jsonwebtoken"
 import { v4 as uuidv4 } from "uuid"
-import { filterSchoolName } from "./__init__"
 import type { User } from "./__init__"
+import { filterSchoolName } from "./__init__"
 
 export async function createUser(options: User) {
   try {
@@ -24,8 +24,7 @@ export async function createUser(options: User) {
     if (!validateEmail(options.email))
       return { success: false, message: "Email is not formatted correctly" }
 
-    const userId = uuidv4()
-    options._id = userId
+    options._id = uuidv4()
     options.school = filterSchoolName(options.school!)
 
     const ref = doc(firestore, "users", encoded(options.email))
