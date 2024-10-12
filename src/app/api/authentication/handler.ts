@@ -11,6 +11,7 @@ import {
 } from "@/utils/__init__"
 import { sign } from "jsonwebtoken"
 import { v4 as uuidv4 } from "uuid"
+import { filterSchoolName } from "./__init__"
 import type { User } from "./__init__"
 
 export async function createUser(options: User) {
@@ -25,6 +26,7 @@ export async function createUser(options: User) {
 
     const userId = uuidv4()
     options._id = userId
+    options.school = filterSchoolName(options.school!)
 
     const ref = doc(firestore, "users", encoded(options.email))
     await setDoc(ref, options)
