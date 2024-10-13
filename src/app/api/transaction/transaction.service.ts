@@ -1,22 +1,7 @@
 ﻿import { storage } from "@/db/firebase"
-import { updateDoc, arrayUnion, setDoc } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-
-export interface Slip {
-  email: string
-  file: File
-  date?: string
-  time?: string
-  price?: string
-  testID?: string
-  status?: string
-}
-
-export enum Status {
-  PENDING = "pending",
-  APPROVED = "approved",
-  REJECTED = "rejected",
-}
+import { arrayUnion, setDoc, updateDoc } from "firebase/firestore"
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { type Slip, Status } from "./transaction.dto"
 
 export function dfsTransaction(transactions: Slip[], testID: string): number {
   function dfs(index: number): number {
@@ -24,6 +9,7 @@ export function dfsTransaction(transactions: Slip[], testID: string): number {
     if (transactions[index].testID === testID) return index
     return dfs(index + 1)
   }
+
   return dfs(0)
 }
 

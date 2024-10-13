@@ -1,23 +1,27 @@
 ﻿import { firestore } from "@/db/firebase"
 
-import { doc, getDocs, updateDoc, arrayUnion, query, collection, where } from "firebase/firestore"
+import { arrayUnion, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
 import { error } from "elysia"
-import { getDocumentByEmail, getDocumentById, getSnapshotByQuery, validateEmail } from "@/utils/__init__"
+import {
+  getDocumentByEmail,
+  getDocumentById,
+  getSnapshotByQuery,
+  validateEmail,
+} from "@/utils/__init__"
 
 import {
-  Status,
   createTransaction,
   dfsTransaction,
   updateTransaction,
   uploadFile,
-} from "./__init__"
-import type { Slip } from "./__init__"
+} from "./transaction.service"
+import { type Slip, Status } from "./transaction.dto"
 
 export async function transaction(body: Slip) {
   if (!validateEmail(body.email))
     return { success: false, message: "Email is not formatted correctly" }
   const isTestExist = await getDocs(
-    query(collection(firestore, "examLists"), where("title", "==", body.testID))
+    query(collection(firestore, "examLists"), where("title", "==", body.testID)),
   )
   if (isTestExist.empty)
     return {
@@ -34,7 +38,7 @@ export async function transaction(body: Slip) {
   if (docSnap?.exists()) {
     const transactionData: Slip[] = docSnap.data().transactions
     const isDuplicatedTransaction = transactionData.find(
-      (transaction) => transaction.testID === body.testID
+      (transaction) => transaction.testID === body.testID,
     )
 
     if (isDuplicatedTransaction)
@@ -51,23 +55,21 @@ export async function transaction(body: Slip) {
 
 export async function userTransactions(email: string) {
   if (!validateEmail(email)) {
-    return { success: false, message: "Email is not formatted correctly" };
+    return { success: false, message: "Email is not formatted correctly" }
   }
 
-  const querySnapshot = await getSnapshotByQuery("transactions", "email", email);
-  if (querySnapshot.empty)
-    return { success: false, status: 404, message: "Cannot find user" };
+  const querySnapshot = await getSnapshotByQuery("transactions", "email", email)
+  if (querySnapshot.empty) return { success: false, status: 404, message: "Cannot find user" }
 
   const transactions = querySnapshot.docs[0].data().transactions
   let temp = []
 
   for (let i = 0; i < transactions.length; i++) {
     const examSnap = await getDocumentById("examLists", transactions[i].testID)
-    if (examSnap?.exists()) 
-      temp.push({ ...transactions[i], examData: examSnap.data() })      
-  } 
+    if (examSnap?.exists()) temp.push({ ...transactions[i], examData: examSnap.data() })
+  }
 
-  return { success: true, data: temp };
+  return { success: true, data: temp }
 }
 
 export async function getTransaction(email: string, testID: string) {
@@ -110,13 +112,18 @@ export async function updateStatus(email: string, testID: string, status: Status
           message: `Cannot find testId: ${testID} from ${email}`,
         }
 
-      transactions[transactionIndex].status = status
+      if (!userSnap?.exists()) return { success: false, status: 404, message: "Cannot find user" }
+
+      let userStatus = (transactions[transactionIndex].status = status)
       await updateDoc(docSnap.ref, { transactions })
-      if (transactions[transactionIndex].status === "approved" && userSnap?.exists()) {
+
+      if (userStatus === Status.APPROVED) {
         await updateDoc(userSnap.ref, { tests: arrayUnion(testID) })
         return { success: true, message: "Updated Approved Successfully" }
-      }
-      return { success: true, message: "Updated Successfully" }
+      } else if (userStatus === Status.REJECTED)
+        return { success: true, message: "Updated Rejected Successfully" }
+
+      return { success: false, message: "Invalid status" }
     } else {
       return { success: false, status: 404, message: "Cannot find user" }
     }

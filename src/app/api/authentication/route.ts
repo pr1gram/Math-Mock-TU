@@ -1,6 +1,6 @@
-﻿import { Elysia, t, error } from "elysia"
-import { createUser, deleteUser, getUser, updateUser, generateJWT } from "./handler"
-import { StringField, GlobalGuard } from "@/utils/__init__"
+﻿import { Elysia, error, t } from "elysia"
+import { createUser, deleteUser, getUser, updateUser } from "./auth.controller"
+import { GlobalGuard, StringField } from "@/utils/__init__"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .use(GlobalGuard)
@@ -20,7 +20,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
         tel: StringField("Tel must be provided"),
         school: StringField("school must be provided"),
       }),
-    }
+    },
   )
   .get(
     "/:email",
@@ -33,7 +33,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
       params: t.Object({
         email: StringField("Email must be provided"),
       }),
-    }
+    },
   )
   .patch(
     "/:email",
@@ -53,7 +53,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
         tel: StringField("Tel must be provided", false),
         school: StringField("school must be provided", false),
       }),
-    }
+    },
   )
   .delete(
     "/",
@@ -66,7 +66,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
       body: t.Object({
         email: StringField("String must be provided"),
       }),
-    }
+    },
   )
 
 export const POST = AuthRoute.handle

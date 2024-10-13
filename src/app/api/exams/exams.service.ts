@@ -3,18 +3,6 @@ import { doc, setDoc, updateDoc } from "firebase/firestore"
 import { error } from "elysia"
 import { getDocumentById } from "@/utils/__init__"
 
-export interface ExamList {
-  _id?: string
-  title: string
-  description?: string
-  items?: number
-  date?: string
-  price?: number
-  duration?: number
-  startTime?: number
-  endTime?: number
-}
-
 export async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   try {
     const userDocSnap = await getDocumentById("exams", email)

@@ -7,12 +7,12 @@ import {
   getSnapshotByQuery,
   isUsernameExist,
   updateSessionDoc,
-  validateEmail
+  validateEmail,
 } from "@/utils/__init__"
 import { sign } from "jsonwebtoken"
 import { v4 as uuidv4 } from "uuid"
-import type { User } from "./__init__"
-import { filterSchoolName } from "./__init__"
+import type { User } from "./auth.dto"
+import { filterSchoolName } from "./auth.service"
 
 export async function createUser(options: User) {
   try {

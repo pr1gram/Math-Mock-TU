@@ -1,7 +1,7 @@
-﻿import { Elysia, t, error} from "elysia"
-import { StringField, GlobalGuard } from "@/utils/__init__"
-import { updateStatus, userTransactions } from "@/api/transaction/handler"
-import { Status } from "../__init__"
+﻿import { Elysia, error, t } from "elysia"
+import { GlobalGuard, StringField } from "@/utils/__init__"
+import { updateStatus, userTransactions } from "../transaction.controller"
+import { Status } from "../transaction.dto"
 
 const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
   .use(GlobalGuard)
@@ -17,7 +17,7 @@ const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
       params: t.Object({
         email: StringField("Email must be provided"),
       }),
-    }
+    },
   )
   .patch(
     "/:email",
@@ -35,7 +35,7 @@ const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
         testID: StringField("TestID must be provided"),
         status: t.Enum(Status, { error: "Status must be provided" }),
       }),
-    }
+    },
   )
 
 export const GET = TransactionRouteEmail.handle

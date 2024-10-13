@@ -1,6 +1,6 @@
-﻿import { Elysia, t, error } from "elysia"
-import { StringField, GlobalGuard } from "@/utils/__init__"
-import { examList, deleteExamList, getExamList } from "../handler"
+﻿import { Elysia, error, t } from "elysia"
+import { GlobalGuard, StringField } from "@/utils/__init__"
+import { deleteExamList, examList, getExamList } from "../exams.controller"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   .use(GlobalGuard)
@@ -22,7 +22,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
         startTime: t.Number({ message: "Start Time must be provided" }),
         endTime: t.Number({ message: "End Time must be provided" }),
       }),
-    }
+    },
   )
   .get("/", async () => {
     const res = await getExamList()
@@ -40,7 +40,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
       body: t.Object({
         title: StringField("Title must be provided"),
       }),
-    }
+    },
   )
 
 export const POST = ExamRoute.handle

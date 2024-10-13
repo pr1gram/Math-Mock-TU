@@ -5,8 +5,8 @@ import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/fi
 import { v4 as uuidv4 } from "uuid"
 import { getDocumentById, getSnapshotByQuery, validateEmail } from "@/utils/__init__"
 
-import type { ExamList } from "./__init__"
-import { createExamDocument, updateExamAnswers } from "./__init__"
+import type { ExamList } from "./exams.dto"
+import { createExamDocument, updateExamAnswers } from "./exams.service"
 
 export async function examList(detail: ExamList) {
   try {
