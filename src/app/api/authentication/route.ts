@@ -1,8 +1,9 @@
 ﻿import { Elysia, error, t } from "elysia"
 import { createUser, deleteUser, getUser, updateUser } from "./auth.controller"
+import { AuthValidator } from "./auth.dto"
 import { GlobalGuard, StringField } from "@/utils/__init__"
 
-const AuthRoute = new Elysia({ prefix: "/api/authentication" })
+const Route = new Elysia({ prefix: "/api/authentication" })
   .use(GlobalGuard)
   .post(
     "/",
@@ -12,14 +13,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
       else return error(400, `Error: ${res.message}`)
     },
     {
-      body: t.Object({
-        email: StringField("String must be provided"),
-        firstname: StringField("Firstname must be provided"),
-        lastname: StringField("Lastname must be provided"),
-        username: StringField("Username must be provided"),
-        tel: StringField("Tel must be provided"),
-        school: StringField("school must be provided"),
-      }),
+      body: AuthValidator,
     },
   )
   .get(
@@ -69,5 +63,5 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
     },
   )
 
-export const POST = AuthRoute.handle
-export const DELETE = AuthRoute.handle
+export const POST = Route.handle
+export const DELETE = Route.handle

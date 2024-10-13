@@ -1,6 +1,6 @@
 ﻿import { Elysia, error, t } from "elysia"
 import { GlobalGuard, StringField } from "@/utils/__init__"
-import { getUserExams, sendExam } from "../exams.controller"
+import { getUserExams, sendExam } from "@/api/exams/exams.controller"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams" })
   .use(GlobalGuard)

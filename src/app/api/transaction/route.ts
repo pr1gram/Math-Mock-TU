@@ -1,6 +1,7 @@
-﻿import { Elysia, error, t } from "elysia"
-import { GlobalGuard, StringField } from "@/utils/__init__"
+﻿import { Elysia, error } from "elysia"
+import { GlobalGuard } from "@/utils/__init__"
 import { transaction } from "./transaction.controller"
+import { TransactionValidator } from "@/api/transaction/transaction.dto"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" }).use(GlobalGuard).post(
   "/",
@@ -11,18 +12,7 @@ const TransactionRoute = new Elysia({ prefix: "/api/transaction" }).use(GlobalGu
     else return error(400, `Error: ${res.message}`)
   },
   {
-    body: t.Object({
-      email: t.String({
-        error: StringField("User email must be provided"),
-      }),
-      file: t.File({
-        error: "Image file must be provided",
-      }),
-      date: StringField("Date must be provided"),
-      time: StringField("Time must be provided"),
-      price: StringField("Price must be provided"),
-      testID: StringField("Test ID must be provided"),
-    }),
+    body: TransactionValidator,
   },
 )
 
