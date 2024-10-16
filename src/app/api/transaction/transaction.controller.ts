@@ -76,7 +76,7 @@ export async function getTransaction(email: string, testID: string) {
   try {
     const docSnap = await getDocumentByEmail("transactions", email)
     const examSnap = await getDocumentById("examLists", testID)
-    const examUserSnap = await getDocumentByEmail("exams", email)
+    const examUserSnap = await getDocumentById("exams", email)
 
     if (docSnap?.exists() && examSnap?.exists() && examUserSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
