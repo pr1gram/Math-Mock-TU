@@ -2,13 +2,13 @@ import { t } from "elysia"
 import { StringField } from "@/utils/__init__"
 
 export interface User {
+  _id?: string
   email: string
   firstname?: string
   lastname?: string
   username?: string
   school?: string
   tel?: string
-  _id?: string
 }
 
 export const AuthValidator = t.Object({
