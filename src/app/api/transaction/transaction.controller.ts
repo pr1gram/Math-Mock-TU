@@ -78,7 +78,7 @@ export async function getTransaction(email: string, testID: string) {
     const examSnap = await getDocumentById("examLists", testID)
     const examUserSnap = await getDocumentById("exams", email)
 
-    if (docSnap?.exists() && examSnap?.exists() && examUserSnap?.exists()) {
+    if (docSnap?.exists() && examSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
       const transaction = transactions.find((t) => t.testID === testID)
 
@@ -86,10 +86,20 @@ export async function getTransaction(email: string, testID: string) {
         return { success: false, status: 404, message: `Cannot find ${testID} from ${email}` }
 
       const examData = examSnap.data()
-      const examsUserData = examUserSnap.data()[testID]
-      return { success: true, data: { ...transaction, examData, examsUserData } }
-    }
 
+      if (examUserSnap?.exists()) {
+        const examsUserData = examUserSnap.data()[testID]
+        return {
+          success: true,
+          data: { ...transaction, examData, examsUserData },
+        }
+      } else {
+        return {
+          success: true,
+          data: { ...transaction, examData },
+        }
+      }
+    }
     return { success: false, status: 404, message: "Cannot find user or testID not found" }
   } catch (e: unknown) {
     throw error(500, "Error while getting transaction")
