@@ -15,6 +15,5 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" }).use(GlobalGu
     }),
   },
 )
-export const POST = ResultsRoute.handle
-export const PATCH = ResultsRoute.handle
-export const DELETE = ResultsRoute.handle
+
+export const GET = ResultsRoute.handle
