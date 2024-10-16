@@ -1,6 +1,6 @@
 ﻿import { Elysia, error, t } from "elysia"
 import { GlobalGuard, StringField } from "@/utils/__init__"
-import { deleteSolutions, getSolutions, solutions, updateSolutions } from "../exams.controller"
+import { deleteSolutions, solutions, updateSolutions } from "../../exams.controller"
 
 const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
   .use(GlobalGuard)
@@ -19,11 +19,6 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
       }),
     },
   )
-  .get("/", async () => {
-    const res = await getSolutions()
-    if (res.success) return res
-    else return error(404, res.message)
-  })
   .patch(
     "/",
     async ({ body: { testID, answers, video_url } }) => {
