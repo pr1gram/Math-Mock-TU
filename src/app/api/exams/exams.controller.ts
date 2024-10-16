@@ -155,6 +155,20 @@ export async function solutions(testID: string, answers: String[], video_url: st
   }
 }
 
+export async function getSolutions() {
+  try {
+    const ref = collection(firestore, "solutions")
+    const snapshot = await getDocs(ref)
+
+    if (snapshot.empty) return { success: false, message: "Cannot find solutions" }
+
+    const solutions = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    return { success: true, data: solutions }
+  } catch (e: unknown) {
+    throw error(500, "Error while getting solutions")
+  }
+}
+
 export async function updateSolutions(testID: string, answers: String[], video_url: string) {
   try {
     const ref = doc(firestore, "solutions", testID)
