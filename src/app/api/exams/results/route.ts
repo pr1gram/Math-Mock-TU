@@ -6,8 +6,8 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
   .use(GlobalGuard)
   .post(
     "/",
-    async ({ body: { testID, answers } }) => {
-      const res = await solutions(testID, answers)
+    async ({ body: { testID, answers, video_url } }) => {
+      const res = await solutions(testID, answers, video_url)
       if (res.success) return res
       else return error(404, res.message)
     },
@@ -15,13 +15,14 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
       body: t.Object({
         testID: StringField("Title must be provided"),
         answers: t.Array(StringField("Answer must be provided correctly")),
+        video_url: StringField("Video URL must be provided"),
       }),
     },
   )
   .patch(
     "/",
-    async ({ body: { testID, answers } }) => {
-      const res = await updateSolutions(testID, answers)
+    async ({ body: { testID, answers, video_url } }) => {
+      const res = await updateSolutions(testID, answers, video_url)
       if (res.success) return res
       else return error(404, res.message)
     },
@@ -29,6 +30,7 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
       body: t.Object({
         testID: StringField("Title must be provided"),
         answers: t.Array(StringField("Answer must be provided correctly")),
+        video_url: StringField("Video URL must be provided"),
       }),
     },
   )

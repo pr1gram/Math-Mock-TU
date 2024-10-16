@@ -145,20 +145,20 @@ export async function sendExam(email: string, testID: string, answers: string[])
   }
 }
 
-export async function solutions(testID: string, answers: String[]) {
+export async function solutions(testID: string, answers: String[], video_url: string) {
   try {
     const ref = doc(firestore, "solutions", testID)
-    await setDoc(ref, { testID: testID, answers: answers })
+    await setDoc(ref, { testID: testID, answers: answers, video_url: video_url })
     return { success: true, message: "Added solutions successfully" }
   } catch (e: unknown) {
     throw error(500, "Error while adding solutions")
   }
 }
 
-export async function updateSolutions(testID: string, answers: String[]) {
+export async function updateSolutions(testID: string, answers: String[], video_url: string) {
   try {
     const ref = doc(firestore, "solutions", testID)
-    await setDoc(ref, { answers: answers }, { merge: true })
+    await setDoc(ref, { answers: answers, video_url: video_url }, { merge: true })
     return { success: true, message: "Updated solutions successfully" }
   } catch (e: unknown) {
     throw error(500, "Error while updating solutions")
