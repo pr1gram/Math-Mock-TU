@@ -45,7 +45,7 @@ const MyExamList = ({ myExamListsJSON }: { myExamListsJSON: any }) => {
                   <div className="text-[#383c4e] my-2">
                     <div className="flex gap-[2px] items-center ">
                       <CalendarIcon className="h-6 w-6" />
-                      {myExam.date}
+                      {myExam.examData.date}
                     </div>
                     <div className="flex gap-[2px] items-center">
                       <ClockIcon className="h-6" />

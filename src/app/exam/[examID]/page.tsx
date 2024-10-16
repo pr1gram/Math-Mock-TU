@@ -9,6 +9,7 @@ import ExamTimer from "@/components/exam/examTimer"
 import apiFunction from "@/components/api"
 import Link from "next/link"
 import ExamSummitButton from "@/components/exam/examSummit"
+import { redirect } from "next/navigation"
 
 const ExamPage = async ({
   params,
@@ -24,6 +25,7 @@ const ExamPage = async ({
   const checkSignIn = await CheckSignIn(false, "/auth") // Sign-in check
   const ExamApiData = await apiFunction("GET", `/exams/examlists/${examID}`, {}) // Fetching the count of the exam
   const startDateData = await apiFunction("GET", `/exams/${session?.user?.email}`, {})
+  const transactionResponse = await apiFunction("GET", `/transaction/${session?.user?.email}/${examID}`, {})
 
   // Dynamically import the JSON file based on the examID
   let examData
@@ -46,6 +48,10 @@ const ExamPage = async ({
   const examEndTime = examStartTime + durationInMilliseconds
   console.log(examEndTime)
 
+  if (transactionResponse?.data?.data?.examsUserData?.submittedTime) {
+    redirect(`/myExam/${examID}`);
+  }
+
   return (
     <main>
       <div className="h-32"></div>
@@ -54,7 +60,7 @@ const ExamPage = async ({
           <div className=" flex justify-center">
             <div>
               <div className=" w-full py-2">
-                <ExamTimer examName={examID} examEndTime={examEndTime} />
+                <ExamTimer examName={examID} />
               </div>
               <div className=" flex justify-center w-full">
                 <ExamCountCounter examName={examID} />
@@ -92,7 +98,9 @@ const ExamPage = async ({
                     </div>
                   </Link>
                 ) : (
-                  <ExamSummitButton examName={examID} />
+                  <div className=" sm:hidden">
+                    <ExamSummitButton examName={examID} />
+                  </div>
                 )}
               </div>
             </div>
@@ -118,7 +126,9 @@ const ExamPage = async ({
                 </div>
               </Link>
             ) : (
-              <ExamSummitButton examName={examID} />
+              <div className=" max-sm:hidden">
+                <ExamSummitButton examName={examID} />
+              </div>
             )}
           </div>
         </div>

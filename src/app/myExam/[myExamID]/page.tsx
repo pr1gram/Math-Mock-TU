@@ -29,9 +29,12 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
   if (response.status === 404) {
     redirect("/404")
   }
+
+  const solutions = await apiFunction("GET", `/exams/solutions/${myExamID}`, {})
   const myExamData = response.data.data
 
   console.log(myExamData)
+  console.log(solutions.data.data.solutions)
 
   return (
     <main>
@@ -82,30 +85,61 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                 {myExamData.status === "approved" ? (
                   <div className="mt-4 flex justify-center text-[#B5B6C2]">
                     <div className=" w-full">
-                      <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 ">
-                        <Link
-                          className=" inline-block w-full h-full"
-                          href={`/exam/${myExamData.testID}`}
-                        >
+                      {Date.now() > myExamData.examData.startTime &&
+                      Date.now() < myExamData.examData.endTime ? (
+                        myExamData?.examsUserData?.submittedTime ? (
+                          <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
+                            เริ่มต้นสอบ
+                          </div>
+                        ) : (
+                          <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 ">
+                            <Link
+                              className=" inline-block w-full h-full"
+                              href={`/exam/${myExamData.testID}`}
+                            >
+                              เริ่มต้นสอบ
+                            </Link>
+                          </div>
+                        )
+                      ) : (
+                        <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
                           เริ่มต้นสอบ
-                        </Link>
-                      </div>
-                      <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
-                        <Link
-                          className=" inline-block w-full h-full"
-                          href={`/score/${myExamData.testID}`}
-                        >
+                        </div>
+                      )}
+                      {myExamData?.examsUserData?.submittedTime ? (
+                        <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
+                          <Link
+                            className=" inline-block w-full h-full"
+                            href={`/score/${myExamData.testID}`}
+                          >
+                            คะแนนสอบ
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
                           คะแนนสอบ
-                        </Link>
-                      </div>
-                      <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
-                        <Link
-                          className=" inline-block w-full h-full"
-                          href={`/exam/${myExamData.testID}`}
-                        >
+                        </div>
+                      )}
+                      {myExamData?.examsUserData?.submittedTime ? (
+                        solutions.data.data.solutions ? (
+                          <div className="w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
+                            <Link
+                              className="inline-block w-full h-full"
+                              href={`${solutions.data.data.solutions}`}
+                            >
+                              เฉลยข้อสอบ
+                            </Link>
+                          </div>
+                        ) : (
+                          <div className="w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
+                            เฉลยข้อสอบ
+                          </div>
+                        )
+                      ) : (
+                        <div className="w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
                           เฉลยข้อสอบ
-                        </Link>
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (

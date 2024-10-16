@@ -23,6 +23,7 @@ const ExamSummitButton: React.FC<ExamCountSelectProps> = ({ examName }) => {
       })
       if (response.status === 200) {
         Router.push(`/myExam/${examName}`)
+        Router.refresh()
       }
     } catch (error) {
       // Handle error
@@ -33,7 +34,7 @@ const ExamSummitButton: React.FC<ExamCountSelectProps> = ({ examName }) => {
   return (
     <button
       type="submit"
-      className="bg-[#2F7AEB] text-white rounded-full px-4 py-2"
+      className="rounded-full px-4 py-[6px] text-white border-2 border-[#2F7AEB] bg-[#2F7AEB] mb-6"
       onClick={summitExam}
     >
       ส่งข้อสอบ
