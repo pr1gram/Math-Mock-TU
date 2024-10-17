@@ -11,7 +11,8 @@ import CalendarIcon from "@/vector/exam/calendarIcon"
 import ClockIcon from "@/vector/exam/clockIcon"
 import WalletIcon from "@/vector/exam/walletIcon"
 import QRCode from "react-qr-code"
-import { RegisterationFormSubmit } from "./examRegisterForm.action"
+import axios from "axios"
+import { useRouter } from "next/navigation"
 
 export default function ExamRegisterForm({ examData }: { examData: any }) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -26,13 +27,13 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
   const [file, setFile] = useState<File | null>(null)
   const [dragActive, setDragActive] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const router = useRouter()
 
   // Handle file selection through input or drop
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0]
 
-      // Check file type
       if (!selectedFile.type.startsWith("image/")) {
         alert("Please select a valid image file (png, jpg, jpeg).")
         return
@@ -42,7 +43,6 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
     }
   }
 
-  
   // Drag over event handler
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -76,12 +76,44 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
     document.getElementById("fileInput")?.click()
   }
 
+  const RegisterationFormSubmit = async (file: File | null, session: any, examData: any) => {
+    const body = new FormData()
+    if (file) {
+      body.append("file", file)
+    }
+    body.append("email", session?.user?.email || "")
+    body.append("testID", examData.id || "")
+    body.append("price", examData.price || "")
+    body.append("date", "")
+    body.append("time", "")
+
+    const options = {
+      method: "POST",
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/transaction`,
+      headers: {
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+      },
+      data: body,
+    }
+
+    try {
+      const response = await axios.request(options)
+      if (response.status === 200) {
+        router.push("/")
+        router.refresh()
+      }
+      return response
+    } catch (error: any) {
+      console.error("Upload failed:", error)
+      return error.response || error
+    }
+  }
+
   useEffect(() => {
     if (file) {
       const fileUrl = URL.createObjectURL(file)
       setPreviewUrl(fileUrl)
       return () => URL.revokeObjectURL(fileUrl)
-      
     }
   }, [file])
 
@@ -209,7 +241,7 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
               ) : (
                 <button
                   className=" rounded-full text-[#B5B6C2] border-2 border-[#B5B6C2] font-bold px-5 py-2"
-                disabled
+                  disabled
                 >
                   เสร็จสิ้น
                 </button>

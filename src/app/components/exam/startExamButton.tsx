@@ -22,6 +22,7 @@ const StartExamButton = ({ examName, count, session, examStartTime }: StartExamB
     }
     // Navigate to the exam page
     router.push(`/exam/${examName}?n=1`)
+    router.refresh()
     if (examStartTime === 0) {
       apiFunction("POST", `/exams/start`, {
         email: session?.user?.email,
