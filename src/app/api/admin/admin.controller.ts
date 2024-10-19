@@ -26,7 +26,7 @@ export async function getPendingUsers(email: string) {
 
       if (Array.isArray(userData.transactions)) {
         userData.transactions.forEach((transaction: Transaction) => {
-          const { testID, date, fileURL, status, time } = transaction
+          const { testID, date, fileUrl, status, time } = transaction
 
           if (status === "pending") {
             if (!categorizedData[testID]) {
@@ -36,7 +36,7 @@ export async function getPendingUsers(email: string) {
             categorizedData[testID].push({
               email: userEmail,
               date: date,
-              fileURL: fileURL,
+              fileURL: fileUrl,
               status: status,
               time: time,
               userData: user,
