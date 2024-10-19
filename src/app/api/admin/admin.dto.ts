@@ -13,5 +13,6 @@ export interface CategorizedData {
     fileURL: string
     status: string
     time: string
+    userData?: any
   }[]
 }

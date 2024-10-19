@@ -5,9 +5,8 @@ import { getDocumentByEmail, validateEmail } from "@/utils/__init__"
 
 export async function getPendingUsers(email: string) {
   try {
-    if (!validateEmail(email)) {
+    if (!validateEmail(email))
       return { success: false, message: "Email is not formatted correctly" }
-    }
 
     const userDoc = await getDocumentByEmail("users", email)
 
@@ -19,9 +18,11 @@ export async function getPendingUsers(email: string) {
 
     const categorizedData: CategorizedData = {}
 
-    querySnapshot.forEach((doc) => {
+    for (const doc of querySnapshot.docs) {
       const userEmail = doc.id
       const userData = doc.data()
+      const userDoc = await getDocumentByEmail("users", userEmail)
+      const user = userDoc?.data()
 
       if (Array.isArray(userData.transactions)) {
         userData.transactions.forEach((transaction: Transaction) => {
@@ -38,11 +39,12 @@ export async function getPendingUsers(email: string) {
               fileURL: fileURL,
               status: status,
               time: time,
+              userData: user,
             })
           }
         })
       }
-    })
+    }
 
     return { success: true, data: categorizedData }
   } catch (e: unknown) {
