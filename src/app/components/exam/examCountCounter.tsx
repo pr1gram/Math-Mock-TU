@@ -36,20 +36,27 @@ const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName }) => {
   useEffect(() => {
     // Update counts when component mounts
     updateCounts()
-
-    // Add event listener for storage changes
+  
+    // Add event listener for storage changes across tabs
     window.addEventListener("storage", updateCounts)
-
-    // Cleanup the event listener on component unmount
+  
+    // Listen for local changes and update count
+    const originalSetItem = localStorage.setItem
+    localStorage.setItem = function (key, value) {
+      originalSetItem.apply(this, [key, value]) // Spread the correct arguments
+      if (key === examName) {
+        updateCounts()
+      }
+    }
+  
     return () => {
       window.removeEventListener("storage", updateCounts)
+      localStorage.setItem = originalSetItem // Restore original setItem
     }
   }, [examName])
 
   return (
-    <div
-      className=" rounded-[20px] border-2 border-[#b5b6c2] text-[#383c4e] text-lg px-4 py-1 w-full text-center"
-    >
+    <div className="rounded-[20px] border-2 border-[#b5b6c2] text-[#383c4e] text-lg px-4 py-1 w-full text-center">
       {doneCount} / {totalCount} ข้อ
     </div>
   )
