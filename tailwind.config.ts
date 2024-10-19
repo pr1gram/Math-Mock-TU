@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Noto Sans Thai"'],
+        sans: ["Noto Sans Thai"],
         Thai: ["Noto Sans Thai"],
         Pinyon_Script: ["Pinyon Script"],
         Cinzel_Decorative: ["Cinzel Decorative"],
