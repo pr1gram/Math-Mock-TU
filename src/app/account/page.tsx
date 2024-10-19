@@ -4,6 +4,7 @@ import apiFunction from "@/components/api"
 import { auth } from "@/api/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import Left_Arrow from "@/vector/left_arrow"
 
 export default async function Account() {
   const session = await auth()
@@ -17,6 +18,12 @@ export default async function Account() {
   return (
     <main className=" bg-gradient-to-t from-[#2F7AEB] to-[#0855CA] h-[calc(100dvh)] w-screen flex justify-center items-center ">
       <div>
+      <Link href="/" className="inline-block mt-4">
+              <div className="flex text-white items-center gap-1 w-fit">
+                <Left_Arrow />
+                <div>หน้าหลัก</div>
+              </div>
+            </Link>
         <div className=" bg-white border border-[#B5B6C2] rounded-xl p-4 min-w-[300px]">
           <div className=" text-[#383C4E] text-3xl font-bold">ข้อมูลส่วนตัว</div>
           <div className=" text-[#383C4E] text-xl font-bold">
