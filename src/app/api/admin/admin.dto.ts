@@ -1,7 +1,7 @@
 export interface Transaction {
   testID: string
   date: string
-  fileUrl: string
+  fileURL: string
   status: string
   time: string
 }

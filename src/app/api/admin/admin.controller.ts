@@ -24,26 +24,24 @@ export async function getPendingUsers(email: string) {
       const userDoc = await getDocumentByEmail("users", userEmail)
       const user = userDoc?.data()
 
-      if (Array.isArray(userData.transactions)) {
-        userData.transactions.forEach((transaction: Transaction) => {
-          const { testID, date, fileUrl, status, time } = transaction
+      userData.transactions.forEach((transaction: Transaction) => {
+        const { testID, date, fileURL, status, time } = transaction
 
-          if (status === "pending") {
-            if (!categorizedData[testID]) {
-              categorizedData[testID] = []
-            }
-
-            categorizedData[testID].push({
-              email: userEmail,
-              date: date,
-              fileURL: fileUrl,
-              status: status,
-              time: time,
-              userData: user,
-            })
+        if (status === "pending") {
+          if (!categorizedData[testID]) {
+            categorizedData[testID] = []
           }
-        })
-      }
+
+          categorizedData[testID].push({
+            email: userEmail,
+            date: date,
+            fileURL: fileURL,
+            status: status,
+            time: time,
+            userData: user,
+          })
+        }
+      })
     }
 
     return { success: true, data: categorizedData }

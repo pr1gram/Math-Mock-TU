@@ -42,7 +42,7 @@ export async function createTransaction(docRef: any, body: Slip, downloadURL: st
         date: body.date,
         time: body.time,
         price: body.price,
-        fileUrl: downloadURL,
+        fileURL: downloadURL,
         status: Status.PENDING,
       },
     ],

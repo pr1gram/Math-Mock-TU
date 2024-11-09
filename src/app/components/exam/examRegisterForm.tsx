@@ -111,9 +111,9 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
 
   useEffect(() => {
     if (file) {
-      const fileUrl = URL.createObjectURL(file)
-      setPreviewUrl(fileUrl)
-      return () => URL.revokeObjectURL(fileUrl)
+      const fileURL = URL.createObjectURL(file)
+      setPreviewUrl(fileURL)
+      return () => URL.revokeObjectURL(fileURL)
     }
   }, [file])
 
