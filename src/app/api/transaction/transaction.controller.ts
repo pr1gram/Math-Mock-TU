@@ -84,15 +84,19 @@ export async function userTransactions(email: string) {
 export async function getTransaction(email: string, testID: string) {
   try {
     const docSnap = await getDocumentByEmail("transactions", email)
-    const examSnap = await getDocumentById("examLists", testID)
     const examUserSnap = await getDocumentById("exams", email)
+
+    const test_id = decodeURIComponent(testID)
+    const q = query(collection(firestore, "examLists"), where("title", "==", test_id))
+    const querySnapshot = await getDocs(q)
+    const examSnap = !querySnapshot.empty ? querySnapshot.docs[0] : undefined
 
     if (docSnap?.exists() && examSnap?.exists()) {
       const transactions: Slip[] = docSnap.data().transactions
-      const transaction = transactions.find((t) => t.testID === testID)
+      const transaction = transactions.find((t) => t.testID === test_id)
 
       if (!transaction)
-        return { success: false, status: 404, message: `Cannot find ${testID} from ${email}` }
+        return { success: false, status: 404, message: `Cannot find ${test_id} from ${email}` }
 
       const examData = examSnap.data()
 
