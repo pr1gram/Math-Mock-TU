@@ -1,7 +1,7 @@
 ﻿import { error } from "elysia"
 import { firestore } from "@/db/firebase"
 
-import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, query, where } from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"
 import { getDocumentById, getSnapshotByQuery, validateEmail } from "@/utils/__init__"
 
@@ -50,22 +50,29 @@ export async function getUserExams(email: string) {
 export async function getExamList(title?: string) {
   try {
     if (!title) {
-      const ref = collection(firestore, "examLists")
-      const snapshot = await getDocs(ref)
+      const ref = collection(firestore, "examLists");
+      const snapshot = await getDocs(ref);
 
-      const examLists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      return { success: true, data: examLists }
+      const examLists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      return { success: true, data: examLists };
     }
 
-    const docSnap = await getDoc(doc(firestore, "examLists", title))
+    const t = decodeURIComponent(title)
+    const q = query(collection(firestore, "examLists"), where("title", "==", t));
+    const querySnapshot = await getDocs(q);
+    
+    const docSnap = querySnapshot.empty ? undefined : querySnapshot.docs[0];
+    if (docSnap && docSnap.exists()) {
+      return { success: true, data: { id: docSnap.id, ...docSnap.data() } };
+    }
 
-    if (docSnap.exists()) return { success: true, data: { id: docSnap.id, ...docSnap.data() } }
-
-    return { success: false, message: "Exam list not found" }
+    return { success: false, message: "Exam list not found" };
   } catch (e: unknown) {
-    throw error(500, "Error while getting exam list")
+    console.log(e);
+    throw error(500, "Error while getting exam list");
   }
 }
+
 
 export async function updateExamList(title: string, detail: ExamList) {
   try {
