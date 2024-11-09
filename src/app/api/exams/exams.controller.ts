@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import { getDocumentById, getSnapshotByQuery, validateEmail } from "@/utils/__init__"
 
 import type { ExamList } from "./exams.dto"
-import { sanitizeFieldName, createExamDocument, updateExamAnswers } from "./exams.service"
+import { sanitizeFieldName, createExamDocument, updateExamAnswers, renameFields } from "./exams.service"
 
 export async function examList(detail: ExamList) {
   try {
@@ -23,7 +23,7 @@ export async function examList(detail: ExamList) {
 export async function getUserExams(email: string) {
   try {
     const tranSnap = await getSnapshotByQuery("transactions", "email", email)
-    const examSnap = await getDocumentById("exams", email)
+    const  examSnap= await getDocumentById("exams", email)
 
     if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404 }
     if (!examSnap?.exists())
@@ -38,9 +38,10 @@ export async function getUserExams(email: string) {
       })
     })
 
-    const examData = examSnap?.data()
-    if (!examData) return { success: false, message: "Cannot find exam data", status: 404 }
+    const examD = examSnap?.data()
+    if (!examD) return { success: false, message: "Cannot find exam data", status: 404 }
 
+    const examData = renameFields(examD)
     return { success: true, data: { examData, status: testIDStatusMap } }
   } catch (error) {
     throw new Error("Error while getting user exams")
@@ -115,7 +116,7 @@ export async function startExam(email: string, testID: string) {
     if (!docSnap?.exists()) {
       const newUserRef = doc(firestore, "exams", email)
       await setDoc(newUserRef, {
-        [testID]: {
+        [sanitizeFieldName(testID)]: {
           startDate: date,
         },
       })
@@ -126,7 +127,7 @@ export async function startExam(email: string, testID: string) {
 
       await setDoc(UserRef, {
         ...userDoc,
-        [testID]: {
+        [sanitizeFieldName(testID)]: {
           startDate: date,
         },
       })

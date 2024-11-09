@@ -4,15 +4,21 @@ import { error } from "elysia"
 import { getDocumentById } from "@/utils/__init__"
 
 export function sanitizeFieldName(fieldName: string): string {
-  const s = fieldName.replace("[", "%");
-  return s.replace("]", "%%")
+  return fieldName.replace("[", "%").replace("]", "%%")
 }
 
-export function reverse(fieldName: string): string {
-  const s = fieldName.replace("%", "[")
-  return s.replace("%%", "]")
-}
+export function renameFields(examData: Record<string, any>) {
+  const updatedExamData: Record<string, any> = {}
 
+  for (const key in examData) {
+    if (examData.hasOwnProperty(key)) {
+      let newKey = key.replace("%", "[").replace("%%", "]")
+      updatedExamData[newKey] = examData[key]
+    }
+  }
+
+  return updatedExamData;
+}
 export async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   try {
     const docRef = doc(firestore, "exams", email)
