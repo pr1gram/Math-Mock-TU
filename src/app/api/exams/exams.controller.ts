@@ -202,12 +202,13 @@ export async function deleteSolutions(testID: string) {
 export async function getScore(email: string, testID: string) {
   try {
     const docSnap = await getDocumentById("exams", email)
+    const test_id = decodeURIComponent(testID)
 
     if (docSnap?.exists()) {
-      const data = docSnap.data()[sanitizeFieldName(testID)]
+      const data = docSnap.data()[sanitizeFieldName(test_id)]
       if (!data) return { success: false, message: "Cannot find answers" }
 
-      const solutionSnap = await getDoc(doc(firestore, "solutions", testID))
+      const solutionSnap = await getDoc(doc(firestore, "solutions", test_id))
       if (!solutionSnap.exists()) return { success: false, message: "Cannot find solutions" }
 
       const sols = solutionSnap.data().answers
