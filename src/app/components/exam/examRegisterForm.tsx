@@ -19,6 +19,11 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
   const { data: session } = useSession()
   const generatePayload = require("promptpay-qr")
   const promptPayCode = generatePayload("0918054948", { amount: examData.price })
+  const [responseError, setResponseError] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [selectList, setSelectList] = useState(false)
+  const [examSelected, setExamSelected] = useState(true)
+  const [testID, setTestID] = useState<string[]>([])
 
   const stepperTextStyle = (step: number) => {
     return currentStep === step ? "text-white mt-1" : "text-[#B5B6C2] mt-1"
@@ -76,13 +81,48 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
     document.getElementById("fileInput")?.click()
   }
 
+  const handleTestIDSelect = (id: string) => {
+    setTestID((prevTestID) => {
+      let updatedTestID
+      if (prevTestID.includes(id)) {
+        // If already selected, remove the ID
+        updatedTestID = prevTestID.filter((item) => item !== id)
+      } else if (prevTestID.length < examData.packQuantity) {
+        // If not selected and limit not reached, add the ID
+        updatedTestID = [...prevTestID, id]
+      } else {
+        // If limit is reached, don't add more items
+        updatedTestID = prevTestID
+      }
+
+      // Check if the selected count has reached packQuantity
+      setExamSelected(updatedTestID.length === examData.packQuantity)
+      return updatedTestID
+    })
+  }
+
+  async function handleSummit() {
+    setIsSending(true) // Set to true when the button is pressed
+
+    try {
+      const response = await RegisterationFormSubmit(file, session, examData) // Wait for API call to finish
+      if (response.status === 400) {
+        setResponseError(true)
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+    } finally {
+      setIsSending(false) // Set to false after the API call completes (whether it succeeded or failed)
+    }
+  }
+
   const RegisterationFormSubmit = async (file: File | null, session: any, examData: any) => {
     const body = new FormData()
     if (file) {
       body.append("file", file)
     }
     body.append("email", session?.user?.email || "")
-    body.append("testID", examData.id || "")
+    body.append("testID", testID.join(","))
     body.append("price", examData.price || "")
     body.append("date", "")
     body.append("time", "")
@@ -117,11 +157,31 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
     }
   }, [file])
 
+  useEffect(() => {
+    if (examData.pack === false) {
+      setTestID([examData.id])
+    }
+    if (examData.pack === true) {
+      if (examData.packQuantity == examData.list.length) {
+        setTestID(examData.list.map((item: any) => item))
+      } else {
+        setSelectList(true)
+        setExamSelected(false)
+      }
+    }
+  }, [examData])
+
+  useEffect(() => {
+    if (examSelected == false) {
+      setCurrentStep(1)
+    }
+  }, [currentStep])
+
   const currentPage = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="flex flex-col justify-between h-[380px] sm:h-[450px] md:h-[540px]">
+          <div className="flex flex-col justify-between min-h-[380px] sm:min-h-[450px] md:min-h-[540px]">
             <div>
               <div className="text-[#2f7aeb] text-3xl sm:text-4xl font-bold">{examData?.title}</div>
               <div className="my-3 text-[#383C4E]">
@@ -139,15 +199,42 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
                 </div>
               </div>
               <div className="text-base">{examData.description}</div>
+              {selectList && (
+                <div>
+                  <div className="text-[#383C4E] mt-2">เลือกวิชาที่ต้องการสอบ</div>
+                  {examData.list.map((item: any) => (
+                    <div key={item} className=" gap-3">
+                      <label>
+                        <input
+                          type="checkbox"
+                          value={item}
+                          checked={testID.includes(item)}
+                          onChange={() => handleTestIDSelect(item)}
+                        />
+                        {item}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="mt-4 flex justify-center">
               {session ? (
-                <button
-                  className="bg-[#2F7AEB] rounded-full text-white font-bold px-4 py-2"
-                  onClick={() => setCurrentStep(2)}
-                >
-                  สมัครสอบ
-                </button>
+                examSelected ? (
+                  <button
+                    className="bg-[#2F7AEB] border-[#2F7AEB] border-2 rounded-full text-white font-bold px-3 py-1"
+                    onClick={() => setCurrentStep(2)}
+                  >
+                    สมัครสอบ
+                  </button>
+                ) : (
+                  <button
+                    className="bg-white border-[#B5B6C2] border-2 rounded-full text-[#B5B6C2] font-bold px-3 py-1"
+                    disabled
+                  >
+                    สมัครสอบ
+                  </button>
+                )
               ) : (
                 <Link
                   href="/auth"
@@ -232,21 +319,31 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
             </div>
             <div className="mt-4 flex justify-center">
               {previewUrl ? (
-                <button
-                  className="bg-[#2F7AEB] rounded-full text-white font-bold px-5 py-2"
-                  onClick={() => RegisterationFormSubmit(file, session, examData)}
-                >
-                  เสร็จสิ้น
-                </button>
+                isSending ? (
+                  <button
+                    className="bg-[#1d4786] rounded-full text-white font-bold px-4 py-1"
+                    onClick={handleSummit}
+                  >
+                    เสร็จสิ้น
+                  </button>
+                ) : (
+                  <button
+                    className="bg-[#2F7AEB] hover:bg-[#3774cf] rounded-full text-white font-bold px-4 py-1"
+                    onClick={handleSummit}
+                  >
+                    เสร็จสิ้น
+                  </button>
+                )
               ) : (
                 <button
-                  className=" rounded-full text-[#B5B6C2] border-2 border-[#B5B6C2] font-bold px-5 py-2"
+                  className=" rounded-full text-[#B5B6C2] border-2 border-[#B5B6C2] font-bold px-4 py-1"
                   disabled
                 >
                   เสร็จสิ้น
                 </button>
               )}
             </div>
+            {responseError && <div className=" flex justify-center text-red-500">สมัครสอบรายการนี้แล้ว</div>}
           </div>
         )
       default:

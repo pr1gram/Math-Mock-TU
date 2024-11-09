@@ -18,30 +18,36 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
   const router = useRouter()
 
   const fetchExamData = async () => {
-    const ExamApiData = await apiFunction("GET", `/exams/examlists/${examName}`, {}) // Fetching the exam duration
-    const startDateData = await apiFunction("GET", `/exams/${session?.user?.email}`, {})
-    const examStartTime = startDateData?.data?.data?.examData?.[examName]?.startDate || 0
-    const durationInMinutes = ExamApiData.data.data.duration
-    const durationInMilliseconds = durationInMinutes * 60 * 1000
+    if (!session?.user?.email) return // Wait until session is available
 
-    const examEndTime = examStartTime + durationInMilliseconds
+    try {
+      const ExamApiData = await apiFunction("GET", `/exams/examlists/${examName}`, {})
+      const startDateData = await apiFunction("GET", `/exams/${session.user.email}`, {})
+      const examStartTime = startDateData?.data?.data?.examData?.[examName]?.startDate || 0
+      const durationInMinutes = ExamApiData.data.data.duration
+      const durationInMilliseconds = durationInMinutes * 60 * 1000
+      const examEndTime = examStartTime + durationInMilliseconds
 
-    setExamEndTime(examEndTime)
-    setTimeRemaining(examEndTime - Date.now())
+      setExamEndTime(examEndTime)
+      setTimeRemaining(examEndTime - Date.now())
+    } catch (error) {
+      console.error("Error fetching exam data:", error)
+    }
   }
 
   useEffect(() => {
-    fetchExamData()
-  }, [examName, session])
+    if (session?.user?.email) {
+      fetchExamData()
+    }
+  }, [examName, session]) // Runs only if examName or session changes
 
   useEffect(() => {
-    // Function to update the timer
     const updateTimer = () => {
       const currentTime = Date.now()
       const newTimeRemaining = examEndTime - currentTime
 
-      if (newTimeRemaining <= 0) {
-        // If the time is up, clear the interval, submit the exam, and set timer to zero
+      if (newTimeRemaining <= 0 && examEndTime > 0) {
+        // Only submit exam when timeRemaining is 0 and examEndTime is valid
         clearInterval(interval)
         setTimeRemaining(0)
         setMinutes(0)
@@ -49,28 +55,19 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
         summitExam() // Automatically submit the exam when time runs out
       } else {
         setTimeRemaining(newTimeRemaining)
-
-        // Calculate total minutes and seconds
-        const totalMinutes = Math.floor(newTimeRemaining / 1000 / 60) // Total minutes
-        const secs = Math.floor((newTimeRemaining / 1000) % 60) // Remaining seconds
-
-        // Update the state
-        setMinutes(totalMinutes)
-        setSeconds(secs)
+        setMinutes(Math.floor(newTimeRemaining / 1000 / 60))
+        setSeconds(Math.floor((newTimeRemaining / 1000) % 60))
       }
     }
 
-    // Set the timer to update every second
     const interval = setInterval(updateTimer, 1000)
-
-    // Clear interval on component unmount
     return () => clearInterval(interval)
-  }, [examEndTime]) // Only re-run if examEndTime changes
+  }, [examEndTime])
 
   const summitExam = async () => {
     const data = JSON.parse(localStorage.getItem(examName) || "[]")
-
     const stringData = Array.isArray(data) ? data.map((item) => item.toString()) : []
+    
     try {
       const response = await apiFunction("POST", `/exams/${session?.user?.email}`, {
         answers: stringData,
@@ -81,7 +78,6 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
         router.refresh()
       }
     } catch (error) {
-      // Handle error
       console.error(error)
     }
   }
@@ -95,3 +91,4 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
 }
 
 export default ExamTimer
+

@@ -104,9 +104,9 @@ const ExamCountSelect: React.FC<ExamCountSelectProps> = ({ examName, pointNumber
               <path
                 d="M18.0018 6.21606L9.58977 1.40918L1.17773 6.21606"
                 stroke="#B5B6C2"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           ) : (
@@ -120,9 +120,9 @@ const ExamCountSelect: React.FC<ExamCountSelectProps> = ({ examName, pointNumber
               <path
                 d="M1.76455 1.81226L10.1766 6.61914L18.5886 1.81226"
                 stroke="#B5B6C2"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           )}

@@ -8,6 +8,7 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" })
     "/",
     async ({ body: { testID, answers, video_url } }) => {
       const res = await solutions(testID, answers, video_url)
+      console.log(res)
       if (res.success) return res
       else return error(404, res.message)
     },

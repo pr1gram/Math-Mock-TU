@@ -38,7 +38,7 @@ const ExamList = ({ examListsJSON }: { examListsJSON: any }) => {
                 className="border-2 rounded-xl border-[#B5B6C2] aspect-square w-[224px] sm:w-[366px] p-4 sm:p-6 md:p-8 my-6 flex flex-col justify-between flex-shrink-0"
               >
                 <div>
-                  <div className="text-[#2F7AEB] font-bold text-3xl">{exam.title}</div>
+                  <div className="text-[#2F7AEB] font-bold  text-2xl ">{exam.title}</div>
                   <div className="text-[#383c4e] my-2">
                     <div className="flex gap-[2px] items-center ">
                       <CalendarIcon className="h-6 w-6" />

@@ -14,9 +14,9 @@ const LeftIcon: FC<{
       <path
         d="M18.182 12.5002H6.81836M6.81836 12.5002L12.5002 18.182M6.81836 12.5002L12.5002 6.81836"
         stroke="#F6F5F1"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )

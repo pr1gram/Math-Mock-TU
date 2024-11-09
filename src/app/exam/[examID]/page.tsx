@@ -30,7 +30,7 @@ const ExamPage = async ({
   // Dynamically import the JSON file based on the examID
   let examData
   try {
-    examData = await import(`@/data/exam/${examID}/data.json`) // Adjust the path as necessary
+    examData = await import(`@/data/exam/${decodeURIComponent(examID)}/data.json`) // Adjust the path as necessary
   } catch (error) {
     console.error("Failed to load exam data:", error)
     return <p>Error loading exam data.</p>
@@ -41,7 +41,7 @@ const ExamPage = async ({
     (exam: { question: string }) => exam.question === pointNumber
   )
 
-  const examStartTime = startDateData?.data?.data?.examData?.[examID]?.startDate || 0
+  const examStartTime = startDateData?.data?.data?.examData?.[decodeURIComponent(examID)]?.startDate || 0
   const durationInMinutes = ExamApiData.data.data.duration
   const durationInMilliseconds = durationInMinutes * 60 * 1000
 
@@ -60,19 +60,19 @@ const ExamPage = async ({
           <div className=" flex justify-center">
             <div>
               <div className=" w-full py-2">
-                <ExamTimer examName={examID} />
+                <ExamTimer examName={decodeURIComponent(examID)} />
               </div>
               <div className=" flex justify-center w-full">
-                <ExamCountCounter examName={examID} />
+                <ExamCountCounter examName={decodeURIComponent(examID)} />
               </div>
             </div>
           </div>
           <div className=" flex justify-center mt-3">
             <div className=" sm:flex sm:gap-2 md:gap-8 lg:gap-20">
-              <ExamQuestion examName={examID} pointNumber={examQuestion?.question} />
+              <ExamQuestion examName={decodeURIComponent(examID)} pointNumber={examQuestion?.question} />
               {examQuestion ? (
                 <ExamChoice
-                  examName={examID}
+                  examName={decodeURIComponent(examID)}
                   pointNumber={examQuestion.question}
                   choices={examQuestion.choices}
                 />
@@ -99,7 +99,7 @@ const ExamPage = async ({
                   </Link>
                 ) : (
                   <div className=" sm:hidden">
-                    <ExamSummitButton examName={examID} />
+                    <ExamSummitButton examName={decodeURIComponent(examID)} />
                   </div>
                 )}
               </div>
@@ -118,7 +118,7 @@ const ExamPage = async ({
               </div>
             )}
 
-            <ExamCountSelect examName={examID} pointNumber={pointNumber} />
+            <ExamCountSelect examName={decodeURIComponent(examID)} pointNumber={pointNumber} />
             {pageNumber !== ExamApiData.data.data.items ? (
               <Link href={`/exam/${examID}?n=${pageNumber + 1}`}>
                 <div className=" rounded-full px-4 py-[6px] w-24 text-white border-2 border-[#2F7AEB] bg-[#2F7AEB] max-sm:hidden mb-6 ">
@@ -127,7 +127,7 @@ const ExamPage = async ({
               </Link>
             ) : (
               <div className=" max-sm:hidden">
-                <ExamSummitButton examName={examID} />
+                <ExamSummitButton examName={decodeURIComponent(examID)} />
               </div>
             )}
           </div>
@@ -135,7 +135,7 @@ const ExamPage = async ({
       ) : (
         <div className=" flex justify-center">
           <StartExamButton
-            examName={examID}
+            examName={decodeURIComponent(examID)}
             count={ExamApiData.data.data.items}
             session={session}
             examStartTime={examStartTime}

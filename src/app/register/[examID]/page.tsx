@@ -22,7 +22,7 @@ const ExamPage = async ({ params }: { params: { examID: string } }) => {
 
   return (
     <main>
-      <div className=" w-full h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] items-center flex justify-center">
+      <div className=" w-full h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] pt-24 flex justify-center">
         <ExamRegisterForm examData={examData} />
       </div>
     </main>

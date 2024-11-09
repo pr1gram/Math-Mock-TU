@@ -25,16 +25,16 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
     redirect("/form")
   }
 
-  const response = await apiFunction("GET", `/transaction/${session?.user?.email}/${myExamID}`, {})
+  const response = await apiFunction("GET", `/transaction/${session?.user?.email}/${decodeURIComponent(myExamID)}`, {})
   if (response.status === 404) {
     redirect("/404")
   }
 
   const solutions = await apiFunction("GET", `/exams/solutions/${myExamID}`, {})
   const myExamData = response.data.data
+  
+  console.log(solutions.data.data.video_url)
 
-  console.log(myExamData)
-  console.log(solutions.data.data.solutions)
 
   return (
     <main>
@@ -121,11 +121,11 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                         </div>
                       )}
                       {myExamData?.examsUserData?.submittedTime ? (
-                        solutions.data.data.solutions ? (
+                        solutions.data.data.video_url ? (
                           <div className="w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
                             <Link
                               className="inline-block w-full h-full"
-                              href={`${solutions.data.data.solutions}`}
+                              href={`${solutions.data.data.video_url}`}
                             >
                               เฉลยข้อสอบ
                             </Link>

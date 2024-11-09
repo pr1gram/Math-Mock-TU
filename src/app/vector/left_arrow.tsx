@@ -15,9 +15,9 @@ const Left_Arrow: FC<{
       <path
         d="M12.8882 6.88867H1.45068M1.45068 6.88867L7.16943 12.6074M1.45068 6.88867L7.16943 1.16992"
         stroke="#F6F5F1"
-        stroke-width="1.63393"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.63393"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
