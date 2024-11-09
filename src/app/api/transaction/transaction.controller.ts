@@ -16,6 +16,7 @@ import {
   uploadFile,
 } from "./transaction.service"
 import { type Slip, Status } from "./transaction.dto"
+import { sanitizeFieldName } from "../exams/exams.service"
 
 export async function transaction(body: Slip) {
   if (!validateEmail(body.email))
@@ -101,7 +102,7 @@ export async function getTransaction(email: string, testID: string) {
       const examData = examSnap.data()
 
       if (examUserSnap?.exists()) {
-        const examsUserData = examUserSnap.data()[testID]
+        const examsUserData = examUserSnap.data()[sanitizeFieldName(test_id)]
         return {
           success: true,
           data: { ...transaction, examData, examsUserData },
