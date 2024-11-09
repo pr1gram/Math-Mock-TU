@@ -107,7 +107,7 @@ export async function startExam(email: string, testID: string) {
       return { success: false, message: "Email is not formatted correctly" }
 
     const docSnap = await getDocumentById("exams", email)
-    const examSnap = await getSnapshotByQuery("examLists", "title", sanitizeFieldName(testID))
+    const examSnap = await getSnapshotByQuery("examLists", "title", testID)
 
     if (examSnap.empty) return { success: false, message: "Cannot find exam list" }
 
