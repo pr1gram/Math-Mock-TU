@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import { getDocumentById, getSnapshotByQuery, validateEmail } from "@/utils/__init__"
 
 import type { ExamList } from "./exams.dto"
-import { createExamDocument, updateExamAnswers } from "./exams.service"
+import { sanitizeFieldName, createExamDocument, updateExamAnswers } from "./exams.service"
 
 export async function examList(detail: ExamList) {
   try {
@@ -106,7 +106,7 @@ export async function startExam(email: string, testID: string) {
       return { success: false, message: "Email is not formatted correctly" }
 
     const docSnap = await getDocumentById("exams", email)
-    const examSnap = await getSnapshotByQuery("examLists", "title", testID)
+    const examSnap = await getSnapshotByQuery("examLists", "title", sanitizeFieldName(testID))
 
     if (examSnap.empty) return { success: false, message: "Cannot find exam list" }
 
@@ -152,6 +152,7 @@ export async function sendExam(email: string, testID: string, answers: string[])
       return { success: true, message: "Test answers successfully added" }
     }
   } catch (e: unknown) {
+    console.log(e)
     throw error(500, "Error while sending exam")
   }
 }
@@ -202,7 +203,7 @@ export async function getScore(email: string, testID: string) {
     const docSnap = await getDocumentById("exams", email)
 
     if (docSnap?.exists()) {
-      const data = docSnap.data()[testID]
+      const data = docSnap.data()[sanitizeFieldName(testID)]
       if (!data) return { success: false, message: "Cannot find answers" }
 
       const solutionSnap = await getDoc(doc(firestore, "solutions", testID))

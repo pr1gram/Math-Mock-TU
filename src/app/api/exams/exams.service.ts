@@ -1,30 +1,40 @@
 ﻿import { firestore } from "@/db/firebase"
-import { doc, setDoc, updateDoc } from "firebase/firestore"
+import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore"
 import { error } from "elysia"
 import { getDocumentById } from "@/utils/__init__"
 
+export function sanitizeFieldName(fieldName: string): string {
+  const s = fieldName.replace("[", "%");
+  return s.replace("]", "%%")
+}
+
+export function reverse(fieldName: string): string {
+  const s = fieldName.replace("%", "[")
+  return s.replace("%%", "]")
+}
+
 export async function updateExamAnswers(email: string, testID: string, answers: string[]) {
   try {
-    const userDocSnap = await getDocumentById("exams", email)
-    const testData = userDocSnap?.data()[testID] || {}
+    const docRef = doc(firestore, "exams", email)
+    const docSnap = await getDoc(docRef)
 
-    if (userDocSnap?.exists()) {
-      const updatedData = {
-        ...userDocSnap.data(),
-        [testID]: {
-          ...testData,
-          answers: answers,
-          submittedTime: Date.now(),
-        },
+    if (docSnap.exists()) {
+      let data = docSnap.data()
+
+      const sanitizedTestID = sanitizeFieldName(testID);
+      data[sanitizedTestID] = {
+        answers: answers,
+        submittedTime: Date.now(),
       }
 
-      const userDoc = doc(firestore, "exams", email)
-      await updateDoc(userDoc, updatedData)
+      console.log(data)
+      await updateDoc(docRef, data)
     } else {
-      return error(400, { message: "User not found" })
+      throw new Error("User not found")
     }
   } catch (e: unknown) {
-    throw error(500, "Error while updating exam answers")
+    console.log(e)
+    throw new Error("Error while updating exam answers")
   }
 }
 
@@ -32,7 +42,7 @@ export async function createExamDocument(email: string, testID: string, answers:
   const newUserRef = doc(firestore, "exams", email)
 
   await setDoc(newUserRef, {
-    [testID]: {
+    [sanitizeFieldName(testID)]: {
       answers: answers,
       submittedTime: Date.now(),
     },
