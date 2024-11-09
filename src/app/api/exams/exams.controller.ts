@@ -170,7 +170,8 @@ export async function solutions(testID: string, answers: String[], video_url: st
 
 export async function getSolutions(testID: string) {
   try {
-    const docSnap = await getDoc(doc(firestore, "solutions", testID))
+    const test_id = decodeURIComponent(testID)
+    const docSnap = await getDoc(doc(firestore, "solutions", test_id))
     if (docSnap.exists()) return { success: true, data: { id: docSnap.id, ...docSnap.data() } }
 
     return { success: false, message: "Cannot find solutions" }
