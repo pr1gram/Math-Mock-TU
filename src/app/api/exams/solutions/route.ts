@@ -1,8 +1,8 @@
-﻿import { Elysia, error, t } from "elysia"
+import { Elysia, error, t } from "elysia"
 import { GlobalGuard, StringField } from "@/utils/__init__"
-import { deleteSolutions, solutions, updateSolutions } from "../../exams.controller"
+import { solutions, updateSolutions, deleteSolutions } from "../exams.controller"
 
-const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
+const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" })
   .use(GlobalGuard)
   .post(
     "/",
@@ -17,7 +17,7 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
         answers: t.Array(StringField("Answer must be provided correctly")),
         video_url: StringField("Video URL must be provided"),
       }),
-    },
+    }
   )
   .patch(
     "/",
@@ -32,7 +32,7 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
         answers: t.Array(StringField("Answer must be provided correctly")),
         video_url: StringField("Video URL must be provided"),
       }),
-    },
+    }
   )
   .delete(
     "/",
@@ -45,7 +45,7 @@ const ResultsRoute = new Elysia({ prefix: "/api/exams/results" })
       body: t.Object({
         testID: StringField("Title must be provided"),
       }),
-    },
+    }
   )
 
 export const POST = ResultsRoute.handle

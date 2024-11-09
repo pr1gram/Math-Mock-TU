@@ -1,9 +1,9 @@
 import { Elysia, error, t } from "elysia"
 import { GlobalGuard, StringField } from "@/utils/__init__"
-import { getSolutions } from "../../exams.controller"
+import { solutions, getSolutions, updateSolutions, deleteSolutions } from "../../exams.controller"
 
-const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" }).use(GlobalGuard).get(
-  "/:testID",
+const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" }).use(GlobalGuard)
+  .get("/:testID",
   async ({ params: { testID } }) => {
     const res = await getSolutions(testID)
     if (res.success) return res
