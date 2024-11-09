@@ -54,7 +54,7 @@ const MyExamList = ({ myExamListsJSON }: { myExamListsJSON: any }) => {
                     <div className="flex gap-[2px] items-center">
                     {myExam.status === "approved" && (
                         <div className=" text-[#4ab361] flex">
-                          <ApprovedIcon className="h-6" /> ผ่านการตรวจสอบ
+                          <ApprovedIcon className="w-6" /> ผ่านการตรวจสอบ
                         </div>
                       )}
                       {myExam.status === "pending" && (
