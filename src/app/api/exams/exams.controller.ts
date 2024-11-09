@@ -52,8 +52,11 @@ export async function getExamList(title?: string) {
     if (!title) {
       const ref = collection(firestore, "examLists");
       const snapshot = await getDocs(ref);
+      
+      const examLists = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() } as { id: string; priority: number }))
+        .sort((a, b) => a.priority - b.priority)
 
-      const examLists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       return { success: true, data: examLists };
     }
 
@@ -63,6 +66,7 @@ export async function getExamList(title?: string) {
     
     const docSnap = querySnapshot.empty ? undefined : querySnapshot.docs[0];
     if (docSnap && docSnap.exists()) {
+      
       return { success: true, data: { id: docSnap.id, ...docSnap.data() } };
     }
 
