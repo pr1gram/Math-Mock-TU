@@ -19,38 +19,47 @@ import { type Slip, Status } from "./transaction.dto"
 
 export async function transaction(body: Slip) {
   if (!validateEmail(body.email))
-    return { success: false, message: "Email is not formatted correctly" }
-  const isTestExist = await getDocs(
-    query(collection(firestore, "examLists"), where("title", "==", body.testID)),
-  )
-  if (isTestExist.empty)
-    return {
-      success: false,
-      message: `Test with testID ${body.testID} does not exist`,
-      status: 404,
+    return { success: false, message: "Email is not formatted correctly" };
+
+  const testIDs = body.testID!.split(',').map(id => id.trim());
+
+  for (let testID of testIDs) {
+    const isTestExist = await getDocs(
+      query(collection(firestore, "examLists"), where("title", "==", testID)),
+    );
+
+    if (isTestExist.empty)
+      return {
+        success: false,
+        message: `Test with testID ${testID} does not exist`,
+        status: 404,
+      };
+
+    const downloadURL = await uploadFile(body.email, testID, body.file);
+
+    if (!downloadURL) return { success: false, message: "Cannot get Image URL" };
+
+    const docSnap = await getDocumentByEmail("transactions", body.email);
+
+    if (docSnap?.exists()) {
+      const transactionData: Slip[] = docSnap.data().transactions;
+      const isDuplicatedTransaction = transactionData.find(
+        (transaction) => transaction.testID === testID,
+      );
+
+      if (isDuplicatedTransaction)
+        return { success: false, message: `Transaction with testID ${testID} already exists` };
+
+      let newBody = body; newBody.testID = testID
+      await updateTransaction(docSnap.ref, newBody, downloadURL);
+    } else {
+      let newBody = body; newBody.testID = testID
+      const docRef = doc(firestore, "transactions", body.email);
+      await createTransaction(docRef, newBody, downloadURL);
     }
-  const downloadURL = await uploadFile(body.email, body.testID!, body.file)
-
-  if (!downloadURL) return { success: false, message: "Cannot get Image URL" }
-
-  const docSnap = await getDocumentByEmail("transactions", body.email)
-
-  if (docSnap?.exists()) {
-    const transactionData: Slip[] = docSnap.data().transactions
-    const isDuplicatedTransaction = transactionData.find(
-      (transaction) => transaction.testID === body.testID,
-    )
-
-    if (isDuplicatedTransaction)
-      return { success: false, message: `Transaction with testID ${body.testID} already exists` }
-
-    await updateTransaction(docSnap.ref, body, downloadURL)
-    return { success: true, message: "Purchase completed" }
-  } else {
-    const docRef = doc(firestore, "transactions", body.email)
-    await createTransaction(docRef, body, downloadURL)
-    return { success: true, message: "Upload Transaction Completed" }
   }
+
+  return { success: true, message: "All transactions completed successfully" };
 }
 
 export async function userTransactions(email: string) {
