@@ -13,8 +13,16 @@ import WalletIcon from "@/vector/exam/walletIcon"
 import QRCode from "react-qr-code"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import Swal from "sweetalert2"
+import MoonLoader from "react-spinners/MoonLoader"
 
-export default function ExamRegisterForm({ examData }: { examData: any }) {
+export default function ExamRegisterForm({
+  examData,
+  myExamData,
+}: {
+  examData: any
+  myExamData: any
+}) {
   const [currentStep, setCurrentStep] = useState(1)
   const { data: session } = useSession()
   const generatePayload = require("promptpay-qr")
@@ -24,6 +32,7 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
   const [selectList, setSelectList] = useState(false)
   const [examSelected, setExamSelected] = useState(true)
   const [testID, setTestID] = useState<string[]>([])
+  const myExamLists = JSON.parse(myExamData)
 
   const stepperTextStyle = (step: number) => {
     return currentStep === step ? "text-white mt-1" : "text-[#B5B6C2] mt-1"
@@ -108,6 +117,11 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
       const response = await RegisterationFormSubmit(file, session, examData) // Wait for API call to finish
       if (response.status === 400) {
         setResponseError(true)
+        Swal.fire({
+          title: "เกิดข้อผิดพลาดในการสมัคร",
+          text: "หากมีปัญหากรุณาติดต่อเจ้าหน้าที่",
+          icon: "error",
+        })
       }
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -131,6 +145,7 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
       method: "POST",
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/transaction`,
       headers: {
+        "Access-Control-Allow-Origin": "*",
         "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
       },
       data: body,
@@ -141,6 +156,14 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
       if (response.status === 200) {
         router.push("/")
         router.refresh()
+        Swal.fire({
+          title: "สมัครสอบเรียบร้อย",
+          text: `กรุณารอเจ้าหน้าที่ตรวจสอบหลักฐาน`,
+          icon: "success",
+        })
+        setTimeout(() => {
+          Swal.close()
+        }, 5000)
       }
       return response
     } catch (error: any) {
@@ -202,19 +225,28 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
               {selectList && (
                 <div>
                   <div className="text-[#383C4E] mt-2">เลือกวิชาที่ต้องการสอบ</div>
-                  {examData.list.map((item: any) => (
-                    <div key={item} className=" gap-3">
-                      <label>
-                        <input
-                          type="checkbox"
-                          value={item}
-                          checked={testID.includes(item)}
-                          onChange={() => handleTestIDSelect(item)}
-                        />
-                        {item}
-                      </label>
-                    </div>
-                  ))}
+                  {examData.list.map((item: string) => {
+                    const isTaken =
+                      myExamLists && Array.isArray(myExamLists)
+                        ? myExamLists.some((exam: any) => exam.testID === item)
+                        : false
+
+                    return (
+                      <div key={item} className="gap-3">
+                        <label>
+                          <input
+                            type="checkbox"
+                            value={item}
+                            checked={testID.includes(item)}
+                            onChange={() => handleTestIDSelect(item)}
+                            disabled={isTaken} // Disable the checkbox if the test is already taken
+                          />
+                          {item}
+                        </label>
+                        {isTaken && <div className="text-red-500 ml-2">*สมัครสอบแล้ว</div>}
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -321,17 +353,32 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
               {previewUrl ? (
                 isSending ? (
                   <button
-                    className="bg-[#1d4786] rounded-full text-white font-bold px-4 py-1"
-                    onClick={handleSummit}
+                    className="bg-[#1d4786] rounded-full text-white font-bold px-4 py-1 flex gap-2"
+                    disabled
                   >
-                    เสร็จสิ้น
+                    <MoonLoader color="white" size={15} />
+                    สมัครสอบ
                   </button>
                 ) : (
                   <button
                     className="bg-[#2F7AEB] hover:bg-[#3774cf] rounded-full text-white font-bold px-4 py-1"
-                    onClick={handleSummit}
+                    onClick={() => {
+                      Swal.fire({
+                        title: "ยืนยันการสมัครสอบ?",
+                        text: "หากสมัครสอบแล้วจะไม่สามารถแก้ไขได้ทุกกรณี",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "ยืนยัน",
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          handleSummit()
+                        }
+                      })
+                    }}
                   >
-                    เสร็จสิ้น
+                    สมัครสอบ
                   </button>
                 )
               ) : (
@@ -339,11 +386,13 @@ export default function ExamRegisterForm({ examData }: { examData: any }) {
                   className=" rounded-full text-[#B5B6C2] border-2 border-[#B5B6C2] font-bold px-4 py-1"
                   disabled
                 >
-                  เสร็จสิ้น
+                  สมัครสอบ
                 </button>
               )}
             </div>
-            {responseError && <div className=" flex justify-center text-red-500">สมัครสอบรายการนี้แล้ว</div>}
+            {responseError && (
+              <div className=" flex justify-center text-red-500">สมัครสอบรายการนี้แล้ว</div>
+            )}
           </div>
         )
       default:

@@ -26,8 +26,8 @@ export default async function Home() {
         </div>
       </div>
       <div>
-        <div className="text-[#383c4e] text-3xl font-bold ml-4 mt-5">การสอบทั้งหมด</div>
-        <ExamList examListsJSON={ExamLists} />
+        <div className="text-[#383c4e] text-3xl font-bold ml-4 mt-5 ">การสอบทั้งหมด</div>
+        <ExamList examListsJSON={ExamLists} myExamListsJSON={myExamListsJSON} />
       </div>
       <div className=" w-full border border-[#EBEBEB] mt-4"></div>
       <div>
