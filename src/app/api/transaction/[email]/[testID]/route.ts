@@ -1,8 +1,12 @@
 ﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { getTransaction } from "../../transaction.controller"
 
-const TransactionRouteTestID = new Elysia({ prefix: "/api/transaction" }).use(GlobalGuard).get(
+const TransactionRouteTestID = new Elysia({ prefix: "/api/transaction" })
+  .use(GlobalGuard)
+  .use(cors())
+  .get(
   "/:email/:testID",
   async ({ params: { email, testID } }) => {
     const res = await getTransaction(email, testID)

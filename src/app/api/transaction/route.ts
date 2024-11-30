@@ -1,9 +1,13 @@
 ﻿import { Elysia, error } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { GlobalGuard } from "@/utils/__init__"
 import { transaction } from "./transaction.controller"
 import { TransactionValidator } from "@/api/transaction/transaction.dto"
 
-const TransactionRoute = new Elysia({ prefix: "/api/transaction" }).use(GlobalGuard).post(
+const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
+  .use(GlobalGuard)
+  .use(cors())
+  .post(
   "/",
   async ({ body }) => {
     const res = await transaction(body)

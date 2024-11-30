@@ -1,9 +1,11 @@
 ﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { getExamList, updateExamList } from "../../exams.controller"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   .use(GlobalGuard)
+  .use(cors())
   .get(
     "/:title",
     async ({ params: { title } }) => {

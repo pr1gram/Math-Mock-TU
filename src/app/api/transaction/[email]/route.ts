@@ -1,10 +1,12 @@
 ﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { updateStatus, userTransactions } from "../transaction.controller"
 import { Status } from "../transaction.dto"
 
 const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
   .use(GlobalGuard)
+  .use(cors())
   .get(
     "/:email",
     async ({ params: { email } }) => {

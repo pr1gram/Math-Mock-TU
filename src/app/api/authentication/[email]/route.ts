@@ -1,9 +1,11 @@
 ﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { getUser, updateUser } from "@/api/authentication/auth.controller"
 import { GlobalGuard, StringField } from "@/utils/__init__"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .use(GlobalGuard)
+  .use(cors())
   .get(
     "/:email",
     async ({ params: { email } }) => {

@@ -1,8 +1,11 @@
 import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { solutions, getSolutions, updateSolutions, deleteSolutions } from "../../exams.controller"
 
-const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" }).use(GlobalGuard)
+const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" })
+  .use(cors())
+  .use(GlobalGuard)
   .get("/:testID",
   async ({ params: { testID } }) => {
     const res = await getSolutions(testID)

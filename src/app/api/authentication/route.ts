@@ -1,10 +1,12 @@
 ﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { createUser, deleteUser, getUser, updateUser } from "./auth.controller"
 import { AuthValidator } from "./auth.dto"
 import { GlobalGuard, StringField } from "@/utils/__init__"
 
 const Route = new Elysia({ prefix: "/api/authentication" })
   .use(GlobalGuard)
+  .use(cors())
   .post(
     "/",
     async ({ body }) => {

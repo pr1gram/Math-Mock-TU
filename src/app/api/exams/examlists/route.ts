@@ -1,10 +1,12 @@
 ﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { deleteExamList, examList, getExamList } from "@/api/exams/exams.controller"
 import { ExamListsValidator } from "@/api/exams/exams.dto"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   .use(GlobalGuard)
+  .use(cors())
   .post(
     "/",
     async ({ body }) => {
