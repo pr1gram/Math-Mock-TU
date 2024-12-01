@@ -5,7 +5,7 @@ import { GlobalGuard, StringField } from "@/utils/__init__"
 
 const Route = new Elysia({ prefix: "/api/admin/users" })
   .use(GlobalGuard)
-  .use(cors())
+  .use(cors({ origin: 'https://math-mock-tu.vercel.app' }))
   .get(
     "/:email",
   async ({ params: { email } }) => {

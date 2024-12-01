@@ -1,11 +1,11 @@
 import { Elysia, error, t } from "elysia"
-import { cors } from '@elysiajs/cors'
+import { cors } from "@elysiajs/cors"
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { solutions, updateSolutions, deleteSolutions } from "../exams.controller"
 
 const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" })
   .use(GlobalGuard)
-  .use(cors())
+  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
   .post(
     "/",
     async ({ body: { testID, answers, video_url } }) => {

@@ -1,12 +1,12 @@
 ﻿import { Elysia, error, t } from "elysia"
-import { cors } from '@elysiajs/cors'
+import { cors } from "@elysiajs/cors"
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { updateStatus, userTransactions } from "../transaction.controller"
 import { Status } from "../transaction.dto"
 
 const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
   .use(GlobalGuard)
-  .use(cors())
+  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
   .get(
     "/:email",
     async ({ params: { email } }) => {
@@ -19,7 +19,7 @@ const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
       params: t.Object({
         email: StringField("Email must be provided"),
       }),
-    },
+    }
   )
   .patch(
     "/:email",
@@ -37,7 +37,7 @@ const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
         testID: StringField("TestID must be provided"),
         status: t.Enum(Status, { error: "Status must be provided" }),
       }),
-    },
+    }
   )
 
 export const GET = TransactionRouteEmail.handle
