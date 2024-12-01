@@ -1,21 +1,44 @@
-﻿import Elysia, { t } from 'elysia'
-import { StringField } from '@/utils/__init__'
-import { transaction, updateStatus, userTransactions } from '@/api/transaction/handler'
+﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
+import { GlobalGuard, StringField } from "@/utils/__init__"
+import { updateStatus, userTransactions } from "../transaction.controller"
+import { Status } from "../transaction.dto"
 
-const TransactionRoute = new Elysia({ prefix: '/api/transaction' })
-	.get('/:email', async ({ params: { email } }) => await userTransactions(email), {
-		params: t.Object({
-			email: StringField('Email must be provided'),
-		}),
-	})
-	.patch('/:email', async ({ params: { email }, body: { testID } }) => await updateStatus(email, testID), {
-		params: t.Object({
-			email: StringField('Email must be provided'),
-		}),
-		body: t.Object({
-			testID: StringField('TestID must be provided')
-		})
-	})
+const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
+  .use(GlobalGuard)
+  .use(cors())
+  .get(
+    "/:email",
+    async ({ params: { email } }) => {
+      const res = await userTransactions(email)
+      if (res.success) return res
+      else if (res.status === 404) return error(404, `Error: ${res.message}`)
+      else return error(400, `Error: ${res.message}`)
+    },
+    {
+      params: t.Object({
+        email: StringField("Email must be provided"),
+      }),
+    },
+  )
+  .patch(
+    "/:email",
+    async ({ params: { email }, body: { testID, status } }) => {
+      const res = await updateStatus(email, testID, status)
+      if (res.success) return res
+      else if (res.status === 404) return error(404, `Error: ${res.message}`)
+      else return error(400, `Error: ${res.message}`)
+    },
+    {
+      params: t.Object({
+        email: StringField("Email must be provided"),
+      }),
+      body: t.Object({
+        testID: StringField("TestID must be provided"),
+        status: t.Enum(Status, { error: "Status must be provided" }),
+      }),
+    },
+  )
 
-export const GET = TransactionRoute.handle
-export const PATCH = TransactionRoute.handle
+export const GET = TransactionRouteEmail.handle
+export const PATCH = TransactionRouteEmail.handle

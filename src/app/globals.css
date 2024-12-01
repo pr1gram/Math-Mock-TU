@@ -1,19 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&family=Pinyon+Script&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel+Decorative&family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&family=Pinyon+Script&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel+Decorative&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&family=Pinyon+Script&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&family=Pinyon+Script&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@font-face {
+  font-family: "Figerona";
+  src: url("/assets/fonts/Figerona.ttf");
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+@font-face {
+  font-family: "Bodwars";
+  src: url("/assets/fonts/Bodwars.otf");
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: gray;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+ ol {
+  list-style-type: decimal;
+  padding-left: 16px;
+}
+
+#tos ul {
+  list-style-type: disc;
+  list-style-position: inside;
+  padding-left: 4px; /* Adjust the value as needed */
+  text-indent: -24px; /* Adjust the value based on the bullet point size */
+  margin-left: 24px; /* Should be the same as the text-indent value */
+}
+
+
+strong {
+font-style: normal;
+font-weight: 700;
+line-height: 220%;
+color: #33007B;
+}
+
+.embla__dot {
+  background-color: transparent;
+  touch-action: manipulation;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.embla__dot:after {
+  box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  background-color: #B5B6C2 ;
+  content: '';
+}
+.embla__dot--selected:after {
+  box-shadow: inset 0 0 0 0.2rem var(--text-body);
+  background-color: #2F7AEB ;
 }

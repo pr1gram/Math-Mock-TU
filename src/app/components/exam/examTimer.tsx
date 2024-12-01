@@ -1,0 +1,94 @@
+"use client"
+import ClockIcon from "@/vector/exam/clockIcon"
+import React, { useEffect, useState } from "react"
+import apiFunction from "@/components/api"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+
+interface ExamTimerProps {
+  examName: string
+}
+
+const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
+  const [minutes, setMinutes] = useState<number>(0)
+  const [seconds, setSeconds] = useState<number>(0)
+  const [examEndTime, setExamEndTime] = useState<number>(0)
+  const [timeRemaining, setTimeRemaining] = useState<number>(0)
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  const fetchExamData = async () => {
+    if (!session?.user?.email) return // Wait until session is available
+
+    try {
+      const ExamApiData = await apiFunction("GET", `/exams/examlists/${examName}`, {})
+      const startDateData = await apiFunction("GET", `/exams/${session.user.email}`, {})
+      const examStartTime = startDateData?.data?.data?.examData?.[examName]?.startDate || 0
+      const durationInMinutes = ExamApiData.data.data.duration
+      const durationInMilliseconds = durationInMinutes * 60 * 1000
+      const examEndTime = examStartTime + durationInMilliseconds
+
+      setExamEndTime(examEndTime)
+      setTimeRemaining(examEndTime - Date.now())
+    } catch (error) {
+      console.error("Error fetching exam data:", error)
+    }
+  }
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetchExamData()
+    }
+  }, [examName, session]) // Runs only if examName or session changes
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const currentTime = Date.now()
+      const newTimeRemaining = examEndTime - currentTime
+
+      if (newTimeRemaining <= 0 && examEndTime > 0) {
+        // Only submit exam when timeRemaining is 0 and examEndTime is valid
+        clearInterval(interval)
+        setTimeRemaining(0)
+        setMinutes(0)
+        setSeconds(0)
+        summitExam() // Automatically submit the exam when time runs out
+      } else {
+        setTimeRemaining(newTimeRemaining)
+        setMinutes(Math.floor(newTimeRemaining / 1000 / 60))
+        setSeconds(Math.floor((newTimeRemaining / 1000) % 60))
+      }
+    }
+
+    const interval = setInterval(updateTimer, 1000)
+    return () => clearInterval(interval)
+  }, [examEndTime])
+
+  const summitExam = async () => {
+    const data = JSON.parse(localStorage.getItem(examName) || "[]")
+    const stringData = Array.isArray(data) ? data.map((item) => item.toString()) : []
+    
+    try {
+      const response = await apiFunction("POST", `/exams/${session?.user?.email}`, {
+        answers: stringData,
+        testID: examName,
+      })
+      if (response.status === 200) {
+        router.push(`/myExam/${examName}`)
+        router.refresh()
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  return (
+    <div className="rounded-[20px] border-2 border-[#b5b6c2] text-[#383c4e] text-lg px-4 py-1 flex gap-2">
+      <ClockIcon className="h-7" />
+      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+    </div>
+  )
+}
+
+export default ExamTimer
+

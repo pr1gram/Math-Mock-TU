@@ -1,22 +1,24 @@
-﻿import Elysia, { t } from 'elysia'
-import { StringField } from '../../utils/__init__'
-import { transaction } from '@/api/transaction/handler'
+﻿import { Elysia, error } from "elysia"
+import { cors } from '@elysiajs/cors'
+import { GlobalGuard } from "@/utils/__init__"
+import { transaction } from "./transaction.controller"
+import { TransactionValidator } from "@/api/transaction/transaction.dto"
 
-const TransactionRoute = new Elysia({ prefix: '/api/transaction' })
-	.post('/', async ({ body }) => await transaction(body), {
-		body: t.Object({
-			email: t.String({
-				error: StringField('User email must be provided'),
-			}),
-			file: t.File({
-				error: 'Image file must be provided',
-			}),
-			date: StringField('Date must be provided'), // DD/MM/YYYY
-			time: StringField('Time must be provided'), // 19:58
-			price: StringField('Price must be provided'), // 999
-			testID: StringField('Test ID must be provided'), //TODO
-		}),
-	})
+const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
+  .use(GlobalGuard)
+  .use(cors())
+  .post(
+  "/",
+  async ({ body }) => {
+    const res = await transaction(body)
+    if (res.success) return res
+    if (res.status === 404) return error(404, `Error: ${res.message}`)
+    else return error(400, `Error: ${res.message}`)
+  },
+  {
+    body: TransactionValidator,
+  },
+)
 
 export const POST = TransactionRoute.handle
 export const GET = TransactionRoute.handle

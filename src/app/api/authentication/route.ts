@@ -1,40 +1,69 @@
-﻿import { Elysia, t } from 'elysia'
-import { createUser, deleteUser, getUser, updateUser } from './handler'
-import { StringField } from '@/utils/__init__'
+﻿import { Elysia, error, t } from "elysia"
+import { cors } from '@elysiajs/cors'
+import { createUser, deleteUser, getUser, updateUser } from "./auth.controller"
+import { AuthValidator } from "./auth.dto"
+import { GlobalGuard, StringField } from "@/utils/__init__"
 
-const AuthRoute = new Elysia({ prefix: '/api/auth' })
-	.post('/', ({ body }) => createUser(body), {
-		body: t.Object({
-			email: StringField('String must be provided'),
-			firstname: StringField('Firstname must be provided'),
-			lastname: StringField('Lastname must be provided'),
-			username: StringField('Username must be provided'),
-			tel: StringField('Tel must be provided'),
-		}),
-    })
-    .get('/:email', ({ params: { email } }) => { getUser(email) }, {
-		params: t.Object({
-			email: StringField('Email must be provided'),
-		}),
-	})
-	.patch('/:email', ({ params: { email }, body }) => updateUser(email, body), {
-		params: t.Object({
-			email: StringField('String must be provided'),
-		}),
-		body: t.Object({
-			firstname: StringField('Firstname must be provided', false),
-			lastname: StringField('Lastname must be provided', false),
-			username: StringField('Username must be provided', false),
-			tel: StringField('Tel must be provided', false),
-		}),
-	})
-	.delete('/', ({ body }) => deleteUser(body), {
-		body: t.Object({
-			email: StringField('String must be provided'),
-		}),
-	})
+const Route = new Elysia({ prefix: "/api/authentication" })
+  .use(GlobalGuard)
+  .use(cors())
+  .post(
+    "/",
+    async ({ body }) => {
+      const res = await createUser(body)
+      if (res.success) return res
+      else return error(400, `Error: ${res.message}`)
+    },
+    {
+      body: AuthValidator,
+    },
+  )
+  .get(
+    "/:email",
+    async ({ params: { email } }) => {
+      const res = await getUser(email)
+      if (res.success) return res
+      else return error(400, `Error: ${res.message}`)
+    },
+    {
+      params: t.Object({
+        email: StringField("Email must be provided"),
+      }),
+    },
+  )
+  .patch(
+    "/:email",
+    async ({ params: { email }, body }) => {
+      const res = await updateUser(email, body)
+      if (res.success) return res
+      else return error(400, `Error: ${res.message}`)
+    },
+    {
+      params: t.Object({
+        email: StringField("String must be provided"),
+      }),
+      body: t.Object({
+        firstname: StringField("Firstname must be provided", false),
+        lastname: StringField("Lastname must be provided", false),
+        username: StringField("Username must be provided", false),
+        tel: StringField("Tel must be provided", false),
+        school: StringField("school must be provided", false),
+      }),
+    },
+  )
+  .delete(
+    "/",
+    async ({ body }) => {
+      const res = await deleteUser(body)
+      if (res.success) return res
+      else return error(400, `Error: ${res.message}`)
+    },
+    {
+      body: t.Object({
+        email: StringField("String must be provided"),
+      }),
+    },
+  )
 
-export const GET = AuthRoute.handle
-export const POST = AuthRoute.handle
-export const PATCH = AuthRoute.handle
-export const DELETE = AuthRoute.handle
+export const POST = Route.handle
+export const DELETE = Route.handle

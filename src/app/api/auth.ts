@@ -1,6 +1,6 @@
-import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
- 
+import NextAuth from "next-auth"
+import GoogleProvider from "next-auth/providers/google"
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -13,4 +13,4 @@ export const {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-});
+})
