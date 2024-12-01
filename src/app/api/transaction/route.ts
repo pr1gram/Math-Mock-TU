@@ -6,7 +6,9 @@ import { TransactionValidator } from "@/api/transaction/transaction.dto"
 
 const TransactionRoute = new Elysia({ prefix: "/api/transaction" })
   .use(GlobalGuard)
-  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
+  .use(cors({ 
+    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .post(
     "/",
     async ({ body }) => {

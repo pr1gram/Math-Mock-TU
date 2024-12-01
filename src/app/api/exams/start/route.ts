@@ -5,7 +5,9 @@ import { startExam } from "../exams.controller"
 
 const ExamStartRoute = new Elysia({ prefix: "/api/exams" })
   .use(GlobalGuard)
-  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
+  .use(cors({ 
+    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .post(
     "/start",
     async ({ body: { email, testID } }) => {

@@ -4,7 +4,9 @@ import { GlobalGuard, StringField } from "@/utils/__init__"
 import { solutions, getSolutions, updateSolutions, deleteSolutions } from "../../exams.controller"
 
 const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" })
-  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
+  .use(cors({ 
+  origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .use(GlobalGuard)
   .get(
     "/:testID",

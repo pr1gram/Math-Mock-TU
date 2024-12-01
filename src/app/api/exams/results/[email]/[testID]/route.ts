@@ -5,7 +5,9 @@ import { getScore } from "../../../exams.controller"
 
 const ResultsTestIDRoute = new Elysia({ prefix: "/api/exams/results" })
   .use(GlobalGuard)
-  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
+  .use(cors({ 
+    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .get(
     "/:email/:testID",
     async ({ params: { email, testID } }) => {
