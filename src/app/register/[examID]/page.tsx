@@ -24,7 +24,6 @@ const ExamPage = async ({ params }: { params: { examID: string } }) => {
   }
   const myExamListsJSON = JSON.stringify(myExamLists?.data?.data) || null
 
-  console.log(examData)
 
   return (
     <main>

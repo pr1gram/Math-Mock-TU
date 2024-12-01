@@ -16,7 +16,6 @@ const MyExamList = ({ myExamListsJSON }: { myExamListsJSON: any }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start" })
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } = useDotButton(emblaApi)
-  console.log(scrollSnaps)
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
@@ -27,8 +26,6 @@ const MyExamList = ({ myExamListsJSON }: { myExamListsJSON: any }) => {
   }, [emblaApi])
 
   const myExamLists = JSON.parse(myExamListsJSON)
-
-  console.log(myExamLists)
 
   return (
     <div className="embla ">

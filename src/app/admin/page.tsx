@@ -11,8 +11,6 @@ export default async function AdminPage() {
     redirect("/")
   }
 
-  console.log(adminResponse.data.data)
-
   const AdminResponseJSON = JSON.stringify(adminResponse.data.data)
 
   return (
