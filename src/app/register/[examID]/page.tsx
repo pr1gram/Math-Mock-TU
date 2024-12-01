@@ -18,12 +18,18 @@ const ExamPage = async ({ params }: { params: { examID: string } }) => {
   }
   const examData = response.data.data
 
+  let myExamLists;
+  if (session) {
+    myExamLists = await apiFunction("GET", `/transaction/${session.user?.email}`, {})
+  }
+  const myExamListsJSON = JSON.stringify(myExamLists?.data?.data) || null
+
   console.log(examData)
 
   return (
     <main>
       <div className=" w-full h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] pt-24 flex justify-center">
-        <ExamRegisterForm examData={examData} />
+        <ExamRegisterForm examData={examData} myExamData={myExamListsJSON} />
       </div>
     </main>
   )

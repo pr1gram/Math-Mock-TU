@@ -32,8 +32,6 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
 
   const solutions = await apiFunction("GET", `/exams/solutions/${myExamID}`, {})
   const myExamData = response.data.data
-  
-  console.log(solutions.data.data.video_url)
 
 
   return (

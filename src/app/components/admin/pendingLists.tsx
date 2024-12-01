@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import apiFunction from "@/components/api"
 import { useRouter } from "next/navigation"
+import Swal from 'sweetalert2'
 
 interface TestInfo {
   email: string
@@ -100,7 +101,22 @@ const TestCard: React.FC<TestCardProps> = ({
         <button
           className="w-full rounded-full bg-[#2FBA5E] text-white py-1 m-1"
           onClick={() => {
-            action(email, testName, "approved")
+            Swal.fire({
+              title: "ยืนยันการอนุมัติ?",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "ยืนยัน"
+            }).then((result) => {
+              if (result.isConfirmed) {
+                action(email, testName, "approved")
+                Swal.fire({
+                  title: "อนุมัติเรียบร้อย",
+                  icon: "success"
+                });
+              }
+            });
           }}
         >
           อนุมัติ
@@ -108,7 +124,22 @@ const TestCard: React.FC<TestCardProps> = ({
         <button
           className="w-full rounded-full bg-[#FF0000] text-white py-1 m-1"
           onClick={() => {
-            action(email, testName, "rejected")
+            Swal.fire({
+              title: "ยืนยันการไม่อนุมัติ?",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "ยืนยัน"
+            }).then((result) => {
+              if (result.isConfirmed) {
+                action(email, testName, "rejected")
+                Swal.fire({
+                  title: "ไม่อนุมัติเรียบร้อย",
+                  icon: "success"
+                });
+              }
+            });
           }}
         >
           ไม่อนุมัติ

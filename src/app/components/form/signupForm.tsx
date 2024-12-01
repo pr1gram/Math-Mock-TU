@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react"
 import * as yup from "yup"
 import { useRouter } from "next/navigation"
 import { handlerSubmit } from "@/components/form/signupForm.action"
+import toast, { Toaster } from "react-hot-toast"
 
 export default function SignUpForm() {
   const { data: session } = useSession()
@@ -34,9 +35,13 @@ export default function SignUpForm() {
     }),
 
     onSubmit: async (values) => {
+      const toastId = toast.loading("กำลังลงทะเบียน")
       const status = await handlerSubmit(values, session)
 
       if (status === 200) {
+        toast.success("ลงทะเบียนสำเร็จ!", {
+          id: toastId,
+        })
         router.push("/account")
       }
 
@@ -59,6 +64,7 @@ export default function SignUpForm() {
       className=" grid sm:gap-[18px] gap-3 sm:mt-3 text-black sm:text-xl text-lg font-medium overflow-visible"
       onSubmit={formik.handleSubmit}
     >
+      <Toaster position="bottom-center" reverseOrder={false} />
       <div>
         <div>ชื่อจริง</div>
         <input
