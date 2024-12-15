@@ -5,7 +5,9 @@ import { getExamList, updateExamList } from "../../exams.controller"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   .use(GlobalGuard)
-  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
+  .use(cors({ 
+    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .get(
     "/:title",
     async ({ params: { title } }) => {

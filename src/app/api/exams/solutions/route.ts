@@ -5,7 +5,9 @@ import { solutions, updateSolutions, deleteSolutions } from "../exams.controller
 
 const ResultsRoute = new Elysia({ prefix: "/api/exams/solutions" })
   .use(GlobalGuard)
-  .use(cors({ origin: "https://math-mock-tu.vercel.app" }))
+  .use(cors({ 
+    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .post(
     "/",
     async ({ body: { testID, answers, video_url } }) => {
