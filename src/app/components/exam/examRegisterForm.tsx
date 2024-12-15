@@ -15,6 +15,7 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
 import MoonLoader from "react-spinners/MoonLoader"
+import Image from "next/image"
 
 export default function ExamRegisterForm({
   examData,
@@ -288,9 +289,18 @@ export default function ExamRegisterForm({
                 เพื่อชำระเงิน
               </div>
               <div className="border border-[#b5b6c2] rounded-[9px] flex justify-center aspect-square items-center ">
-                <QRCode value={promptPayCode} size={240} className="hidden md:block" />
+                <div className=" w-full rounded-[9px] overflow-hidden">
+                  <Image
+                    src={`/thaiQR/${examData.price}.jpg`}
+                    alt="QR Code"
+                    height={400}
+                    width={400}
+                    objectFit="contain"
+                  />
+                </div>
+                {/* <QRCode value={promptPayCode} size={240} className="hidden md:block" />
                 <QRCode value={promptPayCode} size={210} className="hidden sm:block md:hidden" />
-                <QRCode value={promptPayCode} size={180} className="sm:hidden" />
+                <QRCode value={promptPayCode} size={180} className="sm:hidden" /> */}
               </div>
             </div>
             <div className="mt-4 flex justify-center">
