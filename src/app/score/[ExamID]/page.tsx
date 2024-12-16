@@ -7,7 +7,6 @@ const ScorePage = async ({ params }: { params: { ExamID: string } }) => {
   const { ExamID } = params
   const session = await auth()
   const response = await apiFunction("GET", `/exams/results/${session?.user?.email}/${ExamID}`, {})
-  console.log(response.data)
   return (
     <main>
       <div className=" w-full h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] items-center flex justify-center">

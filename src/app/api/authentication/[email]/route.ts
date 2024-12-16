@@ -1,11 +1,13 @@
 ﻿import { Elysia, error, t } from "elysia"
-import { cors } from '@elysiajs/cors'
+import { cors } from "@elysiajs/cors"
 import { getUser, updateUser } from "@/api/authentication/auth.controller"
 import { GlobalGuard, StringField } from "@/utils/__init__"
 
 const AuthRoute = new Elysia({ prefix: "/api/authentication" })
   .use(GlobalGuard)
-  .use(cors())
+  .use(cors({ 
+    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .get(
     "/:email",
     async ({ params: { email } }) => {
@@ -17,7 +19,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
       params: t.Object({
         email: StringField("Email must be provided"),
       }),
-    },
+    }
   )
   .patch(
     "/:email",
@@ -37,7 +39,7 @@ const AuthRoute = new Elysia({ prefix: "/api/authentication" })
         school: StringField("School must be provided", false),
         tel: StringField("Tel must be provided", false),
       }),
-    },
+    }
   )
 
 export const GET = AuthRoute.handle

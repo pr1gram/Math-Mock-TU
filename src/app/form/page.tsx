@@ -14,7 +14,6 @@ export default async function Account() {
 
 
   if (response.status === 200) {
-    //console.log("Redirecting to /account")
     redirect("/account")
   }
 

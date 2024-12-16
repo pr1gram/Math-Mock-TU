@@ -24,11 +24,10 @@ const ExamPage = async ({ params }: { params: { examID: string } }) => {
   }
   const myExamListsJSON = JSON.stringify(myExamLists?.data?.data) || null
 
-  console.log(examData)
 
   return (
     <main>
-      <div className=" w-full h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] pt-24 flex justify-center">
+      <div className=" w-full min-h-[calc(100dvh)] bg-gradient-to-b from-[#0855CA] to-[#2F7AEB] pt-24 flex justify-center">
         <ExamRegisterForm examData={examData} myExamData={myExamListsJSON} />
       </div>
     </main>

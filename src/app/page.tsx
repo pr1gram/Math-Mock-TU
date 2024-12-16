@@ -22,7 +22,6 @@ export default async function Home() {
       <div className=" flex justify-center items-center w-full h-[180px] sm:h-[380px] md:h-[417px] bg-gradient-to-b from-[#0855c9] to-[#2f7aeb]">
         <div className=" block text-white text-center">
           <div className="  text-5xl sm:text-[56px] md:text-7xl font-bold">ONE MATH</div>
-          <div className=" text-xl sm:text-2xl font-normal ">แนะนำแนะนำแนะนำแนะนำแนะนำ</div>
         </div>
       </div>
       <div>
@@ -57,6 +56,11 @@ export default async function Home() {
             </div>
           </div>
         )}
+      </div>
+      <div className=" w-full h-6 bg-[#2F7AEB] text-center text-sm items-center flex justify-center ">
+        <Link href="/contact" className="text-white">
+          หากมีข้อสงสัยสามารถติดต่อได้<span className=" underline">ที่นี่</span>
+        </Link>
       </div>
     </main>
   )

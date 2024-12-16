@@ -1,12 +1,14 @@
 ﻿import { Elysia, error, t } from "elysia"
-import { cors } from '@elysiajs/cors'
+import { cors } from "@elysiajs/cors"
 import { GlobalGuard, StringField } from "@/utils/__init__"
 import { deleteExamList, examList, getExamList } from "@/api/exams/exams.controller"
 import { ExamListsValidator } from "@/api/exams/exams.dto"
 
 const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
   .use(GlobalGuard)
-  .use(cors())
+  .use(cors({ 
+    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+  }))
   .post(
     "/",
     async ({ body }) => {
@@ -16,7 +18,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
     },
     {
       body: ExamListsValidator,
-    },
+    }
   )
   .get("/", async () => {
     const res = await getExamList()
@@ -34,7 +36,7 @@ const ExamRoute = new Elysia({ prefix: "/api/exams/examlists" })
       body: t.Object({
         title: StringField("Title must be provided"),
       }),
-    },
+    }
   )
 
 export const POST = ExamRoute.handle

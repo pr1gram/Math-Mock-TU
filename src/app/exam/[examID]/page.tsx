@@ -46,7 +46,6 @@ const ExamPage = async ({
   const durationInMilliseconds = durationInMinutes * 60 * 1000
 
   const examEndTime = examStartTime + durationInMilliseconds
-  console.log(examEndTime)
 
   if (transactionResponse?.data?.data?.examsUserData?.submittedTime) {
     redirect(`/myExam/${examID}`);
