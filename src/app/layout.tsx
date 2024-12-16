@@ -4,6 +4,7 @@ import "./globals.css"
 import { SessionProvider } from "next-auth/react"
 import NavBar from "./components/navbar/navbar"
 import Secret from "./components/secret"
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -33,6 +34,7 @@ export default function RootLayout({
           <div>{children}</div>
           <Secret />
         </body>
+        <Script src="https://scripts.simpleanalyticscdn.com/latest.js"  />
       </html>
     </SessionProvider>
   )
