@@ -29,6 +29,7 @@ interface TestCardProps {
   Tel: string
   fileURL?: string
   testName: string
+  onActionComplete: (testName: string, email: string) => void
 }
 
 const TestCard: React.FC<TestCardProps> = ({
@@ -41,20 +42,27 @@ const TestCard: React.FC<TestCardProps> = ({
   School,
   Tel,
   fileURL,
+  onActionComplete,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const router = useRouter()
-  const action = async (email: string, testID: string, status: string): Promise<void> => {
+
+  const action = async (email: string, testID: string, status: string , text:string): Promise<void> => {
     try {
       await apiFunction("PATCH", `/transaction/${email}`, {
         testID: testID,
         status: status,
       })
-      router.refresh()
+      onActionComplete(testName, email)
+      Swal.fire({
+        title: `${text}เรียบร้อย`,
+        icon: "success",
+      })
     } catch (error) {
       console.error("Error updating status:", error)
     }
   }
+
 
   const openModal = () => {
     setIsModalOpen(true)
@@ -110,11 +118,7 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-                action(email, testName, "approved")
-                Swal.fire({
-                  title: "อนุมัติเรียบร้อย",
-                  icon: "success",
-                })
+                action(email, testName, "approved","อนุมัติ")
               }
             })
           }}
@@ -133,11 +137,7 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-                action(email, testName, "rejected")
-                Swal.fire({
-                  title: "ไม่อนุมัติเรียบร้อย",
-                  icon: "success",
-                })
+                action(email, testName, "rejected","ไม่อนุมัติ")
               }
             })
           }}
@@ -179,19 +179,30 @@ interface PendingListsProps {
 }
 
 const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
-  const data: { [key: string]: TestInfo[] } = JSON.parse(AdminResponseJSON)
+  const [data, setData] = useState<{ [key: string]: TestInfo[] }>(JSON.parse(AdminResponseJSON))
   const [searchQuery, setSearchQuery] = useState("")
+
+  const handleActionComplete = (testName: string, email: string) => {
+    setData((prevData) => {
+      const updatedTests = prevData[testName].filter((test) => test.email !== email)
+      if (updatedTests.length === 0) {
+        const { [testName]: _, ...remainingData } = prevData
+        return remainingData
+      }
+      return { ...prevData, [testName]: updatedTests }
+    })
+  }
 
   const filteredData = Object.keys(data).reduce((acc, testName) => {
     const filteredTests = data[testName].filter((testInfo) => {
-      const firstname = testInfo.userData.firstname || "" // Default to empty string if undefined
+      const firstname = testInfo.userData.firstname || "" 
       const lastname = testInfo.userData.lastname || ""
       const phone = testInfo.userData.tel || ""
 
       return (
         firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        phone.toLowerCase().includes(searchQuery.toLowerCase()) 
+        phone.toLowerCase().includes(searchQuery.toLowerCase())
       )
     })
 
@@ -228,6 +239,7 @@ const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
                 School={testInfo.userData.school}
                 Tel={testInfo.userData.tel}
                 fileURL={testInfo.fileURL}
+                onActionComplete={handleActionComplete}
               />
             ))
           )
@@ -238,5 +250,6 @@ const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
     </div>
   )
 }
+
 
 export default PendingLists
