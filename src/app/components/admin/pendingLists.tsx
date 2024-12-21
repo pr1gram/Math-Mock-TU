@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import apiFunction from "@/components/api"
 import { useRouter } from "next/navigation"
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2"
 
 interface TestInfo {
   email: string
@@ -66,25 +66,25 @@ const TestCard: React.FC<TestCardProps> = ({
 
   return (
     <div className="text-[#383C4E] bg-white rounded-xl p-6 min-w-[300px]">
-      <div className="font-bold text-3xl ">
+      <div className="font-bold text-3xl">
         {FirstName}
         <br />
         {LastName}
       </div>
       <div>
-        <div className="font-bold flex ">
+        <div className="font-bold flex">
           การสอบ
-          <div className="font-normal"> &nbsp;{testName}</div>
+          <div className="font-normal">&nbsp;{testName}</div>
         </div>
-        <div className="font-bold flex ">
+        <div className="font-bold flex">
           username
           <div className="font-normal">&nbsp;{username}</div>
         </div>
-        <div className="font-bold flex ">
+        <div className="font-bold flex">
           โรงเรียน
           <div className="font-normal">&nbsp;{School}</div>
         </div>
-        <div className="font-bold flex ">
+        <div className="font-bold flex">
           เบอร์โทรศัพท์
           <div className="font-normal">&nbsp;{Tel}</div>
         </div>
@@ -97,7 +97,7 @@ const TestCard: React.FC<TestCardProps> = ({
           ดูหลักฐานการชำระเงิน
         </button>
       </div>
-      <div className=" flex">
+      <div className="flex">
         <button
           className="w-full rounded-full bg-[#2FBA5E] text-white py-1 m-1"
           onClick={() => {
@@ -107,16 +107,16 @@ const TestCard: React.FC<TestCardProps> = ({
               showCancelButton: true,
               confirmButtonColor: "#3085d6",
               cancelButtonColor: "#d33",
-              confirmButtonText: "ยืนยัน"
+              confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
                 action(email, testName, "approved")
                 Swal.fire({
                   title: "อนุมัติเรียบร้อย",
-                  icon: "success"
-                });
+                  icon: "success",
+                })
               }
-            });
+            })
           }}
         >
           อนุมัติ
@@ -130,16 +130,16 @@ const TestCard: React.FC<TestCardProps> = ({
               showCancelButton: true,
               confirmButtonColor: "#3085d6",
               cancelButtonColor: "#d33",
-              confirmButtonText: "ยืนยัน"
+              confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
                 action(email, testName, "rejected")
                 Swal.fire({
                   title: "ไม่อนุมัติเรียบร้อย",
-                  icon: "success"
-                });
+                  icon: "success",
+                })
               }
-            });
+            })
           }}
         >
           ไม่อนุมัติ
@@ -150,11 +150,11 @@ const TestCard: React.FC<TestCardProps> = ({
       {isModalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-          onClick={closeModal} // Close when clicking outside
+          onClick={closeModal}
         >
           <div
             className="bg-white p-4 rounded-lg shadow-lg max-w-lg w-full relative"
-            onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               className="absolute top-2 right-2 text-xl font-bold text-gray-500 hover:text-gray-800"
@@ -180,25 +180,59 @@ interface PendingListsProps {
 
 const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
   const data: { [key: string]: TestInfo[] } = JSON.parse(AdminResponseJSON)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const filteredData = Object.keys(data).reduce((acc, testName) => {
+    const filteredTests = data[testName].filter((testInfo) => {
+      const firstname = testInfo.userData.firstname || "" // Default to empty string if undefined
+      const lastname = testInfo.userData.lastname || ""
+      const phone = testInfo.userData.tel || ""
+
+      return (
+        firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        phone.toLowerCase().includes(searchQuery.toLowerCase()) 
+      )
+    })
+
+    if (filteredTests.length > 0) {
+      acc[testName] = filteredTests
+    }
+
+    return acc
+  }, {} as { [key: string]: TestInfo[] })
 
   return (
     <div>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="ค้นหาโดยชื่อ นามสกุล เบอร์โทรศัพท์"
+          className="w-full p-2 border rounded-md"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
       <div className="space-y-6">
-        {Object.keys(data).map((testName) =>
-          data[testName].map((testInfo, index) => (
-            <TestCard
-              key={index}
-              email={testInfo.email}
-              userData={testInfo.userData}
-              username={testInfo.userData.username}
-              testName={testName}
-              FirstName={testInfo.userData.firstname}
-              LastName={testInfo.userData.lastname}
-              School={testInfo.userData.school}
-              Tel={testInfo.userData.tel}
-              fileURL={testInfo.fileURL}
-            />
-          ))
+        {Object.keys(filteredData).length > 0 ? (
+          Object.keys(filteredData).map((testName) =>
+            filteredData[testName].map((testInfo, index) => (
+              <TestCard
+                key={index}
+                email={testInfo.email}
+                userData={testInfo.userData}
+                username={testInfo.userData.username}
+                testName={testName}
+                FirstName={testInfo.userData.firstname}
+                LastName={testInfo.userData.lastname}
+                School={testInfo.userData.school}
+                Tel={testInfo.userData.tel}
+                fileURL={testInfo.fileURL}
+              />
+            ))
+          )
+        ) : (
+          <p className="text-center text-gray-500">ไม่พบข้อมูลที่ค้นหา</p>
         )}
       </div>
     </div>
