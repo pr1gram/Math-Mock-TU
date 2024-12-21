@@ -153,7 +153,7 @@ const TestCard: React.FC<TestCardProps> = ({
           onClick={closeModal}
         >
           <div
-            className="bg-white p-4 rounded-lg shadow-lg max-w-lg w-full relative"
+            className="bg-white p-4 rounded-lg shadow-lg max-w-lg relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -163,7 +163,7 @@ const TestCard: React.FC<TestCardProps> = ({
               &times;
             </button>
             {fileURL ? (
-              <img src={fileURL} alt="Payment Evidence" className="max-w-full h-auto" />
+              <img src={fileURL} alt="Payment Evidence" className=" w-full max-h-[70vh]" />
             ) : (
               <p>No payment evidence available</p>
             )}
