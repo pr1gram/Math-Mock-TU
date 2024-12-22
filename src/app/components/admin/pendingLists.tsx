@@ -47,7 +47,12 @@ const TestCard: React.FC<TestCardProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const router = useRouter()
 
-  const action = async (email: string, testID: string, status: string , text:string): Promise<void> => {
+  const action = async (
+    email: string,
+    testID: string,
+    status: string,
+    text: string
+  ): Promise<void> => {
     try {
       await apiFunction("PATCH", `/transaction/${email}`, {
         testID: testID,
@@ -62,7 +67,6 @@ const TestCard: React.FC<TestCardProps> = ({
       console.error("Error updating status:", error)
     }
   }
-
 
   const openModal = () => {
     setIsModalOpen(true)
@@ -118,7 +122,7 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-                action(email, testName, "approved","อนุมัติ")
+                action(email, testName, "approved", "อนุมัติ")
               }
             })
           }}
@@ -137,7 +141,7 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-                action(email, testName, "rejected","ไม่อนุมัติ")
+                action(email, testName, "rejected", "ไม่อนุมัติ")
               }
             })
           }}
@@ -195,7 +199,7 @@ const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
 
   const filteredData = Object.keys(data).reduce((acc, testName) => {
     const filteredTests = data[testName].filter((testInfo) => {
-      const firstname = testInfo.userData.firstname || "" 
+      const firstname = testInfo.userData.firstname || ""
       const lastname = testInfo.userData.lastname || ""
       const phone = testInfo.userData.tel || ""
 
@@ -250,6 +254,5 @@ const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
     </div>
   )
 }
-
 
 export default PendingLists
