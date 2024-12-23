@@ -187,10 +187,11 @@ const PendingLists: React.FC = () => {
   const [data, setData] = useState<{ [key: string]: TestInfo[] }>({})
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
+    if (status !== "authenticated") return
     const fetchData = async () => {
       try {
         const response = await apiFunction("GET", `/admin/users/${session?.user?.email}`, {})
@@ -212,7 +213,7 @@ const PendingLists: React.FC = () => {
     }
 
     fetchData()
-  }, [])
+  }, [status])
 
   const handleActionComplete = (testName: string, email: string) => {
     setData((prevData) => {
