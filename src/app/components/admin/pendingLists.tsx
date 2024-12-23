@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import MoonLoader from "react-spinners/MoonLoader"
 import apiFunction from "@/components/api"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -45,7 +47,6 @@ const TestCard: React.FC<TestCardProps> = ({
   onActionComplete,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const router = useRouter()
 
   const action = async (
     email: string,
@@ -182,9 +183,36 @@ interface PendingListsProps {
   AdminResponseJSON: string
 }
 
-const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
-  const [data, setData] = useState<{ [key: string]: TestInfo[] }>(JSON.parse(AdminResponseJSON))
+const PendingLists: React.FC = () => {
+  const [data, setData] = useState<{ [key: string]: TestInfo[] }>({})
   const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(true)
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiFunction("GET", `/admin/users/${session?.user?.email}`, {})
+        if (response.status === 403) {
+          router.push("/")
+        }
+        const fetchedData = response?.data?.data || {}
+        setData(fetchedData)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+        Swal.fire({
+          title: "Error",
+          text: "Failed to load pending lists. Please try again.",
+          icon: "error",
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   const handleActionComplete = (testName: string, email: string) => {
     setData((prevData) => {
@@ -219,38 +247,49 @@ const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
 
   return (
     <div>
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="ค้นหาโดยชื่อ นามสกุล เบอร์โทรศัพท์"
-          className="w-full p-2 border rounded-md"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-      <div className="space-y-6">
-        {Object.keys(filteredData).length > 0 ? (
-          Object.keys(filteredData).map((testName) =>
-            filteredData[testName].map((testInfo, index) => (
-              <TestCard
-                key={index}
-                email={testInfo.email}
-                userData={testInfo.userData}
-                username={testInfo.userData.username}
-                testName={testName}
-                FirstName={testInfo.userData.firstname}
-                LastName={testInfo.userData.lastname}
-                School={testInfo.userData.school}
-                Tel={testInfo.userData.tel}
-                fileURL={testInfo.fileURL}
-                onActionComplete={handleActionComplete}
-              />
-            ))
-          )
-        ) : (
-          <p className="text-center text-gray-500">ไม่พบข้อมูลที่ค้นหา</p>
-        )}
-      </div>
+      {loading ? (
+        <>
+          <div className=" flex flex-col items-center justify-center h-[calc(100vh-80px)]">
+            <MoonLoader color="#ffffff" size={30} />
+            <p className="text-center text-white">Loading...</p>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="ค้นหาโดยชื่อ นามสกุล เบอร์โทรศัพท์"
+              className="w-full p-2 border rounded-md"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="space-y-6">
+            {Object.keys(filteredData).length > 0 ? (
+              Object.keys(filteredData).map((testName) =>
+                filteredData[testName].map((testInfo, index) => (
+                  <TestCard
+                    key={index}
+                    email={testInfo.email}
+                    userData={testInfo.userData}
+                    username={testInfo.userData.username}
+                    testName={testName}
+                    FirstName={testInfo.userData.firstname}
+                    LastName={testInfo.userData.lastname}
+                    School={testInfo.userData.school}
+                    Tel={testInfo.userData.tel}
+                    fileURL={testInfo.fileURL}
+                    onActionComplete={handleActionComplete}
+                  />
+                ))
+              )
+            ) : (
+              <p className="text-center text-gray-500">ไม่พบข้อมูลที่ค้นหา</p>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }
