@@ -10,6 +10,7 @@ import apiFunction from "@/components/api"
 import Link from "next/link"
 import ExamSummitButton from "@/components/exam/examSummit"
 import { redirect } from "next/navigation"
+import ExamDownloadButton from "@/components/exam/examDownloadButton"
 
 const ExamPage = async ({
   params,
@@ -22,10 +23,11 @@ const ExamPage = async ({
   const pointNumber = searchParams.n || "0" // Extracting the query parameter 'n' with a default value
   const pageNumber = parseInt(pointNumber)
   const session = await auth() // Authentication check
+  const userData = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
   const checkSignIn = await CheckSignIn(false, "/auth") // Sign-in check
   const ExamApiData = await apiFunction("GET", `/exams/examlists/${examID}`, {}) // Fetching the count of the exam
   const startDateData = await apiFunction("GET", `/exams/${session?.user?.email}`, {})
-  const transactionResponse = await apiFunction("GET", `/transaction/${session?.user?.email}/${examID}`, {})
+  
 
   // Dynamically import the JSON file based on the examID
   let examData
@@ -41,14 +43,15 @@ const ExamPage = async ({
     (exam: { question: string }) => exam.question === pointNumber
   )
 
-  const examStartTime = startDateData?.data?.data?.examData?.[decodeURIComponent(examID)]?.startDate || 0
+  const examStartTime =
+    startDateData?.data?.data?.examData?.[decodeURIComponent(examID)]?.startDate || 0
   const durationInMinutes = ExamApiData.data.data.duration
   const durationInMilliseconds = durationInMinutes * 60 * 1000
 
   const examEndTime = examStartTime + durationInMilliseconds
 
-  if (transactionResponse?.data?.data?.examsUserData?.submittedTime) {
-    redirect(`/myExam/${examID}`);
+  if (startDateData?.data?.data?.examData?.[decodeURIComponent(examID)]?.submittedTime) {
+    redirect(`/myExam/${examID}`)
   }
 
   return (
@@ -68,7 +71,10 @@ const ExamPage = async ({
           </div>
           <div className=" flex justify-center mt-3">
             <div className=" sm:flex sm:gap-2 md:gap-8 lg:gap-20">
-              <ExamQuestion examName={decodeURIComponent(examID)} pointNumber={examQuestion?.question} />
+              <ExamQuestion
+                examName={decodeURIComponent(examID)}
+                pointNumber={examQuestion?.question}
+              />
               {examQuestion ? (
                 <ExamChoice
                   examName={decodeURIComponent(examID)}
@@ -133,12 +139,22 @@ const ExamPage = async ({
         </div>
       ) : (
         <div className=" flex justify-center">
-          <StartExamButton
-            examName={decodeURIComponent(examID)}
-            count={ExamApiData.data.data.items}
-            session={session}
-            examStartTime={examStartTime}
-          />
+          <div className=" block">
+            <div className=" text-center">คำชี้แจ้งก่อนสอบ</div>
+            <div className=" flex">
+              <ExamDownloadButton
+                examName={decodeURIComponent(examID)}
+                examID={ExamApiData.data.data._id}
+                userData={userData.data}
+              />
+            </div>
+            <StartExamButton
+              examName={decodeURIComponent(examID)}
+              count={ExamApiData.data.data.items}
+              session={session}
+              examStartTime={examStartTime}
+            />
+          </div>
         </div>
       )}
     </main>

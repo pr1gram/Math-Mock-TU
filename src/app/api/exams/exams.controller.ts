@@ -22,8 +22,8 @@ export async function examList(detail: ExamList) {
 
 export async function getUserExams(email: string) {
   try {
-    const tranSnap = await getSnapshotByQuery("transactions", "email", email)
     const examSnap = await getDocumentByEmail("exams", email)
+    const tranSnap = await getSnapshotByQuery("transactions", "email", email)
 
     if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404 }
     if (!examSnap?.exists())
@@ -44,6 +44,7 @@ export async function getUserExams(email: string) {
     const examData = renameFields(examD)
     return { success: true, data: { examData, status: testIDStatusMap } }
   } catch (error) {
+    console.log(error)
     throw new Error("Error while getting user exams")
   }
 }
@@ -116,6 +117,7 @@ export async function startExam(email: string, testID: string) {
     if (!docSnap?.exists()) {
       const newUserRef = doc(firestore, "exams", email)
       await setDoc(newUserRef, {
+        email: email,
         [sanitizeFieldName(testID)]: {
           startDate: date,
         },
