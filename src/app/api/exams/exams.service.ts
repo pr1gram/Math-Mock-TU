@@ -46,6 +46,7 @@ export async function createExamDocument(email: string, testID: string, answers:
   const newUserRef = doc(firestore, "exams", email)
 
   await setDoc(newUserRef, {
+    email: email,
     [sanitizeFieldName(testID)]: {
       answers: answers,
       submittedTime: Date.now(),
