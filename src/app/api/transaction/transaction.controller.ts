@@ -1,10 +1,9 @@
-﻿import { firestore } from "@/db/firebase"
+import { firestore } from "@/db/firebase"
 
 import { arrayUnion, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
 import { error } from "elysia"
 import {
   getDocumentByEmail,
-  getDocumentById,
   getSnapshotByQuery,
   validateEmail,
 } from "@/utils/__init__"
@@ -75,7 +74,7 @@ export async function userTransactions(email: string) {
   let temp = []
 
   for (let i = 0; i < transactions.length; i++) {
-    const examSnap = await getDocumentById("examLists", transactions[i].testID)
+    const examSnap = await getDocumentByEmail("examLists", transactions[i].testID)
     if (examSnap?.exists()) temp.push({ ...transactions[i], examData: examSnap.data() })
   }
 
@@ -85,7 +84,7 @@ export async function userTransactions(email: string) {
 export async function getTransaction(email: string, testID: string) {
   try {
     const docSnap = await getDocumentByEmail("transactions", email)
-    const examUserSnap = await getDocumentById("exams", email)
+    const examUserSnap = await getDocumentByEmail("exams", email)
 
     const test_id = decodeURIComponent(testID)
     const q = query(collection(firestore, "examLists"), where("title", "==", test_id))

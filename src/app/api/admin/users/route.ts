@@ -1,14 +1,14 @@
 import { Elysia, error } from "elysia"
 import { cors } from "@elysiajs/cors"
 import { GlobalGuard } from "@/utils/__init__"
-import { TransactionDocumentValidator } from "../admin.dto"
-import { renameTransactionDocument } from "../admin.controller"
+import { TransactionDocumentValidator } from "@/api/admin/admin.dto"
+import { renameTransactionDocument } from "@/api/admin/admin.controller"
 
-const TransactionRoute = new Elysia({ prefix: "/api/admin" })
-  .use(GlobalGuard)
-  .use(cors({ 
-    origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
-  }))
+const AdminRoute = new Elysia({ prefix: "/api/admin/users" })
+//   .use(GlobalGuard)
+//   .use(cors({ 
+//     origin: ['https://math-mock-tu.vercel.app', 'https://www.pretest-tu.com'] 
+//   }))
   .post(
     "/",
     async ({ body }) => {
@@ -22,4 +22,4 @@ const TransactionRoute = new Elysia({ prefix: "/api/admin" })
     }
   )
 
-export const POST = TransactionRoute.handle
+export const POST = AdminRoute.handle

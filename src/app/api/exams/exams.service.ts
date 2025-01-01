@@ -1,7 +1,5 @@
-﻿import { firestore } from "@/db/firebase"
+import { firestore } from "@/db/firebase"
 import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore"
-import { error } from "elysia"
-import { getDocumentById } from "@/utils/__init__"
 
 export function sanitizeFieldName(fieldName: string): string {
   return fieldName.replace("[", "%").replace("]", "%%")
