@@ -4,6 +4,7 @@ import { arrayUnion, collection, doc, getDocs, query, updateDoc, where } from "f
 import { error } from "elysia"
 import {
   getDocumentByEmail,
+  getDocumentById,
   getSnapshotByQuery,
   validateEmail,
 } from "@/utils/__init__"
@@ -71,10 +72,11 @@ export async function userTransactions(email: string) {
   if (querySnapshot.empty) return { success: false, status: 404, message: "Cannot find user" }
 
   const transactions = querySnapshot.docs[0].data().transactions
+
   let temp = []
 
   for (let i = 0; i < transactions.length; i++) {
-    const examSnap = await getDocumentByEmail("examLists", transactions[i].testID)
+    const examSnap = await getDocumentById("examLists", transactions[i].testID)
     if (examSnap?.exists()) temp.push({ ...transactions[i], examData: examSnap.data() })
   }
 
