@@ -123,7 +123,9 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
+
                 action(email, testName, "approved", "อนุมัติ")
+
               }
             })
           }}
@@ -142,7 +144,9 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
+
                 action(email, testName, "rejected", "ไม่อนุมัติ")
+
               }
             })
           }}
@@ -158,7 +162,9 @@ const TestCard: React.FC<TestCardProps> = ({
           onClick={closeModal}
         >
           <div
+
             className="bg-white p-4 rounded-lg shadow-lg max-w-lg relative"
+
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -182,6 +188,7 @@ const TestCard: React.FC<TestCardProps> = ({
 interface PendingListsProps {
   AdminResponseJSON: string
 }
+
 
 const PendingLists: React.FC = () => {
   const [data, setData] = useState<{ [key: string]: TestInfo[] }>({})
@@ -229,13 +236,16 @@ const PendingLists: React.FC = () => {
   const filteredData = Object.keys(data).reduce((acc, testName) => {
     const filteredTests = data[testName].filter((testInfo) => {
       const firstname = testInfo.userData.firstname || ""
+
       const lastname = testInfo.userData.lastname || ""
       const phone = testInfo.userData.tel || ""
 
       return (
         firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+
         phone.toLowerCase().includes(searchQuery.toLowerCase())
+
       )
     })
 
@@ -291,6 +301,7 @@ const PendingLists: React.FC = () => {
           </div>
         </>
       )}
+
     </div>
   )
 }

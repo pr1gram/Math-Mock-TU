@@ -7,6 +7,7 @@ import Secret from "./components/secret"
 import Script from "next/script"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
