@@ -13,7 +13,6 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
   const [minutes, setMinutes] = useState<number>(0)
   const [seconds, setSeconds] = useState<number>(0)
   const [examEndTime, setExamEndTime] = useState<number>(0)
-  const [timeRemaining, setTimeRemaining] = useState<number>(0)
   const { data: session } = useSession()
   const router = useRouter()
 
@@ -29,7 +28,6 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
       const examEndTime = examStartTime + durationInMilliseconds
 
       setExamEndTime(examEndTime)
-      setTimeRemaining(examEndTime - Date.now())
     } catch (error) {
       console.error("Error fetching exam data:", error)
     }
@@ -46,15 +44,15 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
       const currentTime = Date.now()
       const newTimeRemaining = examEndTime - currentTime
 
-      if (newTimeRemaining <= 0 && examEndTime > 0) {
-        // Only submit exam when timeRemaining is 0 and examEndTime is valid
+      if (newTimeRemaining <= 0) {
+        // Time is up or negative, show 00:00
         clearInterval(interval)
-        setTimeRemaining(0)
         setMinutes(0)
         setSeconds(0)
-        summitExam() // Automatically submit the exam when time runs out
+        if (examEndTime > 0) {
+          summitExam() // Automatically submit the exam when time runs out
+        }
       } else {
-        setTimeRemaining(newTimeRemaining)
         setMinutes(Math.floor(newTimeRemaining / 1000 / 60))
         setSeconds(Math.floor((newTimeRemaining / 1000) % 60))
       }
@@ -67,7 +65,7 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
   const summitExam = async () => {
     const data = JSON.parse(localStorage.getItem(examName) || "[]")
     const stringData = Array.isArray(data) ? data.map((item) => item.toString()) : []
-    
+
     try {
       const response = await apiFunction("POST", `/exams/${session?.user?.email}`, {
         answers: stringData,
@@ -91,4 +89,3 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
 }
 
 export default ExamTimer
-

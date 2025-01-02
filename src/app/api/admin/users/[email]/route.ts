@@ -20,6 +20,6 @@ const Route = new Elysia({ prefix: "/api/admin/users" })
       email: StringField("Email must be provided"),
     }),
   },
-)
+  )
 
 export const GET = Route.handle

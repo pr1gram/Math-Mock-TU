@@ -1,7 +1,7 @@
 import { collection, getDocs } from "firebase/firestore"
 import { firestore } from "@/db/firebase"
-import type { CategorizedData, Transaction } from "@/api/admin/admin.dto"
-import { getDocumentByEmail, validateEmail } from "@/utils/__init__"
+import type { CategorizedData, Transaction, TransactionDocumentData } from "@/api/admin/admin.dto"
+import { getDocumentByEmail, renameDocument, validateEmail } from "@/utils/__init__"
 
 export async function getPendingUsers(email: string) {
   try {
@@ -49,4 +49,9 @@ export async function getPendingUsers(email: string) {
     console.error("Error while getting pending users:", e)
     throw new Error("Error while getting user")
   }
+}
+
+export async function renameTransactionDocument(data: TransactionDocumentData) {
+  const res = await renameDocument("transactions", data.oldName, data.newName);
+  return { success: true, message: "Renamed successfully", status: 200 }
 }

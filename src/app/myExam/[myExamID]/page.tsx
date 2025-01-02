@@ -9,6 +9,7 @@ import Left_Arrow from "@/vector/left_arrow"
 import Link from "next/link"
 import CheckSignIn from "@/components/auth/checkSignIn"
 import RejectedIcon from "@/vector/exam/rejectedIcon"
+import MyExamTimer from "@/components/exam/myExamTimer"
 
 const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
   const { myExamID } = params
@@ -32,7 +33,6 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
 
   const solutions = await apiFunction("GET", `/exams/solutions/${myExamID}`, {})
   const myExamData = response.data.data
-
 
   return (
     <main>
@@ -119,7 +119,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                         </div>
                       )}
                       {myExamData?.examsUserData?.submittedTime ? (
-                        solutions.data.data.video_url ? (
+                        solutions?.data?.data?.video_url ? (
                           <div className="w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
                             <Link
                               className="inline-block w-full h-full"
@@ -160,6 +160,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
           </div>
         </div>
       </div>
+      <MyExamTimer startTime={myExamData.examData.startTime} />
     </main>
   )
 }

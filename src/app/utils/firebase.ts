@@ -1,4 +1,4 @@
-﻿import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore"
+﻿import { doc, getDoc, setDoc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { firestore } from "@/db/firebase"
 
 export async function _isUsernameExist(username: string | null) {
@@ -25,6 +25,28 @@ export async function _getDocumentById(collectionName: string, documentId: strin
   const docSnap = await getDoc(docRef)
   return docSnap.exists() ? docSnap : undefined
 }
+
+export async function _renameDocument(collectionName: string, docName: string, newDocName: string) {
+  try {
+    const originalDocRef = doc(firestore, collectionName, docName)
+    const originalDocSnap = await getDoc(originalDocRef)
+
+    if (!originalDocSnap.exists())
+      return { success: false, message: "Original document does not exist" }
+    
+    const data = originalDocSnap.data()
+    data.email = newDocName
+    const newDocRef = doc(firestore, collectionName, newDocName)
+    await setDoc(newDocRef, data)
+    // await deleteDoc(originalDocRef)
+
+    return { success: true, message: "Document renamed successfully" };
+  } catch (error) {
+    console.error("Error renaming document:", error);
+    return { success: false, message: "Error renaming document", error: error };
+  }
+}
+
 
 export async function _updateSessionDoc(docId: string, userID: string, token: string) {
   const document = doc(firestore, "sessions", docId)

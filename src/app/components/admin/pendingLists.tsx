@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import MoonLoader from "react-spinners/MoonLoader"
 import apiFunction from "@/components/api"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
@@ -29,6 +31,7 @@ interface TestCardProps {
   Tel: string
   fileURL?: string
   testName: string
+  onActionComplete: (testName: string, email: string) => void
 }
 
 const TestCard: React.FC<TestCardProps> = ({
@@ -41,16 +44,26 @@ const TestCard: React.FC<TestCardProps> = ({
   School,
   Tel,
   fileURL,
+  onActionComplete,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const router = useRouter()
-  const action = async (email: string, testID: string, status: string): Promise<void> => {
+
+  const action = async (
+    email: string,
+    testID: string,
+    status: string,
+    text: string
+  ): Promise<void> => {
     try {
       await apiFunction("PATCH", `/transaction/${email}`, {
         testID: testID,
         status: status,
       })
-      router.refresh()
+      onActionComplete(testName, email)
+      Swal.fire({
+        title: `${text}เรียบร้อย`,
+        icon: "success",
+      })
     } catch (error) {
       console.error("Error updating status:", error)
     }
@@ -110,11 +123,9 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-                action(email, testName, "approved")
-                Swal.fire({
-                  title: "อนุมัติเรียบร้อย",
-                  icon: "success",
-                })
+
+                action(email, testName, "approved", "อนุมัติ")
+
               }
             })
           }}
@@ -133,11 +144,9 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-                action(email, testName, "rejected")
-                Swal.fire({
-                  title: "ไม่อนุมัติเรียบร้อย",
-                  icon: "success",
-                })
+
+                action(email, testName, "rejected", "ไม่อนุมัติ")
+
               }
             })
           }}
@@ -153,7 +162,9 @@ const TestCard: React.FC<TestCardProps> = ({
           onClick={closeModal}
         >
           <div
-            className="bg-white p-4 rounded-lg shadow-lg max-w-lg w-full relative"
+
+            className="bg-white p-4 rounded-lg shadow-lg max-w-lg relative"
+
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -163,7 +174,7 @@ const TestCard: React.FC<TestCardProps> = ({
               &times;
             </button>
             {fileURL ? (
-              <img src={fileURL} alt="Payment Evidence" className="max-w-full h-auto" />
+              <img src={fileURL} alt="Payment Evidence" className=" w-full max-h-[70vh]" />
             ) : (
               <p>No payment evidence available</p>
             )}
@@ -178,20 +189,63 @@ interface PendingListsProps {
   AdminResponseJSON: string
 }
 
-const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
-  const data: { [key: string]: TestInfo[] } = JSON.parse(AdminResponseJSON)
+
+const PendingLists: React.FC = () => {
+  const [data, setData] = useState<{ [key: string]: TestInfo[] }>({})
   const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(true)
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status !== "authenticated") return
+    const fetchData = async () => {
+      try {
+        const response = await apiFunction("GET", `/admin/users/${session?.user?.email}`, {})
+        if (response.status === 403) {
+          router.push("/")
+        }
+        const fetchedData = response?.data?.data || {}
+        setData(fetchedData)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+        Swal.fire({
+          title: "Error",
+          text: "Failed to load pending lists. Please try again.",
+          icon: "error",
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [status])
+
+  const handleActionComplete = (testName: string, email: string) => {
+    setData((prevData) => {
+      const updatedTests = prevData[testName].filter((test) => test.email !== email)
+      if (updatedTests.length === 0) {
+        const { [testName]: _, ...remainingData } = prevData
+        return remainingData
+      }
+      return { ...prevData, [testName]: updatedTests }
+    })
+  }
 
   const filteredData = Object.keys(data).reduce((acc, testName) => {
     const filteredTests = data[testName].filter((testInfo) => {
-      const firstname = testInfo.userData.firstname || "" // Default to empty string if undefined
+      const firstname = testInfo.userData.firstname || ""
+
       const lastname = testInfo.userData.lastname || ""
       const phone = testInfo.userData.tel || ""
 
       return (
         firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        phone.toLowerCase().includes(searchQuery.toLowerCase()) 
+
+        phone.toLowerCase().includes(searchQuery.toLowerCase())
+
       )
     })
 
@@ -204,37 +258,50 @@ const PendingLists: React.FC<PendingListsProps> = ({ AdminResponseJSON }) => {
 
   return (
     <div>
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="ค้นหาโดยชื่อ นามสกุล เบอร์โทรศัพท์"
-          className="w-full p-2 border rounded-md"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-      <div className="space-y-6">
-        {Object.keys(filteredData).length > 0 ? (
-          Object.keys(filteredData).map((testName) =>
-            filteredData[testName].map((testInfo, index) => (
-              <TestCard
-                key={index}
-                email={testInfo.email}
-                userData={testInfo.userData}
-                username={testInfo.userData.username}
-                testName={testName}
-                FirstName={testInfo.userData.firstname}
-                LastName={testInfo.userData.lastname}
-                School={testInfo.userData.school}
-                Tel={testInfo.userData.tel}
-                fileURL={testInfo.fileURL}
-              />
-            ))
-          )
-        ) : (
-          <p className="text-center text-gray-500">ไม่พบข้อมูลที่ค้นหา</p>
-        )}
-      </div>
+      {loading ? (
+        <>
+          <div className=" flex flex-col items-center justify-center h-[calc(100vh-80px)]">
+            <MoonLoader color="#ffffff" size={30} />
+            <p className="text-center text-white">Loading...</p>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="ค้นหาโดยชื่อ นามสกุล เบอร์โทรศัพท์"
+              className="w-full p-2 border rounded-md"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="space-y-6">
+            {Object.keys(filteredData).length > 0 ? (
+              Object.keys(filteredData).map((testName) =>
+                filteredData[testName].map((testInfo, index) => (
+                  <TestCard
+                    key={index}
+                    email={testInfo.email}
+                    userData={testInfo.userData}
+                    username={testInfo.userData.username}
+                    testName={testName}
+                    FirstName={testInfo.userData.firstname}
+                    LastName={testInfo.userData.lastname}
+                    School={testInfo.userData.school}
+                    Tel={testInfo.userData.tel}
+                    fileURL={testInfo.fileURL}
+                    onActionComplete={handleActionComplete}
+                  />
+                ))
+              )
+            ) : (
+              <p className="text-center text-gray-500">ไม่พบข้อมูลที่ค้นหา</p>
+            )}
+          </div>
+        </>
+      )}
+
     </div>
   )
 }

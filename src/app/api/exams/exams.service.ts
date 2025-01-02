@@ -1,7 +1,5 @@
-﻿import { firestore } from "@/db/firebase"
+import { firestore } from "@/db/firebase"
 import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore"
-import { error } from "elysia"
-import { getDocumentById } from "@/utils/__init__"
 
 export function sanitizeFieldName(fieldName: string): string {
   return fieldName.replace("[", "%").replace("]", "%%")
@@ -26,6 +24,7 @@ export async function updateExamAnswers(email: string, testID: string, answers: 
 
     if (docSnap.exists()) {
       let data = docSnap.data()
+      console.log(data)
 
       const sanitizedTestID = sanitizeFieldName(testID);
       data[sanitizedTestID] = {
@@ -48,6 +47,7 @@ export async function createExamDocument(email: string, testID: string, answers:
   const newUserRef = doc(firestore, "exams", email)
 
   await setDoc(newUserRef, {
+    email: email,
     [sanitizeFieldName(testID)]: {
       answers: answers,
       submittedTime: Date.now(),

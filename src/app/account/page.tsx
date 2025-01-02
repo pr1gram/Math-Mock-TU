@@ -9,7 +9,6 @@ import Left_Arrow from "@/vector/left_arrow"
 export default async function Account() {
   const session = await auth()
   const response = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
-  const adminResponse = await apiFunction("GET", `/admin/users/${session?.user?.email}`, {})
   await CheckSignIn(false, "/auth")
   if (response.status === 400) {
     redirect("/form")
@@ -46,10 +45,10 @@ export default async function Account() {
         </div>
         <div
           className={`flex mt-3 ${
-            adminResponse.status == 200 ? "justify-between" : "justify-center"
+            response?.data?.admin  ? "justify-between" : "justify-center"
           }`}
         >
-          {adminResponse.status == 200 && (
+          {response?.data?.admin && (
             <Link href="/admin" className="border-2 border-white rounded-full text-white px-2 py-1">
               แผงควบคุม
             </Link>

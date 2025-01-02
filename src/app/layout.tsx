@@ -5,6 +5,8 @@ import { SessionProvider } from "next-auth/react"
 import NavBar from "./components/navbar/navbar"
 import Secret from "./components/secret"
 import Script from "next/script"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -42,6 +44,7 @@ export default function RootLayout({
             gtag('config', 'G-7ZB9D1HHNH');`}
         </Script>
       </html>
+      <SpeedInsights/>
     </SessionProvider>
   )
 }

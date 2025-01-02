@@ -5,6 +5,7 @@ import {
   _getDocumentByEmail,
   _getDocumentById,
   _getSnapshotByQuery,
+  _renameDocument,
   _updateSessionDoc,
   _createSessionDoc,
 } from "@/utils/firebase"
@@ -18,5 +19,6 @@ export const isUsernameExist = _isUsernameExist
 export const getDocumentByEmail = _getDocumentByEmail
 export const getDocumentById = _getDocumentById
 export const getSnapshotByQuery = _getSnapshotByQuery
+export const renameDocument = _renameDocument
 export const updateSessionDoc = _updateSessionDoc
 export const createSessionDoc = _createSessionDoc

@@ -1,9 +1,9 @@
-﻿import { error } from "elysia"
+import { error } from "elysia"
 import { firestore } from "@/db/firebase"
 
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, query, where } from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid"
-import { getDocumentById, getSnapshotByQuery, validateEmail } from "@/utils/__init__"
+import { getSnapshotByQuery, validateEmail, getDocumentByEmail } from "@/utils/__init__"
 
 import type { ExamList } from "./exams.dto"
 import { sanitizeFieldName, createExamDocument, updateExamAnswers, renameFields } from "./exams.service"
@@ -22,8 +22,8 @@ export async function examList(detail: ExamList) {
 
 export async function getUserExams(email: string) {
   try {
+    const examSnap = await getDocumentByEmail("exams", email)
     const tranSnap = await getSnapshotByQuery("transactions", "email", email)
-    const  examSnap= await getDocumentById("exams", email)
 
     if (tranSnap.empty) return { success: false, message: "Cannot find user exams", status: 404 }
     if (!examSnap?.exists())
@@ -44,6 +44,7 @@ export async function getUserExams(email: string) {
     const examData = renameFields(examD)
     return { success: true, data: { examData, status: testIDStatusMap } }
   } catch (error) {
+    console.log(error)
     throw new Error("Error while getting user exams")
   }
 }
@@ -106,7 +107,7 @@ export async function startExam(email: string, testID: string) {
     if (!validateEmail(email))
       return { success: false, message: "Email is not formatted correctly" }
 
-    const docSnap = await getDocumentById("exams", email)
+    const docSnap = await getDocumentByEmail("exams", email)
     const examSnap = await getSnapshotByQuery("examLists", "title", testID)
 
     if (examSnap.empty) return { success: false, message: "Cannot find exam list" }
@@ -116,6 +117,7 @@ export async function startExam(email: string, testID: string) {
     if (!docSnap?.exists()) {
       const newUserRef = doc(firestore, "exams", email)
       await setDoc(newUserRef, {
+        email: email,
         [sanitizeFieldName(testID)]: {
           startDate: date,
         },
@@ -143,7 +145,7 @@ export async function sendExam(email: string, testID: string, answers: string[])
     if (!validateEmail(email))
       return { success: false, message: "Email is not formatted correctly" }
 
-    const docSnap = await getDocumentById("exams", email)
+    const docSnap = await getDocumentByEmail("exams", email)
 
     if (!docSnap?.exists()) {
       await createExamDocument(email, testID, answers)
@@ -202,7 +204,7 @@ export async function deleteSolutions(testID: string) {
 
 export async function getScore(email: string, testID: string) {
   try {
-    const docSnap = await getDocumentById("exams", email)
+    const docSnap = await getDocumentByEmail("exams", email)
     const test_id = decodeURIComponent(testID)
 
     if (docSnap?.exists()) {

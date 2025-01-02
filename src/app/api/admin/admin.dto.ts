@@ -1,3 +1,6 @@
+import { t } from "elysia"
+import { StringField } from "@/utils/__init__"
+
 export interface Transaction {
   testID: string
   date: string
@@ -16,3 +19,13 @@ export interface CategorizedData {
     userData?: any
   }[]
 }
+
+export interface TransactionDocumentData {
+  oldName: string
+  newName: string
+}
+
+export const TransactionDocumentValidator = t.Object({
+  oldName: StringField("Old name must be provided"),
+  newName: StringField("New name must be provided")
+})

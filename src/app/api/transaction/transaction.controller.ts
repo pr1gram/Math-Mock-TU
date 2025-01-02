@@ -1,4 +1,4 @@
-﻿import { firestore } from "@/db/firebase"
+import { firestore } from "@/db/firebase"
 
 import { arrayUnion, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
 import { error } from "elysia"
@@ -72,6 +72,7 @@ export async function userTransactions(email: string) {
   if (querySnapshot.empty) return { success: false, status: 404, message: "Cannot find user" }
 
   const transactions = querySnapshot.docs[0].data().transactions
+
   let temp = []
 
   for (let i = 0; i < transactions.length; i++) {
@@ -85,7 +86,7 @@ export async function userTransactions(email: string) {
 export async function getTransaction(email: string, testID: string) {
   try {
     const docSnap = await getDocumentByEmail("transactions", email)
-    const examUserSnap = await getDocumentById("exams", email)
+    const examUserSnap = await getDocumentByEmail("exams", email)
 
     const test_id = decodeURIComponent(testID)
     const q = query(collection(firestore, "examLists"), where("title", "==", test_id))
