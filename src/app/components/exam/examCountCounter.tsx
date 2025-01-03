@@ -23,6 +23,7 @@ const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName }) => {
 
   const updateCounts = () => {
     if (!isLocalStorageAvailable()) return
+
     const data = localStorage.getItem(examName)
     if (data) {
       try {
@@ -46,10 +47,20 @@ const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName }) => {
 
   useEffect(() => {
     if (!isLocalStorageAvailable()) return
+
+    // Initial update when the component mounts
     updateCounts()
 
-    window.addEventListener("storage", updateCounts)
+    // Listen for changes across tabs/windows
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === examName) {
+        updateCounts()
+      }
+    }
 
+    window.addEventListener("storage", handleStorageChange)
+
+    // Override localStorage.setItem to detect same-tab changes
     const originalSetItem = localStorage.setItem
     localStorage.setItem = function (key, value) {
       originalSetItem.apply(this, [key, value])
@@ -59,7 +70,8 @@ const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName }) => {
     }
 
     return () => {
-      window.removeEventListener("storage", updateCounts)
+      // Cleanup: Remove event listener and restore original setItem
+      window.removeEventListener("storage", handleStorageChange)
       localStorage.setItem = originalSetItem
     }
   }, [examName])
