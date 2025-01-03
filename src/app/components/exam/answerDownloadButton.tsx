@@ -4,20 +4,16 @@ import { PDFDocument, rgb, degrees } from "pdf-lib"
 import fontkit from "@pdf-lib/fontkit"
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline"
 
-const ExamDownloadButton = ({
+const AnswerDownloadButton = ({
   examName,
   examID,
-  userData,
-  className
 }: {
   examName: string
   examID: string
-  userData: { firstname: string; lastname: string }
-  className?: string
 }) => {
   const handleDownload = async () => {
     try {
-      const pdfUrl = `/examFile/${examID}.pdf`
+      const pdfUrl = `/answerFile/${examID}.pdf`
       const response = await fetch(pdfUrl)
       if (!response.ok) {
         throw new Error("Failed to fetch the PDF file.")
@@ -42,29 +38,6 @@ const ExamDownloadButton = ({
 
       // Add watermark to each page
       const pages = pdfDoc.getPages()
-      const watermarkText = `${userData.firstname} ${userData.lastname}`
-
-      pages.forEach((page) => {
-        const { width, height } = page.getSize()
-        page.drawText(watermarkText, {
-          x: width / 3,
-          y: height / 2,
-          size: 50,
-          font: customFont,
-          color: rgb(0.75, 0.75, 0.75), // Light gray
-          rotate: degrees(45),
-          opacity: 0.5,
-        })
-        page.drawText(watermarkText, {
-          x: width / 3,
-          y: height / 10,
-          size: 50,
-          font: customFont,
-          color: rgb(0.75, 0.75, 0.75), // Light gray
-          rotate: degrees(45),
-          opacity: 0.5,
-        })
-      })
 
       // Serialize the PDF to bytes
       const pdfBytes = await pdfDoc.save()
@@ -76,7 +49,7 @@ const ExamDownloadButton = ({
 
       const a = document.createElement("a")
       a.href = url
-      a.download = `${examName}_${userData.firstname}_${userData.lastname}.pdf`
+      a.download = `${examName}.pdf`
       a.click()
 
       URL.revokeObjectURL(url) // Clean up the URL object
@@ -88,12 +61,11 @@ const ExamDownloadButton = ({
   return (
     <button
       onClick={handleDownload}
-      className={className}
+      className="w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 mb-2"
     >
-      <ArrowDownTrayIcon className="w-5 h-5" />
-      ดาวน์โหลดข้อสอบ
+      เฉลยข้อสอบ
     </button>
   )
 }
 
-export default ExamDownloadButton
+export default AnswerDownloadButton

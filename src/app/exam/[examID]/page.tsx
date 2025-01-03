@@ -165,6 +165,7 @@ const ExamPage = async ({
                 examName={decodeURIComponent(examID)}
                 examID={ExamApiData.data.data._id}
                 userData={userData.data}
+                className="underline text-center text-sm mt-3 flex justify-center"
               />
             </div>
             <div className=" flex justify-center mt-3">

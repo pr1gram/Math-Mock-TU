@@ -14,7 +14,7 @@ const ExamQuestion: React.FC<ExamQuestionProps> = ({ examName, pointNumber }) =>
             alt="Exam Image"
             width={500}
             height={500}
-            className="object-contain max-w-full h-auto p-1"
+            className="object-contain max-w-full h-auto p-1 pointer-events-none"
             priority={true}
           />
     </div>
