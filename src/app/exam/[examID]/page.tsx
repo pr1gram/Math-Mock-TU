@@ -64,7 +64,7 @@ const ExamPage = async ({
                 <ExamTimer examName={decodeURIComponent(examID)} />
               </div>
               <div className=" flex justify-center w-full">
-                <ExamCountCounter examName={decodeURIComponent(examID)} />
+                <ExamCountCounter examName={decodeURIComponent(examID)} examNumber={pointNumber} />
               </div>
             </div>
           </div>

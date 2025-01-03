@@ -57,7 +57,7 @@ const ExamCountSelect: React.FC<ExamCountSelectProps> = ({ examName, pointNumber
   }
 
   return (
-    <div className=" flex items-center border-2 border-[#b5b6c2] rounded-3xl duration-300">
+    <div className=" flex items-center border-2 border-[#b5b6c2] rounded-3xl duration-300 my-4">
       <div className="duration-300">
         <div
           className={` gap-x-1 items-center justify-center   w-fit px-4 py-2
