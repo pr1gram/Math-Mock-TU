@@ -70,11 +70,16 @@ const ExamDownloadButton = ({
       // Trigger the download
       const blob = new Blob([pdfBytes], { type: "application/pdf" })
       const url = URL.createObjectURL(blob)
+      const newTab = window.open(url, '_blank')
 
       const a = document.createElement("a")
       a.href = url
       a.download = `${examName}_${userData.firstname}_${userData.lastname}.pdf`
       a.click()
+
+      if (newTab) {
+        newTab.close()
+      }
 
       URL.revokeObjectURL(url) // Clean up the URL object
     } catch (error) {
@@ -83,7 +88,7 @@ const ExamDownloadButton = ({
   }
 
   return (
-    <button onClick={handleDownload} className=" underline text-center text-sm mt-3 w-full flex justify-center">
+    <button onClick={handleDownload} className=" underline text-center text-sm mt-3 flex justify-center">
       <ArrowDownTrayIcon className="w-5 h-5" />
       ดาวน์โหลดข้อสอบ
     </button>

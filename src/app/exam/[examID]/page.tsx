@@ -27,7 +27,6 @@ const ExamPage = async ({
   const checkSignIn = await CheckSignIn(false, "/auth") // Sign-in check
   const ExamApiData = await apiFunction("GET", `/exams/examlists/${examID}`, {}) // Fetching the count of the exam
   const startDateData = await apiFunction("GET", `/exams/${session?.user?.email}`, {})
-  
 
   // Dynamically import the JSON file based on the examID
   let examData
@@ -140,20 +139,42 @@ const ExamPage = async ({
       ) : (
         <div className=" flex justify-center">
           <div className=" block">
-            <div className=" text-center">คำชี้แจ้งก่อนสอบ</div>
-            <div className=" flex">
+            <div className=" text-center text-4xl font-bold">คำชี้แจ้งก่อนสอบ</div>
+            <div className=" text-md mx-4 my-4 border-2 border-black rounded-lg p-4">
+              <ol>
+                <li>ควรทำแบบทดสอบฉบับนี้บนคอมพิวเตอร์เพื่อความเสถียร และความไวในการเข้าระบบ</li>
+                <li>นักเรียนมีเวลาทำข้อสอบฉบับนี้ 90 นาที</li>
+                <li>
+                  ระบบจะเริ่มจับเวลาหลังจากนักเรียนคลิกเริ่มทำข้อสอบ
+                  ไม่สามารถยกเลิกหรือเริ่มจับเวลาใหม่ได้
+                </li>
+                <li>
+                  หากเปลี่ยนอุปกรณ์ หรือปิดหน้าต่าง ระบบจะไม่บันทึกคำตอบและเวลาจะยังคงเดินต่อไป
+                </li>
+                <li>
+                  หากเวลาหมด ระบบจะส่งข้อสอบโดปุ่มกดส่งคำตอบจะอยู่ที่ข้อ{" "}
+                  {ExamApiData.data.data.items}{" "}
+                  และเมื่อส่งคำตอบแล้วจะไม่สามารถกลับเข้ามาแก้ไขได้
+                </li>
+                <li>เมื่อครบ 90 นาที แล้วยังไม่กดส่งคำตอบระบบจะกดส่งคำตอบที่เลือกไว้อัตโนมัติ</li>
+                <li>หากต้องการดาวน์โหลดข้อสอบสามารถดาวน์โหลดได้ที่ link ด้านล่าง</li>
+              </ol>
+            </div>
+            <div className=" flex justify-center">
               <ExamDownloadButton
                 examName={decodeURIComponent(examID)}
                 examID={ExamApiData.data.data._id}
                 userData={userData.data}
               />
             </div>
-            <StartExamButton
-              examName={decodeURIComponent(examID)}
-              count={ExamApiData.data.data.items}
-              session={session}
-              examStartTime={examStartTime}
-            />
+            <div className=" flex justify-center mt-3">
+              <StartExamButton
+                examName={decodeURIComponent(examID)}
+                count={ExamApiData.data.data.items}
+                session={session}
+                examStartTime={examStartTime}
+              />
+            </div>
           </div>
         </div>
       )}
