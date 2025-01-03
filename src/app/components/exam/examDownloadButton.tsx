@@ -73,16 +73,7 @@ const ExamDownloadButton = ({
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
   
-      // Open the new tab immediately
-      const newTab = window.open("about:blank", "_blank");
-      if (!newTab) {
-        throw new Error("Failed to open a new tab. Please allow pop-ups.");
-      }
   
-      // Set the Blob URL in the new tab
-      newTab.location.href = url;
-  
-      // Optional: trigger download if needed
       const a = document.createElement("a");
       a.href = url;
       a.download = `${examName}_${userData.firstname}_${userData.lastname}.pdf`;
@@ -93,7 +84,6 @@ const ExamDownloadButton = ({
       console.error("Error downloading the PDF:", error);
     }
   };
-  
   
 
   return (

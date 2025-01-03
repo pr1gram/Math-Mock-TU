@@ -41,11 +41,6 @@ const AnswerDownloadButton = ({
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
 
-      // Open the new tab immediately to prevent redirection
-      const newTab = window.open("about:blank", "_blank");
-      if (newTab) {
-        newTab.location.href = url;
-      }
 
       // Optional: Trigger the download directly
       const a = document.createElement("a");
