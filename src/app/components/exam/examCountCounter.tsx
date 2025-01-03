@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react"
 
 interface ExamQuestionProps {
   examName: string
+  examNumber: string
 }
 
-const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName }) => {
+const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName ,examNumber }) => {
   const [doneCount, setDoneCount] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
 
@@ -53,7 +54,7 @@ const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName }) => {
       window.removeEventListener("storage", updateCounts)
       localStorage.setItem = originalSetItem // Restore original setItem
     }
-  }, [examName])
+  }, [examName, examNumber])
 
   return (
     <div className="rounded-[20px] border-2 border-[#b5b6c2] text-[#383c4e] text-lg px-4 py-1 w-full text-center">
