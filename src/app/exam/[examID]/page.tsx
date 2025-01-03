@@ -139,7 +139,7 @@ const ExamPage = async ({
       ) : (
         <div className=" flex justify-center">
           <div className=" block">
-            <div className=" text-center text-4xl font-bold">คำชี้แจ้งก่อนสอบ</div>
+            <div className=" text-center text-4xl font-bold">คำชี้แจงก่อนสอบ</div>
             <div className=" text-md mx-4 my-4 border-2 border-black rounded-lg p-4">
               <ol>
                 <li>ควรทำแบบทดสอบฉบับนี้บนคอมพิวเตอร์เพื่อความเสถียร และความไวในการเข้าระบบ</li>
