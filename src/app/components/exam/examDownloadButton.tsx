@@ -17,35 +17,35 @@ const ExamDownloadButton = ({
 }) => {
   const handleDownload = async () => {
     try {
-      const pdfUrl = `/examFile/${examID}.pdf`
-      const response = await fetch(pdfUrl)
+      const pdfUrl = `/examFile/${examID}.pdf`;
+      const response = await fetch(pdfUrl);
       if (!response.ok) {
-        throw new Error("Failed to fetch the PDF file.")
+        throw new Error("Failed to fetch the PDF file.");
       }
-
-      const arrayBuffer = await response.arrayBuffer()
-
+  
+      const arrayBuffer = await response.arrayBuffer();
+  
       // Load the PDF with pdf-lib
-      const pdfDoc = await PDFDocument.load(arrayBuffer)
-
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+  
       // Embed a custom font (e.g., a font that supports Thai characters)
-      pdfDoc.registerFontkit(fontkit)
-
-      const fontUrl = "/fonts/NotoSansThai-VariableFont_wdth,wght.ttf" // Path to your custom font in the public folder
-      const fontResponse = await fetch(fontUrl)
+      pdfDoc.registerFontkit(fontkit);
+  
+      const fontUrl = "/fonts/NotoSansThai-VariableFont_wdth,wght.ttf"; // Path to your custom font in the public folder
+      const fontResponse = await fetch(fontUrl);
       if (!fontResponse.ok) {
-        throw new Error("Failed to fetch the font file.")
+        throw new Error("Failed to fetch the font file.");
       }
-
-      const fontBytes = await fontResponse.arrayBuffer()
-      const customFont = await pdfDoc.embedFont(fontBytes)
-
+  
+      const fontBytes = await fontResponse.arrayBuffer();
+      const customFont = await pdfDoc.embedFont(fontBytes);
+  
       // Add watermark to each page
-      const pages = pdfDoc.getPages()
-      const watermarkText = `${userData.firstname} ${userData.lastname}`
-
+      const pages = pdfDoc.getPages();
+      const watermarkText = `${userData.firstname} ${userData.lastname}`;
+  
       pages.forEach((page) => {
-        const { width, height } = page.getSize()
+        const { width, height } = page.getSize();
         page.drawText(watermarkText, {
           x: width / 3,
           y: height / 2,
@@ -54,7 +54,7 @@ const ExamDownloadButton = ({
           color: rgb(0.75, 0.75, 0.75), // Light gray
           rotate: degrees(45),
           opacity: 0.5,
-        })
+        });
         page.drawText(watermarkText, {
           x: width / 3,
           y: height / 10,
@@ -63,27 +63,33 @@ const ExamDownloadButton = ({
           color: rgb(0.75, 0.75, 0.75), // Light gray
           rotate: degrees(45),
           opacity: 0.5,
-        })
-      })
-
+        });
+      });
+  
       // Serialize the PDF to bytes
-      const pdfBytes = await pdfDoc.save()
-
+      const pdfBytes = await pdfDoc.save();
+  
       // Trigger the download
-      const blob = new Blob([pdfBytes], { type: "application/pdf" })
-      const url = URL.createObjectURL(blob)
-      window.open(url, "_blank")
-
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `${examName}_${userData.firstname}_${userData.lastname}.pdf`
-      a.click()
-
-      URL.revokeObjectURL(url) // Clean up the URL object
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+  
+      // Open the new tab in Safari
+      const newTab = window.open("", "_blank");
+      if (newTab) {
+        newTab.location.href = url;
+      }
+  
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${examName}_${userData.firstname}_${userData.lastname}.pdf`;
+      a.click();
+  
+      URL.revokeObjectURL(url); // Clean up the URL object
     } catch (error) {
-      console.error("Error downloading the PDF:", error)
+      console.error("Error downloading the PDF:", error);
     }
-  }
+  };
+  
 
   return (
     <button
