@@ -28,6 +28,7 @@ const ExamPage = async ({
   const ExamApiData = await apiFunction("GET", `/exams/examlists/${examID}`, {}) // Fetching the count of the exam
   const startDateData = await apiFunction("GET", `/exams/${session?.user?.email}`, {})
 
+
   // Dynamically import the JSON file based on the examID
   let examData
   try {

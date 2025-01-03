@@ -46,6 +46,7 @@ const ExamDownloadButton = ({
   
       pages.forEach((page) => {
         const { width, height } = page.getSize();
+
         page.drawText(watermarkText, {
           x: width / 3,
           y: height / 2,
@@ -54,6 +55,7 @@ const ExamDownloadButton = ({
           color: rgb(0.75, 0.75, 0.75), // Light gray
           rotate: degrees(45),
           opacity: 0.5,
+
         });
         page.drawText(watermarkText, {
           x: width / 3,
