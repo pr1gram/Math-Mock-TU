@@ -10,48 +10,57 @@ const ExamCountCounter: React.FC<ExamQuestionProps> = ({ examName }) => {
   const [doneCount, setDoneCount] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
 
+  const isLocalStorageAvailable = () => {
+    try {
+      const testKey = "__test__"
+      localStorage.setItem(testKey, "test")
+      localStorage.removeItem(testKey)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   const updateCounts = () => {
-    // Retrieve the data from local storage
+    if (!isLocalStorageAvailable()) return
     const data = localStorage.getItem(examName)
-
     if (data) {
-      // Parse the stored data to an array
-      const valuesArray = JSON.parse(data)
-
-      const totalCount: number = (valuesArray as number[]).length
-      // Count the number of non-zero values
-      const doneCount: number = (valuesArray as number[]).filter(
-        (value: number) => value !== 0
-      ).length
-
-      setTotalCount(totalCount)
-      setDoneCount(doneCount)
+      try {
+        const valuesArray = JSON.parse(data)
+        const totalCount: number = (valuesArray as number[]).length
+        const doneCount: number = (valuesArray as number[]).filter(
+          (value: number) => value !== 0
+        ).length
+        setTotalCount(totalCount)
+        setDoneCount(doneCount)
+      } catch (error) {
+        console.error("Failed to parse localStorage data:", error)
+        setTotalCount(0)
+        setDoneCount(0)
+      }
     } else {
-      // Reset counts if no data found
       setTotalCount(0)
       setDoneCount(0)
     }
   }
 
   useEffect(() => {
-    // Update counts when component mounts
+    if (!isLocalStorageAvailable()) return
     updateCounts()
-  
-    // Add event listener for storage changes across tabs
+
     window.addEventListener("storage", updateCounts)
-  
-    // Listen for local changes and update count
+
     const originalSetItem = localStorage.setItem
     localStorage.setItem = function (key, value) {
-      originalSetItem.apply(this, [key, value]) // Spread the correct arguments
+      originalSetItem.apply(this, [key, value])
       if (key === examName) {
         updateCounts()
       }
     }
-  
+
     return () => {
       window.removeEventListener("storage", updateCounts)
-      localStorage.setItem = originalSetItem // Restore original setItem
+      localStorage.setItem = originalSetItem
     }
   }, [examName])
 

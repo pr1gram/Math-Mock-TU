@@ -5,11 +5,11 @@ import fontkit from "@pdf-lib/fontkit"
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline"
 
 const ExamDownloadButton = ({
-    examName,
+  examName,
   examID,
   userData,
 }: {
-    examName: string
+  examName: string
   examID: string
   userData: { firstname: string; lastname: string }
 }) => {
@@ -55,7 +55,7 @@ const ExamDownloadButton = ({
         })
         page.drawText(watermarkText, {
           x: width / 3,
-          y: height /10,
+          y: height / 10,
           size: 50,
           font: customFont,
           color: rgb(0.75, 0.75, 0.75), // Light gray
@@ -70,16 +70,12 @@ const ExamDownloadButton = ({
       // Trigger the download
       const blob = new Blob([pdfBytes], { type: "application/pdf" })
       const url = URL.createObjectURL(blob)
-      const newTab = window.open(url, '_blank')
+      window.open(url, "_blank")
 
       const a = document.createElement("a")
       a.href = url
       a.download = `${examName}_${userData.firstname}_${userData.lastname}.pdf`
       a.click()
-
-      if (newTab) {
-        newTab.close()
-      }
 
       URL.revokeObjectURL(url) // Clean up the URL object
     } catch (error) {
@@ -88,7 +84,10 @@ const ExamDownloadButton = ({
   }
 
   return (
-    <button onClick={handleDownload} className=" underline text-center text-sm mt-3 flex justify-center">
+    <button
+      onClick={handleDownload}
+      className=" underline text-center text-sm mt-3 flex justify-center"
+    >
       <ArrowDownTrayIcon className="w-5 h-5" />
       ดาวน์โหลดข้อสอบ
     </button>
