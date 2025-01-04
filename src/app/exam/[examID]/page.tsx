@@ -70,7 +70,7 @@ const ExamPage = async ({
             </div>
           </div>
           <div className=" flex justify-center mt-3">
-            <div className=" sm:flex sm:gap-2 md:gap-8 lg:gap-20">
+            <div className=" sm:flex justify-center sm:gap-2 md:gap-6 lg:gap-14">
               <ExamQuestion
                 examName={decodeURIComponent(examID)}
                 pointNumber={examQuestion?.question}

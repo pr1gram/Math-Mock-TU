@@ -41,7 +41,7 @@ const ExamChoice: React.FC<ExamChoiceProps> = ({ examName, pointNumber, choices 
   }
 
   return (
-    <div className=" sm:h-full sm:flex items-center sm:w-[320px] md:w-[370px] lg:w-[500px]">
+    <div className=" sm:h-full sm:flex items-center sm:w-[300px] md:w-[340px] lg:w-[400px]">
       <div className=" w-full">
         <div className="text-[#383c4e] text-4xl font-bold mt-5 sm:mt-0 w-full">
           ข้อที่ {pointNumber}
