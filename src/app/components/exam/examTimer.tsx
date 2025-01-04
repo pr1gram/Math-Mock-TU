@@ -26,7 +26,7 @@ const ExamTimer: React.FC<ExamTimerProps> = ({ examName }) => {
       const durationInMinutes = ExamApiData.data.data.duration
       const durationInMilliseconds = durationInMinutes * 60 * 1000
       const examEndTime = examStartTime + durationInMilliseconds
-
+      console.log(examStartTime, durationInMinutes, examEndTime)
       setExamEndTime(examEndTime)
     } catch (error) {
       console.error("Error fetching exam data:", error)
