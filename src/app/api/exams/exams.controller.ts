@@ -116,21 +116,36 @@ export async function startExam(email: string, testID: string) {
     if (!docSnap?.exists()) {
       const newUserRef = doc(firestore, "exams", email)
       await setDoc(newUserRef, {
+        email: email,
         [sanitizeFieldName(testID)]: {
           startDate: date,
         },
       })
       return { success: true, message: "Created successfully" }
     } else {
-      const UserRef = doc(firestore, "exams", email)
-      const userDoc = (await getDoc(UserRef)).data()
+      const userDocSnapshot = await getDocumentByEmail("exams", email)
 
-      await setDoc(UserRef, {
-        ...userDoc,
+      if (!userDocSnapshot) {
+        return { success: false, message: "Cannot find user"}
+      }
+
+      const userDocData = userDocSnapshot.data()
+
+      await setDoc(userDocData.ref, {
+        ...userDocData,
         [sanitizeFieldName(testID)]: {
-          startDate: date,
-        },
+          startDate: date
+        }
       })
+      // const UserRef = doc(firestore, "exams", email)
+      // const userDoc = (await getDoc(UserRef)).data()
+
+      // await setDoc(UserRef, {
+      //   ...userDoc,
+      //   [sanitizeFieldName(testID)]: {
+      //     startDate: date,
+      //   },
+      // })
       return { success: true, message: "Updated successfully" }
     }
   } catch (e: unknown) {
