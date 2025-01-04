@@ -10,6 +10,7 @@ import apiFunction from "@/components/api"
 import Link from "next/link"
 import ExamSummitButton from "@/components/exam/examSummit"
 import { redirect } from "next/navigation"
+import ExamDownloadButton from "@/components/exam/examDownloadButton"
 
 const ExamPage = async ({
   params,
@@ -22,10 +23,11 @@ const ExamPage = async ({
   const pointNumber = searchParams.n || "0" // Extracting the query parameter 'n' with a default value
   const pageNumber = parseInt(pointNumber)
   const session = await auth() // Authentication check
+  const userData = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
   const checkSignIn = await CheckSignIn(false, "/auth") // Sign-in check
   const ExamApiData = await apiFunction("GET", `/exams/examlists/${examID}`, {}) // Fetching the count of the exam
   const startDateData = await apiFunction("GET", `/exams/${session?.user?.email}`, {})
-  const transactionResponse = await apiFunction("GET", `/transaction/${session?.user?.email}/${examID}`, {})
+
 
   // Dynamically import the JSON file based on the examID
   let examData
@@ -41,14 +43,15 @@ const ExamPage = async ({
     (exam: { question: string }) => exam.question === pointNumber
   )
 
-  const examStartTime = startDateData?.data?.data?.examData?.[decodeURIComponent(examID)]?.startDate || 0
+  const examStartTime =
+    startDateData?.data?.data?.examData?.[decodeURIComponent(examID)]?.startDate || 0
   const durationInMinutes = ExamApiData.data.data.duration
   const durationInMilliseconds = durationInMinutes * 60 * 1000
 
   const examEndTime = examStartTime + durationInMilliseconds
 
-  if (transactionResponse?.data?.data?.examsUserData?.submittedTime) {
-    redirect(`/myExam/${examID}`);
+  if (startDateData?.data?.data?.examData?.[decodeURIComponent(examID)]?.submittedTime) {
+    redirect(`/myExam/${examID}`)
   }
 
   return (
@@ -62,13 +65,16 @@ const ExamPage = async ({
                 <ExamTimer examName={decodeURIComponent(examID)} />
               </div>
               <div className=" flex justify-center w-full">
-                <ExamCountCounter examName={decodeURIComponent(examID)} />
+                <ExamCountCounter examName={decodeURIComponent(examID)} examNumber={pointNumber} />
               </div>
             </div>
           </div>
           <div className=" flex justify-center mt-3">
             <div className=" sm:flex sm:gap-2 md:gap-8 lg:gap-20">
-              <ExamQuestion examName={decodeURIComponent(examID)} pointNumber={examQuestion?.question} />
+              <ExamQuestion
+                examName={decodeURIComponent(examID)}
+                pointNumber={examQuestion?.question}
+              />
               {examQuestion ? (
                 <ExamChoice
                   examName={decodeURIComponent(examID)}
@@ -133,12 +139,46 @@ const ExamPage = async ({
         </div>
       ) : (
         <div className=" flex justify-center">
-          <StartExamButton
-            examName={decodeURIComponent(examID)}
-            count={ExamApiData.data.data.items}
-            session={session}
-            examStartTime={examStartTime}
-          />
+          <div className=" block">
+            <div className=" text-center text-4xl font-bold">คำชี้แจงก่อนสอบ</div>
+            <div className=" text-md mx-4 my-4 border-2 border-black rounded-lg p-4">
+              <ol>
+                <li>ควรทำแบบทดสอบฉบับนี้บนคอมพิวเตอร์เพื่อความเสถียร และความไวในการเข้าระบบ</li>
+                <li>นักเรียนมีเวลาทำข้อสอบฉบับนี้ 90 นาที</li>
+                <li>
+                  ระบบจะเริ่มจับเวลาหลังจากนักเรียนคลิกเริ่มทำข้อสอบ
+                  ไม่สามารถยกเลิกหรือเริ่มจับเวลาใหม่ได้
+                </li>
+                <li>
+                  หากเปลี่ยนอุปกรณ์ หรือปิดหน้าต่าง ระบบจะไม่บันทึกคำตอบและเวลาจะยังคงเดินต่อไป
+                </li>
+                <li>
+                  หากเวลาหมด ระบบจะส่งข้อสอบโดปุ่มกดส่งคำตอบจะอยู่ที่ข้อ{" "}
+                  {ExamApiData.data.data.items}{" "}
+                  และเมื่อส่งคำตอบแล้วจะไม่สามารถกลับเข้ามาแก้ไขได้
+                </li>
+                <li>เมื่อครบ 90 นาที แล้วยังไม่กดส่งคำตอบระบบจะกดส่งคำตอบที่เลือกไว้อัตโนมัติ</li>
+                <li>หากต้องการดาวน์โหลดข้อสอบสามารถดาวน์โหลดได้ที่ link ด้านล่าง (หมายเหตุ: ให้กดย้อนกลับหลังจากดาวน์โหลดเสร็จ)
+                </li>
+              </ol>
+            </div>
+            <div className=" flex justify-center">
+              <ExamDownloadButton
+                examName={decodeURIComponent(examID)}
+                examID={ExamApiData.data.data._id}
+                userData={userData.data}
+                className="underline text-center text-sm mt-3 flex justify-center"
+              />
+            </div>
+            <div className=" flex justify-center mt-3">
+              <StartExamButton
+                examName={decodeURIComponent(examID)}
+                count={ExamApiData.data.data.items}
+                session={session}
+                examStartTime={examStartTime}
+              />
+            </div>
+          </div>
         </div>
       )}
     </main>

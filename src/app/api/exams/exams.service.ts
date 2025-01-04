@@ -24,6 +24,7 @@ export async function updateExamAnswers(email: string, testID: string, answers: 
 
     if (docSnap.exists()) {
       let data = docSnap.data()
+      console.log(data)
 
       const sanitizedTestID = sanitizeFieldName(testID);
       data[sanitizedTestID] = {

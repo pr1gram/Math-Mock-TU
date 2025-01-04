@@ -9,6 +9,10 @@ import Left_Arrow from "@/vector/left_arrow"
 import Link from "next/link"
 import CheckSignIn from "@/components/auth/checkSignIn"
 import RejectedIcon from "@/vector/exam/rejectedIcon"
+import MyExamTimer from "@/components/exam/myExamTimer"
+import ExamDownloadButton from "@/components/exam/examDownloadButton"
+import AnswerDownloadButton from "@/components/exam/answerDownloadButton"
+
 
 const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
   const { myExamID } = params
@@ -25,14 +29,19 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
     redirect("/form")
   }
 
-  const response = await apiFunction("GET", `/transaction/${session?.user?.email}/${decodeURIComponent(myExamID)}`, {})
+  const userData = await apiFunction("GET", `/authentication/${session?.user?.email}`, {})
+
+  const response = await apiFunction(
+    "GET",
+    `/transaction/${session?.user?.email}/${decodeURIComponent(myExamID)}`,
+    {}
+  )
   if (response.status === 404) {
     redirect("/404")
   }
 
   const solutions = await apiFunction("GET", `/exams/solutions/${myExamID}`, {})
   const myExamData = response.data.data
-
 
   return (
     <main>
@@ -46,7 +55,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
               </div>
             </Link>
             <div className="bg-white rounded-[9px] border border-[#b5b6c2] p-4 flex flex-col mt-1 duration-500">
-              <div className="flex flex-col justify-between h-[380px] sm:h-[450px] md:h-[540px]">
+              <div className="flex flex-col justify-between h-[450px] sm:h-[500px] md:h-[590px]">
                 <div>
                   <div className="text-[#2f7aeb] text-3xl sm:text-4xl font-bold">
                     {myExamData?.examData.title}
@@ -105,13 +114,21 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                         </div>
                       )}
                       {myExamData?.examsUserData?.submittedTime ? (
-                        <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
-                          <Link
-                            className=" inline-block w-full h-full"
-                            href={`/score/${myExamData.testID}`}
-                          >
-                            คะแนนสอบ
-                          </Link>
+                        <div>
+                          <ExamDownloadButton
+                            examName={decodeURIComponent(myExamID)}
+                            examID={myExamData.examData._id}
+                            userData={userData.data}
+                            className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 flex justify-center"
+                          />
+                          <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
+                            <Link
+                              className=" inline-block w-full h-full"
+                              href={`/score/${myExamData.testID}`}
+                            >
+                              คะแนนสอบ
+                            </Link>
+                          </div>
                         </div>
                       ) : (
                         <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
@@ -119,15 +136,11 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                         </div>
                       )}
                       {myExamData?.examsUserData?.submittedTime ? (
-                        solutions.data.data.video_url ? (
-                          <div className="w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
-                            <Link
-                              className="inline-block w-full h-full"
-                              href={`${solutions.data.data.video_url}`}
-                            >
-                              เฉลยข้อสอบ
-                            </Link>
-                          </div>
+                        solutions?.data?.data?.video_url ? (
+                          <AnswerDownloadButton
+                            examName={decodeURIComponent(myExamID)}
+                            examID={myExamData.examData._id}
+                          />
                         ) : (
                           <div className="w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
                             เฉลยข้อสอบ
@@ -160,6 +173,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
           </div>
         </div>
       </div>
+      <MyExamTimer startTime={myExamData.examData.startTime} />
     </main>
   )
 }
