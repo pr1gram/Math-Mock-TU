@@ -47,7 +47,17 @@ const ExamDownloadPage = () => {
             y: height / 2,
             size: 50,
             font: customFont,
-            color: rgb(0.75, 0.75, 0.75),
+            color: rgb(0.75, 0.75, 0.75), // Light gray
+            rotate: degrees(45),
+            opacity: 0.5,
+  
+          });
+          page.drawText(watermarkText, {
+            x: width / 3,
+            y: height / 10,
+            size: 50,
+            font: customFont,
+            color: rgb(0.75, 0.75, 0.75), // Light gray
             rotate: degrees(45),
             opacity: 0.5,
           });
