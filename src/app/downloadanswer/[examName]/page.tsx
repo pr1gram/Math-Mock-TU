@@ -50,8 +50,6 @@ const ExamAnswerPage = () => {
 
         URL.revokeObjectURL(url);
 
-        // Close the tab after the download
-        window.close();
       } catch (error) {
         console.error("Error downloading the PDF:", error);
       }
