@@ -10,9 +10,8 @@ import Link from "next/link"
 import CheckSignIn from "@/components/auth/checkSignIn"
 import RejectedIcon from "@/vector/exam/rejectedIcon"
 import MyExamTimer from "@/components/exam/myExamTimer"
-import ExamDownloadButton from "@/components/exam/examDownloadButton"
 import AnswerDownloadButton from "@/components/exam/answerDownloadButton"
-
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline"
 
 const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
   const { myExamID } = params
@@ -113,14 +112,30 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                           เริ่มต้นสอบ
                         </div>
                       )}
+                      <Link
+                        href={`/downloadexam/${decodeURIComponent(myExamID)}?examID=${
+                          myExamData.examData._id
+                        }&firstname=${encodeURIComponent(
+                          userData.data.firstname
+                        )}&lastname=${encodeURIComponent(userData.data.lastname)}`}
+                        className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
+                        target="_blank"
+                      >
+                        <ArrowDownTrayIcon className="w-5 h-5" />
+                        ดาวน์โหลดข้อสอบ
+                      </Link>
+                      <Link
+                        href={`/downloadanswer/${decodeURIComponent(myExamID)}?examID=${
+                          myExamData.examData._id
+                        }`}
+                        className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
+                        target="_blank"
+                      >
+                        <ArrowDownTrayIcon className="w-5 h-5" />
+                        ดาวน์โหลดเฉลยข้อสอบ
+                      </Link>
                       {myExamData?.examsUserData?.submittedTime ? (
                         <div>
-                          <ExamDownloadButton
-                            examName={decodeURIComponent(myExamID)}
-                            examID={myExamData.examData._id}
-                            userData={userData.data}
-                            className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 flex justify-center"
-                          />
                           <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
                             <Link
                               className=" inline-block w-full h-full"
@@ -135,7 +150,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                           คะแนนสอบ
                         </div>
                       )}
-                      {myExamData?.examsUserData?.submittedTime ? (
+                      {/* {myExamData?.examsUserData?.submittedTime ? (
                         solutions?.data?.data?.video_url ? (
                           <AnswerDownloadButton
                             examName={decodeURIComponent(myExamID)}
@@ -150,7 +165,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                         <div className="w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
                           เฉลยข้อสอบ
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 ) : (
@@ -162,9 +177,9 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                       <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
                         คะแนนสอบ
                       </div>
-                      <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
+                      {/* <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
                         เฉลยข้อสอบ
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 )}
