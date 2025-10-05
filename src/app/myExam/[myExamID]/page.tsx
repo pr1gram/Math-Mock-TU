@@ -94,8 +94,8 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                       {Date.now() > myExamData.examData.startTime &&
                       Date.now() < myExamData.examData.endTime ? (
                         myExamData?.examsUserData?.submittedTime ? (
-                          <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
-                            เริ่มต้นสอบ
+                            <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2 ">
+                              เริ่มต้นสอบ
                           </div>
                         ) : (
                           <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 ">
@@ -112,30 +112,31 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                           เริ่มต้นสอบ
                         </div>
                       )}
-                      <Link
-                        href={`/downloadexam/${decodeURIComponent(myExamID)}?examID=${
-                          myExamData.examData._id
-                        }&firstname=${encodeURIComponent(
-                          userData.data.firstname
-                        )}&lastname=${encodeURIComponent(userData.data.lastname)}`}
-                        className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
-                        target="_blank"
-                      >
-                        <ArrowDownTrayIcon className="w-5 h-5" />
-                        ดาวน์โหลดข้อสอบ
-                      </Link>
-                      <Link
-                        href={`/downloadanswer/${decodeURIComponent(myExamID)}?examID=${
-                          myExamData.examData._id
-                        }`}
-                        className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
-                        target="_blank"
-                      >
-                        <ArrowDownTrayIcon className="w-5 h-5" />
-                        ดาวน์โหลดเฉลยข้อสอบ
-                      </Link>
+
                       {myExamData?.examsUserData?.submittedTime ? (
                         <div>
+                          <Link
+                              href={`/downloadexam/${decodeURIComponent(myExamID)}?examID=${
+                                myExamData.examData._id
+                              }&firstname=${encodeURIComponent(
+                                userData.data.firstname
+                              )}&lastname=${encodeURIComponent(userData.data.lastname)}`}
+                              className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
+                              target="_blank"
+                            >
+                              <ArrowDownTrayIcon className="w-5 h-5" />
+                              ดาวน์โหลดข้อสอบ
+                            </Link>
+                          <Link
+                            href={`/downloadanswer/${decodeURIComponent(myExamID)}?examID=${
+                              myExamData.examData._id
+                            }`}
+                            className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
+                            target="_blank"
+                          >
+                            <ArrowDownTrayIcon className="w-5 h-5" />
+                            ดาวน์โหลดเฉลยข้อสอบ
+                          </Link>
                           <div className=" w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2">
                             <Link
                               className=" inline-block w-full h-full"

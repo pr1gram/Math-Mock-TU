@@ -52,7 +52,8 @@ const TestCard: React.FC<TestCardProps> = ({
     email: string,
     testID: string,
     status: string,
-    text: string
+    text: string,
+    note?: string
   ): Promise<void> => {
     try {
       await apiFunction("PATCH", `/transaction/${email}`, {
@@ -123,9 +124,7 @@ const TestCard: React.FC<TestCardProps> = ({
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-
                 action(email, testName, "approved", "อนุมัติ")
-
               }
             })
           }}
@@ -138,15 +137,16 @@ const TestCard: React.FC<TestCardProps> = ({
             Swal.fire({
               title: "ยืนยันการไม่อนุมัติ?",
               icon: "warning",
+              input: "text",
+              inputPlaceholder: "หมายเหตุ", // optional placeholder
               showCancelButton: true,
               confirmButtonColor: "#3085d6",
               cancelButtonColor: "#d33",
               confirmButtonText: "ยืนยัน",
             }).then((result) => {
               if (result.isConfirmed) {
-
-                action(email, testName, "rejected", "ไม่อนุมัติ")
-
+                const reason = result.value // ✅ get the input text
+                action(email, testName, "rejected", "ไม่อนุมัติ", reason)
               }
             })
           }}
@@ -162,9 +162,7 @@ const TestCard: React.FC<TestCardProps> = ({
           onClick={closeModal}
         >
           <div
-
             className="bg-white p-4 rounded-lg shadow-lg max-w-lg relative"
-
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -188,7 +186,6 @@ const TestCard: React.FC<TestCardProps> = ({
 interface PendingListsProps {
   AdminResponseJSON: string
 }
-
 
 const PendingLists: React.FC = () => {
   const [data, setData] = useState<{ [key: string]: TestInfo[] }>({})
@@ -243,9 +240,7 @@ const PendingLists: React.FC = () => {
       return (
         firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-
         phone.toLowerCase().includes(searchQuery.toLowerCase())
-
       )
     })
 
@@ -301,7 +296,6 @@ const PendingLists: React.FC = () => {
           </div>
         </>
       )}
-
     </div>
   )
 }
