@@ -30,6 +30,13 @@ export async function createUser(options: User) {
     const ref = doc(firestore, "users", encoded(options.email))
     await setDoc(ref, options)
 
+    const querySnapshot = await getDocumentByEmail("exams", options.email)
+
+    if (!querySnapshot?.exists()) {
+      const examRef = doc(firestore, "exams", options.email)
+      await setDoc(examRef, { email: options.email })
+    }
+
     return { success: true, message: `User ${options.username} created successfully` }
   } catch (e) {
     throw new Error("Error while creating user")
