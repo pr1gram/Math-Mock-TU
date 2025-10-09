@@ -9,6 +9,7 @@ export interface Slip {
   price?: string
   testID?: string
   status?: string
+  note?: string
 }
 
 export enum Status {

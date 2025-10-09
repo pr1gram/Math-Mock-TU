@@ -27,8 +27,8 @@ const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
   )
   .patch(
     "/:email",
-    async ({ params: { email }, body: { testID, status } }) => {
-      const res = await updateStatus(email, testID, status)
+    async ({ params: { email }, body: { testID, status, note } }) => {
+      const res = await updateStatus(email, testID, status, note)
       if (res.success) return res
       else if (res.status === 404) return error(404, `Error: ${res.message}`)
       else return error(400, `Error: ${res.message}`)
@@ -40,6 +40,7 @@ const TransactionRouteEmail = new Elysia({ prefix: "/api/transaction" })
       body: t.Object({
         testID: StringField("TestID must be provided"),
         status: t.Enum(Status, { error: "Status must be provided" }),
+        note: t.Optional(StringField("Note must be provided")),
       }),
     }
   )

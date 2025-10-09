@@ -121,7 +121,7 @@ export async function getTransaction(email: string, testID: string) {
   }
 }
 
-export async function updateStatus(email: string, testID: string, status: Status) {
+export async function updateStatus(email: string, testID: string, status: Status, note?: string) {
   try {
     if (!validateEmail(email))
       return { success: false, message: "Email is not formatted correctly" }
@@ -142,6 +142,8 @@ export async function updateStatus(email: string, testID: string, status: Status
       if (!userSnap?.exists()) return { success: false, status: 404, message: "Cannot find user" }
 
       let userStatus = (transactions[transactionIndex].status = status)
+      if (note) transactions[transactionIndex].note = note
+      
       await updateDoc(docSnap.ref, { transactions })
 
       if (userStatus === Status.APPROVED) {
