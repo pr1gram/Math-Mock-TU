@@ -59,6 +59,7 @@ const TestCard: React.FC<TestCardProps> = ({
       await apiFunction("PATCH", `/transaction/${email}`, {
         testID: testID,
         status: status,
+        note: note || "",
       })
       onActionComplete(testName, email)
       Swal.fire({

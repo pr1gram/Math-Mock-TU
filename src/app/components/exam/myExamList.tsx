@@ -60,8 +60,8 @@ const MyExamList = ({ myExamListsJSON }: { myExamListsJSON: any }) => {
                         </div>
                       )}
                       {myExam.status === "rejected" && (
-                        <div className=" text-red-600 flex">
-                          <RejectedIcon className="h-6" /> ไม่ผ่านการตรวจสอบ
+                        <div className=" text-red-600 flex items-center">
+                          <RejectedIcon className="h-6" /> ไม่ผ่านการตรวจสอบ <br />หมายเหตุ: {myExam.note}
                         </div>
                       )}
                     </div>
