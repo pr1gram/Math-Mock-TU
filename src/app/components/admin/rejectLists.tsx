@@ -105,7 +105,7 @@ const TestCard: React.FC<TestCardProps> = ({
         </div>
         <div className="font-bold flex">
           สถานะ
-          <div className="font-normal text-yellow-500 ">&nbsp; ระหว่างการตรวจสอบ</div>
+          <div className="font-normal text-red-500 ">&nbsp; ไม่ผ่านการตรวจสอบ</div>
         </div>
       </div>
       <div>
@@ -192,7 +192,7 @@ interface PendingListsProps {
   AdminResponseJSON: string
 }
 
-const PendingLists: React.FC = () => {
+const RejectLists: React.FC = () => {
   const [data, setData] = useState<{ [key: string]: TestInfo[] }>({})
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
@@ -203,7 +203,7 @@ const PendingLists: React.FC = () => {
     if (status !== "authenticated") return
     const fetchData = async () => {
       try {
-        const response = await apiFunction("GET", `/admin/users/pending/${session?.user?.email}`, {})
+        const response = await apiFunction("GET", `/admin/users/reject/${session?.user?.email}`, {})
         if (response.status === 403) {
           router.push("/")
         }
@@ -213,7 +213,7 @@ const PendingLists: React.FC = () => {
         console.error("Error fetching data:", error)
         Swal.fire({
           title: "Error",
-          text: "Failed to load pending lists. Please try again.",
+          text: "Failed to load rejected lists. Please try again.",
           icon: "error",
         })
       } finally {
@@ -305,4 +305,4 @@ const PendingLists: React.FC = () => {
   )
 }
 
-export default PendingLists
+export default RejectLists
