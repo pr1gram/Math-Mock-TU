@@ -43,10 +43,5 @@
   { "question": "42", "choices": ["", "", "", ""] },
   { "question": "43", "choices": ["", "", "", ""] },
   { "question": "44", "choices": ["", "", "", ""] },
-  { "question": "45", "choices": ["", "", "", ""] },
-  { "question": "46", "choices": ["", "", "", ""] },
-  { "question": "47", "choices": ["", "", "", ""] },
-  { "question": "48", "choices": ["", "", "", ""] },
-  { "question": "49", "choices": ["", "", "", ""] },
-  { "question": "50", "choices": ["", "", "", ""] }
+  { "question": "45", "choices": ["", "", "", ""] }
 ]
