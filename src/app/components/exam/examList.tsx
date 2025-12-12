@@ -57,7 +57,7 @@ const ExamList = ({ examListsJSON, myExamListsJSON }: { examListsJSON: any; myEx
     <div className="embla">
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container flex gap-5 mx-4">
-          {filteredExamLists?.length ? (
+          {/* {filteredExamLists?.length ? (
             filteredExamLists.map((exam: any) => (
               <div
                 key={exam.id}
@@ -86,8 +86,8 @@ const ExamList = ({ examListsJSON, myExamListsJSON }: { examListsJSON: any; myEx
             ))
           ) : (
             <div className=" text-[#383c4e] text-2xl font-bold ml-4 mt-2 py-36 w-full text-center">ไม่มีวิชาให้สมัครสอบในขณะนี้</div>
-          )}
-          {/* <div className=" text-[#383c4e] text-2xl font-bold ml-4 mt-2 py-36 w-full text-center">ไม่มีวิชาให้สมัครสอบในขณะนี้</div> */}
+          )} */}
+          <div className=" text-[#383c4e] text-2xl font-bold ml-4 mt-2 py-36 w-full text-center">ไม่มีวิชาให้สมัครสอบในขณะนี้</div>
         </div>
       </div>
       {scrollSnaps.length > 1 && (
