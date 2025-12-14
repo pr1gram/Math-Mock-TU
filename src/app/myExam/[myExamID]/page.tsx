@@ -151,9 +151,38 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                           </div>
                         </div>
                       ) : (
-                        <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
-                          คะแนนสอบ
-                        </div>
+                        <>
+                          { //comment this when you want to hide download before submit
+                            <div>
+                              <Link
+                                href={`/downloadexam/${decodeURIComponent(myExamID)}?examID=${
+                                  myExamData.examData._id
+                                }&firstname=${encodeURIComponent(
+                                  userData.data.firstname
+                                )}&lastname=${encodeURIComponent(userData.data.lastname)}`}
+                                className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
+                                target="_blank"
+                              >
+                                <ArrowDownTrayIcon className="w-5 h-5" />
+                                ดาวน์โหลดข้อสอบ
+                              </Link>
+                              <Link
+                                href={`/downloadanswer/${decodeURIComponent(myExamID)}?examID=${
+                                  myExamData.examData._id
+                                }`}
+                                className=" flex justify-center w-full border-2 text-white border-[#2F7AEB] bg-[#2F7AEB] rounded-full text-center py-1 my-2 "
+                                target="_blank"
+                              >
+                                <ArrowDownTrayIcon className="w-5 h-5" />
+                                ดาวน์โหลดเฉลยข้อสอบ
+                              </Link>
+                            </div>
+                          }
+
+                          <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
+                            คะแนนสอบ
+                          </div>
+                        </>
                       )}
                       {/* {myExamData?.examsUserData?.submittedTime ? (
                         solutions?.data?.data?.video_url ? (
