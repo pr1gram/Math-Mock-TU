@@ -214,12 +214,16 @@ export async function getScore(email: string, testID: string) {
       if (!solutionSnap.exists()) return { success: false, message: "Cannot find solutions" }
 
       const sols = solutionSnap.data().answers
+      const MeanSnap = await getDoc(doc(firestore, "solutions", test_id))
+      const Mean = MeanSnap.exists() ? MeanSnap.data().Mean : null
+      const SDSnap = await getDoc(doc(firestore, "solutions", test_id))
+      const SD = SDSnap.exists() ? SDSnap.data().SD : null
       const score = data.answers.reduce(
         (acc: number, cur: string, idx: number) => (cur === sols[idx] ? acc + 1 : acc),
-        0,
+        0
       )
 
-      return { success: true, data: { email: email, score: score } }
+      return { success: true, data: { email: email, score: score, Mean: Mean, SD: SD } }
     }
 
     return { success: false, message: "Cannot find user" }
