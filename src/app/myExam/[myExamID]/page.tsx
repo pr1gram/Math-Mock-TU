@@ -153,6 +153,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                       ) : (
                         <>
                           { //comment this when you want to hide download before submit
+                          /*
                             <div>
                               <Link
                                 href={`/downloadexam/${decodeURIComponent(myExamID)}?examID=${
@@ -177,6 +178,7 @@ const MyExamPage = async ({ params }: { params: { myExamID: string } }) => {
                                 ดาวน์โหลดเฉลยข้อสอบ
                               </Link>
                             </div>
+                          */
                           }
 
                           <div className=" w-full border-2 border-[#B5B6C2] rounded-full text-center py-1 my-2">
